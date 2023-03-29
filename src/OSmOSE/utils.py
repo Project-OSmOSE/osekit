@@ -356,7 +356,6 @@ def make_path(path: Path, *, mode=DPDEFAULT) -> Path:
             The permission code of the complete path. The default is 0o755, meaning the owner has all permissions over the files of the path,
             and the owner group and others only have read and execute rights, but not writing.
     """
-
     for parent in path.parents[::-1]:
         parent.mkdir(mode=mode, exist_ok=True)
 
