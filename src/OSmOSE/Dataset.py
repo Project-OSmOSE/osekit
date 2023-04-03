@@ -526,12 +526,21 @@ class Dataset:
         """Search for the original folder or create it from existing files.
 
         This function does in order:
+<<<<<<< HEAD
         - If there is any audio file in the top directory, consider them all original and create the data/audio/original/ directory before
             moving all audio files in it.
         - If there is only one folder in the top directory, move it to /data/audio/original.
         - If there is a folder named "original" in the raw audio path, then return it
         - If there is only one folder in the raw audio path, then return it as the original.
         If none of the above is true, then a ValueError is raised as the original folder could not be found nor created. 
+=======
+    - If there is any audio file in the top directory, consider them all original and create the data/audio/original/ directory before
+        moving all audio files in it.
+    - If there is only one folder in the top directory, move it to /data/audio/original.
+    - If there is a folder named "original" in the raw audio path, then return it
+    - If there is only one folder in the raw audio path, then return it as the original.
+    If none of the above is true, then a ValueError is raised as the original folder could not be found nor created. 
+>>>>>>> cc9dd99... docstring fixes
 
         Returns
         -------
