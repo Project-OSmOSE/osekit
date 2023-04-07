@@ -208,7 +208,7 @@ class Spectrogram(Dataset):
             else "hamming"
         )
 
-        self.time_resolution: List[float] = (
+        self.time_resolution = (
             [
                 analysis_sheet[col][0]
                 for col in analysis_sheet
@@ -1282,6 +1282,8 @@ class Spectrogram(Dataset):
                 )
 
                 os.chmod(output_matrix, mode=FPDEFAULT)
+
+            os.chmod(output_matrix, mode=FPDEFAULT)
 
         return Sxx, Freq
 
