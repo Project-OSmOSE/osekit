@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from functools import partial
 import inspect
 import os
@@ -606,6 +607,43 @@ class Spectrogram(Dataset):
             self.list_wav_to_process = list(
                 set(subset).intersection(set(self.list_wav_to_process))
             )
+
+        # Generate the timestamp.csv
+        input_timestamp = pd.read_csv(
+            self.path_input_audio_file.joinpath("timestamp.csv"),
+            header=None,
+            names=["filename", "timestamp", "timezone"],
+        )
+
+        new_timestamp_list = []
+        new_name_list = []
+        for i in range(len(input_timestamp.filename)):
+            if len(new_timestamp_list) == 0:
+                next_timestamp = datetime.strptime(input_timestamp.timestamp[0], "%Y-%m-%dT%H:%M:%S.%fZ")
+
+            new_timestamp_list.append(datetime.strftime(next_timestamp, "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z")
+            new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
+            
+            next_timestamp += timedelta(seconds=self.spectro_duration)
+
+        path_csv = self.audio_path.joinpath("timestamp.csv")
+
+        if self.path_input_audio_file == self.audio_path:
+            path_csv.rename(path_csv.with_stem("old_timestamp"))
+
+        new_timestamp = pd.DataFrame(
+            {"filename": new_name_list, "timestamp": new_timestamp_list, "timezone": "UTC"}
+        )
+        new_timestamp.sort_values(by=["timestamp"], inplace=True)
+        new_timestamp.drop_duplicates().to_csv(
+            path_csv,
+            index=False,
+            na_rep="NaN",
+            header=None,
+        )
+        os.chmod(path_csv, mode=FPDEFAULT)
+
+
 
         batch_size = len(self.list_wav_to_process) // self.batch_number
 
