@@ -26,12 +26,16 @@ def substract_timestamps(
     cur_timestamp: str = input_timestamp[input_timestamp["filename"] == files[index]][
         "timestamp"
     ].values[0]
-    cur_timestamp: datetime = datetime.strptime(cur_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+    cur_timestamp: datetime = to_timestamp(cur_timestamp)
     next_timestamp: str = input_timestamp[
         input_timestamp["filename"] == files[index + 1]
     ]["timestamp"].values[0]
-    next_timestamp: datetime = datetime.strptime(
-        next_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
+    next_timestamp: datetime = to_timestamp(next_timestamp)
 
     return next_timestamp - cur_timestamp
+
+def to_timestamp(string: str) -> datetime:
+    return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+def from_timestamp(date: datetime) -> str:
+    return datetime.strftime(date, "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"

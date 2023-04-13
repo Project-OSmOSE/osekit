@@ -22,7 +22,7 @@ from OSmOSE.cluster import (
     compute_stats,
 )
 from OSmOSE.Dataset import Dataset
-from OSmOSE.utils import safe_read, make_path, set_umask
+from OSmOSE.utils import safe_read, make_path, set_umask, from_timestamp, to_timestamp
 from OSmOSE.config import *
 
 
@@ -619,9 +619,9 @@ class Spectrogram(Dataset):
         new_name_list = []
         for i in range(len(input_timestamp.filename)):
             if len(new_timestamp_list) == 0:
-                next_timestamp = datetime.strptime(input_timestamp.timestamp[0], "%Y-%m-%dT%H:%M:%S.%fZ")
+                next_timestamp = to_timestamp(input_timestamp.timestamp[0])
 
-            new_timestamp_list.append(datetime.strftime(next_timestamp, "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z")
+            new_timestamp_list.append(from_timestamp(next_timestamp))
             new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
             
             next_timestamp += timedelta(seconds=self.spectro_duration)
@@ -955,6 +955,63 @@ class Spectrogram(Dataset):
     # region On cluster
 
     def preprocess_file(self, audio_file: Path, *args):
+        self.__build_path()
+
+        orig_path = self.path_input_audio_file.joinpath("old_timestamp.csv") if self.path_input_audio_file.joinpath("old_timestamp.csv").exists() else self.path_input_audio_file.joinpath("timestamp.csv")
+        orig_timestamp_file = pd.read_csv(
+            orig_path,
+            header=None,
+            names=["filename", "timestamp", "timezone"],
+        )
+
+        final_timestamp_file = pd.read_csv(
+            self.audio_path.joinpath("timestamp.csv"),
+            header=None,
+            names=["filename", "timestamp", "timezone"],
+        )
+
+        files_to_load = [audio_file]
+        output_files = []
+
+        orig_index = orig_timestamp_file["filename"] == audio_file
+        T0 = orig_timestamp_file[orig_index]["timestamp"].values # Timestamp of the beginning of the original file
+        d1 = orig_timestamp_file[orig_index+1]["timestamp"].values - T0 # Duration of the original timestamp (considering all timestamps are continuous)
+        final_timestamps = final_timestamp_file["timestamp"].values
+
+        final_timestamps["timestamp"] = [to_timestamp(timestamp) for timestamp in final_timestamps["timestamp"]]
+
+        N0 = final_timestamps[final_timestamp_file["timestamp"] <= T0][-1] # Timestamp of the beginning of the first output file starting before T0
+        output_files.append(N0["filename"].values)
+        N0_index = final_timestamps.index
+
+        start = T0
+        i=1
+        while start > N0:
+            start = orig_timestamp_file[orig_index-i]["timestamp"].values
+            files_to_load.insert(0, orig_timestamp_file[orig_index-i]["filename"].values)
+            i+=1
+
+        offset_beginning = (N0 - start).seconds
+
+        # While the original file ends after the target file, we prepare to create the next.
+        j=1
+        next_output = N0
+        while T0 + d1 > next_output + self.spectro_duration:
+            next_output = final_timestamps[N0_index + j]["timestamp"].values
+            output_files.append(final_timestamps[N0_index + j]["filename"].values)
+            j+=1
+        
+        
+        end = T0
+        k=1
+        while end + d1 < next_output + self.spectro_duration:
+            end = orig_timestamp_file[orig_index+k]["timestamp"].values
+            files_to_load.append(orig_timestamp_file[orig_index+i]["filename"].values)
+            k+=1
+        
+        offset_end = (end + d1 - N0 + self.spectro_duration).seconds
+
+        
         fileinfo = sf.info(audio_file)
         sr_origin = fileinfo.samplerate
         #! RESAMPLING
@@ -974,61 +1031,6 @@ class Spectrogram(Dataset):
                 logdir=self.path.joinpath("log")
             )
 
-        #! ZSCORE NORMALIZATION
-        isnorma = (
-            any([cc in self.zscore_duration for cc in ["D", "M", "H", "S", "W"]])
-            if self.zscore_duration
-            else False
-        )
-
-        norma_job_id_list = []
-        if (
-            os.listdir(self.path.joinpath(OSMOSE_PATH.statistics))
-            and self.data_normalization == "zscore"
-            and isnorma
-        ):
-            for batch in range(self.batch_number):
-                i_min = batch * batch_size
-                i_max = (
-                    i_min + batch_size
-                    if batch < self.batch_number - 1
-                    else len(self.list_wav_to_process)
-                )  # If it is the last batch, take all files
-                if self.__local:
-                    process = mp.Process(
-                        target=compute_stats,
-                        kwargs={
-                            "input_dir": self.path_input_audio_file,
-                            "output_file": self.path.joinpath(
-                                OSMOSE_PATH.statistics,
-                                "SummaryStats_" + str(i_min) + ".csv",
-                            ),
-                            "target_sr": self.sr_analysis,
-                            "batch_ind_min": i_min,
-                            "batch_ind_max": i_max,
-                        },
-                    )
-
-                    process.start()
-                    processes.append(process)
-                else:
-                    jobfile = self.jb.build_job_file(
-                        script_path=Path(inspect.getfile(compute_stats)).resolve(),
-                        script_args=f"--input-dir {self.path_input_audio_file} --hpfilter-min-freq {self.HPfilter_min_freq} \
-                                    --ind-min {i_min} --ind-max {i_max} --output-file {self.path.joinpath(OSMOSE_PATH.statistics, 'SummaryStats_' + str(i_min) + '.csv')}",
-                        jobname="OSmOSE_get_zscore_params",
-                        preset="low",
-                        logdir=self.path.joinpath("log")
-                    )
-
-                    job_id = self.jb.submit_job(dependency=resample_job_id_list)
-                    norma_job_id_list += job_id
-            
-            self.pending_jobs = norma_job_id_list
-
-            for process in processes:
-                process.join()
-
         #! RESHAPING
         # Reshape audio files to fit the maximum spectrogram size, whether it is greater or smaller.
         reshape_job_id_list = []
@@ -1045,99 +1047,95 @@ class Spectrogram(Dataset):
             print(
                 f"Automatically reshaping audio files to fit the spectro duration value. Files will be {self.spectro_duration} seconds long."
             )
+            input_files = self.audio_path if resample_done else self.path_input_audio_file
 
-            if reshape_method == "classic":
-                # build job, qsub, stuff
+            nb_reshaped_files = (
+                audio_file_origin_duration * audio_file_count
+            ) / self.spectro_duration
+            metadata["audio_file_count"] = nb_reshaped_files
+            next_offset_beginning = 0
+            offset_end = 0
+            i_max = -1
 
-                input_files = self.audio_path if resample_done else self.path_input_audio_file
+            for batch in range(self.batch_number):
+                if i_max >= len(self.list_wav_to_process) - 1:
+                    continue
 
-                nb_reshaped_files = (
-                    audio_file_origin_duration * audio_file_count
-                ) / self.spectro_duration
-                metadata["audio_file_count"] = nb_reshaped_files
+                offset_beginning = next_offset_beginning
                 next_offset_beginning = 0
-                offset_end = 0
-                i_max = -1
 
-                for batch in range(self.batch_number):
-                    if i_max >= len(self.list_wav_to_process) - 1:
-                        continue
+                i_min = i_max + (1 if not offset_beginning else 0)
+                i_max = (
+                    i_min + batch_size
+                    if batch < self.batch_number - 1
+                    and i_min + batch_size < len(self.list_wav_to_process)
+                    else len(self.list_wav_to_process) - 1
+                )  # If it is the last batch, take all files
 
-                    offset_beginning = next_offset_beginning
-                    next_offset_beginning = 0
+                while (
+                    (
+                        (i_max - i_min + 1) * audio_file_origin_duration
+                        - offset_end
+                        - offset_beginning  # Determines if the offset would require more than one file
+                    )
+                    % self.spectro_duration
+                    > audio_file_origin_duration
+                    and i_max < len(self.list_wav_to_process)
+                ) or (
+                    i_max - i_min + offset_end - offset_beginning + 1
+                ) * audio_file_origin_duration < self.spectro_duration:
+                    i_max += 1
 
-                    i_min = i_max + (1 if not offset_beginning else 0)
-                    i_max = (
-                        i_min + batch_size
-                        if batch < self.batch_number - 1
-                        and i_min + batch_size < len(self.list_wav_to_process)
-                        else len(self.list_wav_to_process) - 1
-                    )  # If it is the last batch, take all files
+                last_file_behavior = (
+                    "pad"
+                    if batch == self.batch_number - 1
+                    or i_max == len(self.list_wav_to_process) - 1
+                    else "discard"
+                )
 
-                    while (
-                        (
-                            (i_max - i_min + 1) * audio_file_origin_duration
-                            - offset_end
-                            - offset_beginning  # Determines if the offset would require more than one file
-                        )
-                        % self.spectro_duration
-                        > audio_file_origin_duration
-                        and i_max < len(self.list_wav_to_process)
-                    ) or (
-                        i_max - i_min + offset_end - offset_beginning + 1
-                    ) * audio_file_origin_duration < self.spectro_duration:
-                        i_max += 1
+                offset_end = (
+                    (i_max - i_min + 1) * audio_file_origin_duration
+                    - offset_beginning
+                ) % self.spectro_duration
+                if offset_end:
+                    next_offset_beginning = audio_file_origin_duration - offset_end
+                else:
+                    offset_end = 0  # ? ack
 
-                    last_file_behavior = (
-                        "pad"
-                        if batch == self.batch_number - 1
-                        or i_max == len(self.list_wav_to_process) - 1
-                        else "discard"
+                if self.__local:
+                    process = mp.Process(
+                        target=reshape,
+                        kwargs={
+                            "input_files": input_files,
+                            "chunk_size": self.spectro_duration,
+                            "output_dir_path": self.audio_path,
+                            "offset_beginning": int(offset_beginning),
+                            "offset_end": int(offset_end),
+                            "batch_ind_min": i_min,
+                            "batch_ind_max": i_max,
+                            "last_file_behavior": last_file_behavior,
+                        },
                     )
 
-                    offset_end = (
-                        (i_max - i_min + 1) * audio_file_origin_duration
-                        - offset_beginning
-                    ) % self.spectro_duration
-                    if offset_end:
-                        next_offset_beginning = audio_file_origin_duration - offset_end
-                    else:
-                        offset_end = 0  # ? ack
+                    process.start()
+                    processes.append(process)
+                else:
+                    self.jb.build_job_file(
+                        script_path=Path(inspect.getfile(reshape)).resolve(),
+                        script_args=f"--input-files {input_files} --chunk-size {self.spectro_duration} --ind-min {i_min}\
+                                    --ind-max {i_max} --output-dir {self.audio_path} --offset-beginning {int(offset_beginning)} --offset-end {int(offset_end)}\
+                                    --last-file-behavior {last_file_behavior} {'--force' if force_init else ''} {'--overwrite' if resample_done else ''}",
+                        jobname="OSmOSE_reshape_py",
+                        preset="low",
+                        logdir=self.path.joinpath("log")
+                    )
 
-                    if self.__local:
-                        process = mp.Process(
-                            target=reshape,
-                            kwargs={
-                                "input_files": input_files,
-                                "chunk_size": self.spectro_duration,
-                                "output_dir_path": self.audio_path,
-                                "offset_beginning": int(offset_beginning),
-                                "offset_end": int(offset_end),
-                                "batch_ind_min": i_min,
-                                "batch_ind_max": i_max,
-                                "last_file_behavior": last_file_behavior,
-                            },
-                        )
+                    job_id = self.jb.submit_job(dependency=norma_job_id_list)
+                    reshape_job_id_list += job_id
+            self.pending_jobs = reshape_job_id_list
 
-                        process.start()
-                        processes.append(process)
-                    else:
-                        self.jb.build_job_file(
-                            script_path=Path(inspect.getfile(reshape)).resolve(),
-                            script_args=f"--input-files {input_files} --chunk-size {self.spectro_duration} --ind-min {i_min}\
-                                        --ind-max {i_max} --output-dir {self.audio_path} --offset-beginning {int(offset_beginning)} --offset-end {int(offset_end)}\
-                                        --last-file-behavior {last_file_behavior} {'--force' if force_init else ''} {'--overwrite' if resample_done else ''}",
-                            jobname="OSmOSE_reshape_py",
-                            preset="low",
-                            logdir=self.path.joinpath("log")
-                        )
-
-                        job_id = self.jb.submit_job(dependency=norma_job_id_list)
-                        reshape_job_id_list += job_id
-                self.pending_jobs = reshape_job_id_list
-
-                for process in processes:
-                    process.join()
+            for process in processes:
+                process.join()
 
     def process_file(
         self, audio_file: Union[str, Path], *, adjust: bool = False, save_matrix: bool = False

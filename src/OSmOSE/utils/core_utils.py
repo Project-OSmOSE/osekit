@@ -19,6 +19,7 @@ except ModuleNotFoundError:
 import soundfile as sf
 import numpy as np
 from OSmOSE.config import OSMOSE_PATH
+import os
 
 
 def display_folder_storage_infos(dir_path: str) -> None:
@@ -325,3 +326,6 @@ def check_n_files(
                     )
                     return True
     return False
+
+def set_umask():
+    os.umask(0o002)
