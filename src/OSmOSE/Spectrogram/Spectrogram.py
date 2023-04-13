@@ -974,21 +974,21 @@ class Spectrogram(Dataset):
         output_files = []
 
         orig_index = orig_timestamp_file["filename"] == audio_file
-        T0 = orig_timestamp_file[orig_index]["timestamp"].values # Timestamp of the beginning of the original file
-        d1 = orig_timestamp_file[orig_index+1]["timestamp"].values - T0 # Duration of the original timestamp (considering all timestamps are continuous)
-        final_timestamps = final_timestamp_file["timestamp"].values
+        T0 = orig_timestamp_file[orig_index]["timestamp"].values[0] # Timestamp of the beginning of the original file
+        d1 = orig_timestamp_file[orig_index+1]["timestamp"].values[0] - T0 # Duration of the original timestamp (considering all timestamps are continuous)
+        final_timestamps = final_timestamp_file["timestamp"].values[0]
 
         final_timestamps["timestamp"] = [to_timestamp(timestamp) for timestamp in final_timestamps["timestamp"]]
 
         N0 = final_timestamps[final_timestamp_file["timestamp"] <= T0][-1] # Timestamp of the beginning of the first output file starting before T0
-        output_files.append(N0["filename"].values)
+        output_files.append(N0["filename"].values[0])
         N0_index = final_timestamps.index
 
         start = T0
         i=1
         while start > N0:
-            start = orig_timestamp_file[orig_index-i]["timestamp"].values
-            files_to_load.insert(0, orig_timestamp_file[orig_index-i]["filename"].values)
+            start = orig_timestamp_file[orig_index-i]["timestamp"].values[0]
+            files_to_load.insert(0, orig_timestamp_file[orig_index-i]["filename"].values[0])
             i+=1
 
         offset_beginning = (N0 - start).seconds
@@ -997,16 +997,16 @@ class Spectrogram(Dataset):
         j=1
         next_output = N0
         while T0 + d1 > next_output + self.spectro_duration:
-            next_output = final_timestamps[N0_index + j]["timestamp"].values
-            output_files.append(final_timestamps[N0_index + j]["filename"].values)
+            next_output = final_timestamps[N0_index + j]["timestamp"].values[0]
+            output_files.append(final_timestamps[N0_index + j]["filename"].values[0])
             j+=1
         
         
         end = T0
         k=1
         while end + d1 < next_output + self.spectro_duration:
-            end = orig_timestamp_file[orig_index+k]["timestamp"].values
-            files_to_load.append(orig_timestamp_file[orig_index+i]["filename"].values)
+            end = orig_timestamp_file[orig_index+k]["timestamp"].values[0]
+            files_to_load.append(orig_timestamp_file[orig_index+i]["filename"].values[0])
             k+=1
         
         offset_end = (end + d1 - N0 + self.spectro_duration).seconds

@@ -65,7 +65,13 @@ def test_reshape_errors(input_dir):
 
 
 def test_reshape_smaller(input_reshape: Path, output_dir: Path):
-    reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir)
+    reshaped_list = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
+    assert len(reshaped_list) == 15
+    # assert sf.info(reshaped_list[0]).duration == 2.0
+    # assert sf.info(reshaped_list[0]).samplerate == 44100
+    # assert sum(audio/samplerate for audio in reshaped_list) == 30.0
+
+    reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True)
 
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
     # reshaped_files = sorted(
@@ -92,7 +98,7 @@ def test_reshape_smaller(input_reshape: Path, output_dir: Path):
 
 
 def test_reshape_larger(input_reshape: Path, output_dir):
-    reshape(input_files=input_reshape, chunk_size=5, output_dir_path=output_dir)
+    reshape(input_files=input_reshape, chunk_size=5, output_dir_path=output_dir, write_output=True)
 
     reshaped_files = sorted(
         [x for x in Path(output_dir).iterdir() if str(x).endswith(".wav")],
@@ -109,6 +115,7 @@ def test_reshape_pad_last(input_reshape: Path, output_dir):
         chunk_size=4,
         output_dir_path=output_dir,
         last_file_behavior="pad",
+        write_output=True
     )
 
     reshaped_files = sorted(
@@ -127,6 +134,7 @@ def test_reshape_truncate_last(input_reshape: Path, output_dir):
         chunk_size=4,
         output_dir_path=output_dir,
         last_file_behavior="truncate",
+        write_output = True
     )
 
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
@@ -143,6 +151,7 @@ def test_reshape_discard_last(input_reshape: Path, output_dir):
         chunk_size=4,
         output_dir_path=output_dir,
         last_file_behavior="discard",
+        write_output=True
     )
 
     reshaped_files = sorted(
@@ -164,6 +173,7 @@ def test_reshape_offsets(input_reshape: Path, output_dir):
         offset_end=1,
         last_file_behavior="truncate",
         verbose=True,
+        write_output=True
     )
 
     reshaped_files = sorted(
