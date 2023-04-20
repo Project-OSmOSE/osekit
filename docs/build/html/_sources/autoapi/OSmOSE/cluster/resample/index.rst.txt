@@ -1,0 +1,64 @@
+:py:mod:`OSmOSE.cluster.resample`
+=================================
+
+.. py:module:: OSmOSE.cluster.resample
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.cluster.resample.resample
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.cluster.resample.parser
+
+
+.. py:function:: resample(*, input_dir: pathlib.Path, output_dir: pathlib.Path, target_sr: int, batch_ind_min: int = 0, batch_ind_max: int = -1)
+
+   
+   Resample all audio files in a given directory to a target sample rate and write them to a new directory.
+
+   :param input_dir: The input directory containing the input files.
+   :type input_dir: `Path`, keyword-only
+   :param output_dir: The output directory to write the resampled files.
+   :type output_dir: `Path`, keyword-only
+   :param target_sr: The target sample rate.
+   :type target_sr: `int`, keyword-only
+   :param batch_ind_min: The index of the first file of the batch. The default is 0.
+   :type batch_ind_min: `int`, keyword-only
+   :param batch_ind_max: The index of the last file of the batch. The default is -1, meaning the last file of the input directory.
+   :type batch_ind_max: `int`, keyword-only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: parser
+
+   
+

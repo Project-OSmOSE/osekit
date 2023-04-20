@@ -26,8 +26,6 @@ from OSmOSE.config import *
 
 
 class Spectrogram(Dataset):
-    """Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms."""
-
     def __init__(
         self,
         dataset_path: str,
@@ -39,7 +37,7 @@ class Spectrogram(Dataset):
         batch_number: int = 10,
         local: bool = False,
     ) -> None:
-        """Instanciates a spectrogram object.
+        """Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.
 
         The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:
             - Use the existing `analysis/analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that

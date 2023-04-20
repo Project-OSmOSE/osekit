@@ -1,0 +1,103 @@
+:py:mod:`OSmOSE.timestamps`
+===========================
+
+.. py:module:: OSmOSE.timestamps
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.timestamps.convert_template_to_re
+   OSmOSE.timestamps.write_timestamp
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.timestamps.__converter
+   OSmOSE.timestamps.argparser
+
+
+.. py:data:: __converter
+
+   
+
+.. py:function:: convert_template_to_re(date_template: str) -> str
+
+   
+   Converts a template in strftime format to a matching regular expression.
+
+   Parameter:
+       date_template: the template in strftime format.
+
+   :returns: The regular expression matching the template.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: write_timestamp(*, audio_path: str, date_template: str, timezone: str = 'UTC', offsets: tuple = None)
+
+   
+   Read the dates in the filenames of audio files in the `audio_path` folder,
+   according to the date template in strftime format or the offsets from the beginning and end of the date.
+
+   If both `date_template` and `offsets` are provided, the latter has priority and `date_template` is ignored.
+
+   The result is written in a file named `timestamp.csv` with no header and two columns in this format : [filename],[timestamp].
+   The output date is in the template `'%Y-%m-%dT%H:%M:%S.%fZ'.
+
+   :param audio_path: the path of the folder containing audio files
+   :type audio_path: `str`
+   :param date_template: the date template in strftime format. For example, `2017/02/24` has the template `%Y/%m/%d`
+                         For more information on strftime template, see https://strftime.org/
+   :type date_template: `str`
+   :param timezone: The timezone this timestamp was originally recorded in (the default is UTC).
+   :type timezone: `str`, optional
+   :param offsets: a tuple containing the beginning and end offset of the date.
+                   The first element is the first character of the date, and the second is the last.
+   :type offsets: `tuple(int,int)`, optional
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: argparser
+
+   
+

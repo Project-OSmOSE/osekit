@@ -22,13 +22,15 @@ __converter = {
 
 
 def convert_template_to_re(date_template: str) -> str:
-    """Converts a template in strftime format to a matching regular expression
+    """
+    Converts a template in strftime format to a matching regular expression.
 
     Parameter:
-        date_template: the template in strftime format
+        date_template: the template in strftime format.
 
     Returns:
-        The regular expression matching the template"""
+        The regular expression matching the template.
+    """
 
     res = ""
     i = 0
@@ -50,7 +52,8 @@ def write_timestamp(
     timezone: str = "UTC",
     offsets: tuple = None,
 ):
-    """Read the dates in the filenames of audio files in the `audio_path` folder,
+    """
+    Read the dates in the filenames of audio files in the `audio_path` folder,
     according to the date template in strftime format or the offsets from the beginning and end of the date.
 
     If both `date_template` and `offsets` are provided, the latter has priority and `date_template` is ignored.

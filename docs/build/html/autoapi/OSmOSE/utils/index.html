@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSmOSE.utils &mdash; OSmOSE 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="OSmOSE.timestamps" href="../timestamps/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OSmOSE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../Dataset/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Dataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../Spectrogram/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../job/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../timestamps/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OSmOSE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/OSmOSE/utils/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-OSmOSE.utils">
+<span id="osmose-utils"></span><h1><a class="reference internal" href="#module-OSmOSE.utils" title="OSmOSE.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></a><a class="headerlink" href="#module-OSmOSE.utils" title="Permalink to this heading"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.utils.display_folder_storage_infos" title="OSmOSE.utils.display_folder_storage_infos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_folder_storage_infos</span></code></a>(→ None)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#OSmOSE.utils.list_not_built_datasets" title="OSmOSE.utils.list_not_built_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_not_built_datasets</span></code></a>(→ None)</p></td>
+<td><p>Prints the available datasets that have not been built by the <cite>Dataset.build()</cite> function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.utils.read_config" title="OSmOSE.utils.read_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_config</span></code></a>(→ NamedTuple)</p></td>
+<td><p>Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#OSmOSE.utils.convert" title="OSmOSE.utils.convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert</span></code></a>(→ NamedTuple)</p></td>
+<td><p>Convert a dictionary in a Named Tuple</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.utils.read_header" title="OSmOSE.utils.read_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_header</span></code></a>(→ Tuple[int, float, int, int])</p></td>
+<td><p>Read the first bytes of a wav file and extract its characteristics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#OSmOSE.utils.safe_read" title="OSmOSE.utils.safe_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_read</span></code></a>(→ Tuple[numpy.ndarray, int])</p></td>
+<td><p>Open a file using Soundfile and clean up the data to be used safely</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.utils.check_n_files" title="OSmOSE.utils.check_n_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_n_files</span></code></a>(→ bool)</p></td>
+<td><p>Check n files at random for anomalies and may normalize them.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#OSmOSE.utils.make_path" title="OSmOSE.utils.make_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_path</span></code></a>(→ OSmOSE.config.Path)</p></td>
+<td><p>Create a path folder by folder with correct permissions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.utils.set_umask" title="OSmOSE.utils.set_umask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_umask</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.display_folder_storage_infos">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">display_folder_storage_infos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#display_folder_storage_infos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.display_folder_storage_infos" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.list_not_built_datasets">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">list_not_built_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets_folder_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#list_not_built_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.list_not_built_datasets" title="Permalink to this definition"></a></dt>
+<dd><p>Prints the available datasets that have not been built by the <cite>Dataset.build()</cite> function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.read_config">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NamedTuple</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#read_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.read_config" title="Permalink to this definition"></a></dt>
+<dd><p>Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.convert">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NamedTuple</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.convert" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a dictionary in a Named Tuple</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.read_header">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">read_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#read_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.read_header" title="Permalink to this definition"></a></dt>
+<dd><p>Read the first bytes of a wav file and extract its characteristics.
+At the very least, only the first 44 bytes are read. If the <cite>data</cite> chunk is not right after the header chunk,
+the subsequent chunks will be read until the <cite>data</cite> chunk is found. If there is no <cite>data</cite> chunk, all the file will be read.
+Parameter
+———
+file: str</p>
+<blockquote>
+<div><p>The absolute path of the wav file whose header will be read.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>samplerate</strong> (<cite>int</cite>) – The number of samples in one frame.</p></li>
+<li><p><strong>frames</strong> (<cite>float</cite>) – The number of frames, corresponding to the file duration in seconds.</p></li>
+<li><p><strong>channels</strong> (<cite>int</cite>) – The number of audio channels.</p></li>
+<li><p><strong>sampwidth</strong> (<cite>int</cite>) – The sample width.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When there is no <cite>data</cite> chunk, the <cite>frames</cite> value will fall back on the size written in the header. This can be incorrect,
+if the file has been corrupted or the writing process has been interrupted before completion.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.safe_read">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">safe_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neginf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#safe_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.safe_read" title="Permalink to this definition"></a></dt>
+<dd><p>Open a file using Soundfile and clean up the data to be used safely
+Currently, only checks for <cite>NaN</cite>, <cite>inf</cite> and <cite>-inf</cite> presence. The default behavior is the same as <cite>np.nan_to_num</cite>:
+<cite>NaNs</cite> are transformed into 0.0, <cite>inf</cite> and <cite>-inf</cite> are transformed into the maximum and minimum values of their dtype.
+:param file_path: The path to the audio file to safely read.
+:type file_path: <cite>str</cite>
+:param nan: The value that will replace <cite>NaNs</cite>. Default is 0.0
+:type nan: <cite>float</cite>, optional, keyword_only
+:param posinf: The value that will replace <cite>inf</cite>. Default behavior is the maximum value of the data type.
+:type posinf: <cite>any</cite>, optional, keyword_only
+:param neginf: The value that will replace <cite>-inf</cite>. Default behavior is the minimum value of the data type.
+:type neginf: <cite>any</cite>, optional, keyword_only</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>audio_data</strong> (<cite>NDArray</cite>) – The cleaned audio data as a numpy array.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>int</cite>) – The sample rate of the data.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.check_n_files">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">check_n_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_normalization</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#check_n_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.check_n_files" title="Permalink to this definition"></a></dt>
+<dd><p>Check n files at random for anomalies and may normalize them.
+Currently, check if the data for wav in PCM float format are between -1.0 and 1.0. If the number of files that
+fail the test is higher than the threshold (which is 10% of n by default, with an absolute minimum of 1), all the
+dataset will be normalized and written in another file.
+:param file_list: The list of files to be evaluated. It must be equal or longer than n.
+:type file_list: <cite>list</cite>
+:param n: The number of files to evaluate. To lower resource consumption, it is advised to check only a subset of the dataset.</p>
+<blockquote>
+<div><p>10 files taken at random should provide an acceptable idea of the whole dataset.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_path</strong> (<cite>str</cite>, optional, keyword-only) – The path to the folder where the normalized files will be written. If auto_normalization is set to True, then
+it must have a value.</p></li>
+<li><p><strong>threshold_percent</strong> (<cite>float</cite>, optional, keyword-only) – The maximum acceptable percentage of evaluated files that can contain anomalies. Understands fraction and whole numbers. Default is 0.1, or 10%</p></li>
+<li><p><strong>auto_normalization</strong> (<cite>bool</cite>, optional, keyword_only) – Whether the normalization should proceed automatically or not if the threshold is reached. As a safeguard, the default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>normalized</strong> – Indicates whether or not the dataset has been normalized.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>bool</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.make_path">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">make_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DPDEFAULT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OSmOSE.config.Path</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#make_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.make_path" title="Permalink to this definition"></a></dt>
+<dd><p>Create a path folder by folder with correct permissions.</p>
+<p>If a folder in the path already exists, it will not be modified (even if the specified mode differs).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<cite>Path</cite>) – The complete path to create.</p></li>
+<li><p><strong>mode</strong> (<cite>int</cite>, optional, keyword-only) – The permission code of the complete path. The default is 0o755, meaning the owner has all permissions over the files of the path,
+and the owner group and others only have read and execute rights, but not writing.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.utils.set_umask">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.utils.</span></span><span class="sig-name descname"><span class="pre">set_umask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/utils.html#set_umask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.utils.set_umask" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../timestamps/index.html" class="btn btn-neutral float-left" title="OSmOSE.timestamps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Rumengol.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
