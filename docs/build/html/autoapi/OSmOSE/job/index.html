@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSmOSE.job &mdash; OSmOSE 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="OSmOSE.timestamps" href="../timestamps/index.html" />
+    <link rel="prev" title="OSmOSE.config" href="../config/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OSmOSE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#subpackages">Subpackages</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../Dataset/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Dataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../Spectrogram/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.config</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../timestamps/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OSmOSE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/OSmOSE/job/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-OSmOSE.job">
+<span id="osmose-job"></span><h1><a class="reference internal" href="#module-OSmOSE.job" title="OSmOSE.job"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></a><a class="headerlink" href="#module-OSmOSE.job" title="Permalink to this heading"></a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.job.Job_builder" title="OSmOSE.job.Job_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Job_builder</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OSmOSE.job.</span></span><span class="sig-name descname"><span class="pre">Job_builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder" title="Permalink to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.config">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#OSmOSE.job.Job_builder.config" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.prepared_jobs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepared_jobs</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.prepared_jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.ongoing_jobs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ongoing_jobs</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.ongoing_jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.finished_jobs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">finished_jobs</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.finished_jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.job_scheduler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">job_scheduler</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.job_scheduler" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.env_script">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">env_script</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.env_script" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.env_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">env_name</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.env_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.queue">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">queue</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.queue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.walltime">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">walltime</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.walltime" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.ncpus">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ncpus</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.ncpus" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.mem">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mem</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.mem" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.outfile">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">outfile</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.outfile" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.errfile">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">errfile</span></span><a class="headerlink" href="#OSmOSE.job.Job_builder.errfile" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.write_configuration">
+<span class="sig-name descname"><span class="pre">write_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder.write_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder.write_configuration" title="Permalink to this definition"></a></dt>
+<dd><p>Writes the configuration to the original configuration file, or a new file if specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.build_job_file">
+<span class="sig-name descname"><span class="pre">build_job_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">low</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">medium</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">high</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">Torque</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Slurm</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder.build_job_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder.build_job_file" title="Permalink to this definition"></a></dt>
+<dd><p>Build a job file corresponding to your job scheduler.</p>
+<p>When a job file is created, it becomes a <cite>prepared_job</cite> and can be launched automatically using the <cite>submit_job()</cite> method
+with no arguments.</p>
+<p>This method can use the configuration file to set default job parameters. Use presets to quickly adjust the resource
+consumption or fill the parameters. If a parameter is left empty, it will fall back to the value in the configuration file.
+The default preset is <cite>low</cite> in order to save as much resource as possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script_path</strong> (<cite>str</cite>, keyword-only) – The path to the script that will be executed in the cluster job</p></li>
+<li><p><strong>script_args</strong> (<cite>str</cite>, keyword-only) – All the arguments required by the script, as one string.</p></li>
+<li><p><strong>jobname</strong> (<cite>str</cite>, optional, keyword-only) – The name of the job as seen on the job list (qstat, squeue, …). The default is the script name.</p></li>
+<li><p><strong>preset</strong> (<cite>{“low”, “medium”, “high”}</cite>, optional, keyword-only) – Resource preset for the job. It is best to set up the presets in the configuration file before using them,
+as the default might not correspond to your structure. The default is <cite>low</cite>.</p></li>
+<li><p><strong>job_scheduler</strong> (<cite>{“Torque”, “Slurm”}</cite>, optional, keyword-only) – The job scheduler to which the jobs will be submitted. As of now, only Torque (PBS) and Slurm (Sbatch) are supported.</p></li>
+<li><p><strong>env_script</strong> (<cite>str</cite>, optional, keyword-only) – The script used to activate the conda environment. If there is no particular script, it can just be <cite>source</cite> or <cite>conda activate</cite></p></li>
+<li><p><strong>env_name</strong> (<cite>str</cite>, optional, keyword-only) – The name of the conda environment this job should run into.</p></li>
+<li><p><strong>queue</strong> (<cite>str</cite>, optional, keyword-only) – The partition/queue/qol in which the job should run. It is very dependant on the cluster.</p></li>
+<li><p><strong>nodes</strong> (<cite>int</cite>, optional, keyword-only) – The number of nodes (i.e. computers) this job will use. If it is not using a protocol like MPI or an adapted job scheduler (like PEGASUS),
+using more than one node will have no effect.</p></li>
+<li><p><strong>walltime</strong> (<cite>str</cite>, optional, keyword-only) – The time limit of the job. If exceeded, the job will be killed by the job scheduler. It is best to view large and ask for 1.5 or 2 times
+more than the anticipated time of the job, especially for tasks with a high degree ofo variability in processing time.</p></li>
+<li><p><strong>ncpus</strong> (<cite>int</cite>, optional, keyword-only) – The number of CPUs required per node.</p></li>
+<li><p><strong>mem</strong> (<cite>str</cite>, optional, keyword-only) – The quantity of RAM required per CPU. Most of the time it is an integer followed by a G for Gigabytes or Mb for Megabytes.</p></li>
+<li><p><strong>outfile</strong> (<cite>str</cite>, optional, keyword-only) – The name of the main log file which will record the standard output from the job. If only the name is provided, it will be created in the current
+directory.</p></li>
+<li><p><strong>errfile</strong> (<cite>str</cite>, optional, keyword-only) – The name of the error log file which will record the error output from the job. If only the name is provided, it will be created in the
+current directory. If there is no error output, it will not be created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>job_path</strong> – The path to the created job file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.submit_job">
+<span class="sig-name descname"><span class="pre">submit_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder.submit_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder.submit_job" title="Permalink to this definition"></a></dt>
+<dd><p>Submits the job file to the cluster using the job scheduler written in the file name or in the configuration file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.update_job_status">
+<span class="sig-name descname"><span class="pre">update_job_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder.update_job_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder.update_job_status" title="Permalink to this definition"></a></dt>
+<dd><p>Iterates over the list of ongoing jobs and mark them as finished if the job file does not exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.update_job_access">
+<span class="sig-name descname"><span class="pre">update_job_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder.update_job_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder.update_job_access" title="Permalink to this definition"></a></dt>
+<dd><p>In case the output files are not accessible by anyone but the owner, running this once will update the permissions for anyone to read them.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.job.Job_builder.read_output_file">
+<span class="sig-name descname"><span class="pre">read_output_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">out</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">err</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'out'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/job.html#Job_builder.read_output_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.job.Job_builder.read_output_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read the content of a specific job output file, or the first in the finished list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outtype</strong> (<cite>{“out”,”err”}</cite>, optional, keyword-only) – The type of the output file to read, whether standard (out) or error (err). The default is out.</p></li>
+<li><p><strong>job_file_name</strong> (<cite>str</cite>, optional, keyword-only) – The path to the job_file to read, which can be retrieved easily from Job_builder.finished_jobs. If not provided, then the first element of the list will be read.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../config/index.html" class="btn btn-neutral float-left" title="OSmOSE.config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../timestamps/index.html" class="btn btn-neutral float-right" title="OSmOSE.timestamps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Rumengol.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

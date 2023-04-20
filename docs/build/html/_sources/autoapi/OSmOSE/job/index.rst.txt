@@ -1,0 +1,250 @@
+:py:mod:`OSmOSE.job`
+====================
+
+.. py:module:: OSmOSE.job
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.job.Job_builder
+
+
+
+
+.. py:class:: Job_builder(config_file: str = None)
+
+   .. py:property:: config
+      :type: dict
+
+
+   .. py:property:: prepared_jobs
+
+
+   .. py:property:: ongoing_jobs
+
+
+   .. py:property:: finished_jobs
+
+
+   .. py:property:: job_scheduler
+
+
+   .. py:property:: env_script
+
+
+   .. py:property:: env_name
+
+
+   .. py:property:: queue
+
+
+   .. py:property:: nodes
+
+
+   .. py:property:: walltime
+
+
+   .. py:property:: ncpus
+
+
+   .. py:property:: mem
+
+
+   .. py:property:: outfile
+
+
+   .. py:property:: errfile
+
+
+   .. py:method:: write_configuration(output_file: str = None)
+
+      
+      Writes the configuration to the original configuration file, or a new file if specified.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: build_job_file(*, script_path: str, script_args: str, jobname: str = None, preset: Literal[low, medium, high] = None, job_scheduler: Literal[Torque, Slurm] = None, env_script: str = None, env_name: str = None, queue: str = None, nodes: int = None, walltime: str = None, ncpus: int = None, mem: str = None, outfile: str = None, errfile: str = None, logdir: OSmOSE.config.Path = None) -> str
+
+      
+      Build a job file corresponding to your job scheduler.
+
+      When a job file is created, it becomes a `prepared_job` and can be launched automatically using the `submit_job()` method
+      with no arguments.
+
+      This method can use the configuration file to set default job parameters. Use presets to quickly adjust the resource
+      consumption or fill the parameters. If a parameter is left empty, it will fall back to the value in the configuration file.
+      The default preset is `low` in order to save as much resource as possible.
+
+      :param script_path: The path to the script that will be executed in the cluster job
+      :type script_path: `str`, keyword-only
+      :param script_args: All the arguments required by the script, as one string.
+      :type script_args: `str`, keyword-only
+      :param jobname: The name of the job as seen on the job list (qstat, squeue, ...). The default is the script name.
+      :type jobname: `str`, optional, keyword-only
+      :param preset: Resource preset for the job. It is best to set up the presets in the configuration file before using them,
+                     as the default might not correspond to your structure. The default is `low`.
+      :type preset: `{"low", "medium", "high"}`, optional, keyword-only
+      :param job_scheduler: The job scheduler to which the jobs will be submitted. As of now, only Torque (PBS) and Slurm (Sbatch) are supported.
+      :type job_scheduler: `{"Torque", "Slurm"}`, optional, keyword-only
+      :param env_script: The script used to activate the conda environment. If there is no particular script, it can just be `source` or `conda activate`
+      :type env_script: `str`, optional, keyword-only
+      :param env_name: The name of the conda environment this job should run into.
+      :type env_name: `str`, optional, keyword-only
+      :param queue: The partition/queue/qol in which the job should run. It is very dependant on the cluster.
+      :type queue: `str`, optional, keyword-only
+      :param nodes: The number of nodes (i.e. computers) this job will use. If it is not using a protocol like MPI or an adapted job scheduler (like PEGASUS),
+                    using more than one node will have no effect.
+      :type nodes: `int`, optional, keyword-only
+      :param walltime: The time limit of the job. If exceeded, the job will be killed by the job scheduler. It is best to view large and ask for 1.5 or 2 times
+                       more than the anticipated time of the job, especially for tasks with a high degree ofo variability in processing time.
+      :type walltime: `str`, optional, keyword-only
+      :param ncpus: The number of CPUs required per node.
+      :type ncpus: `int`, optional, keyword-only
+      :param mem: The quantity of RAM required per CPU. Most of the time it is an integer followed by a G for Gigabytes or Mb for Megabytes.
+      :type mem: `str`, optional, keyword-only
+      :param outfile: The name of the main log file which will record the standard output from the job. If only the name is provided, it will be created in the current
+                      directory.
+      :type outfile: `str`, optional, keyword-only
+      :param errfile: The name of the error log file which will record the error output from the job. If only the name is provided, it will be created in the
+                      current directory. If there is no error output, it will not be created.
+      :type errfile: `str`, optional, keyword-only
+
+      :returns: **job_path** -- The path to the created job file.
+      :rtype: `str`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: submit_job(jobfile: str = None, dependency: str | List[str] = None) -> List[str]
+
+      
+      Submits the job file to the cluster using the job scheduler written in the file name or in the configuration file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: update_job_status()
+
+      
+      Iterates over the list of ongoing jobs and mark them as finished if the job file does not exist.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: update_job_access()
+
+      
+      In case the output files are not accessible by anyone but the owner, running this once will update the permissions for anyone to read them.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: read_output_file(*, outtype: Literal[out, err] = 'out', job_file_name: str = None)
+
+      
+      Read the content of a specific job output file, or the first in the finished list.
+
+      :param outtype: The type of the output file to read, whether standard (out) or error (err). The default is out.
+      :type outtype: `{"out","err"}`, optional, keyword-only
+      :param job_file_name: The path to the job_file to read, which can be retrieved easily from Job_builder.finished_jobs. If not provided, then the first element of the list will be read.
+      :type job_file_name: `str`, optional, keyword-only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+

@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSmOSE &mdash; OSmOSE 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OSmOSE.cluster" href="cluster/index.html" />
+    <link rel="prev" title="API Reference" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OSmOSE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cluster/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Dataset/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Dataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Spectrogram/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="job/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="timestamps/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OSmOSE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/autoapi/OSmOSE/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-OSmOSE">
+<span id="osmose"></span><h1><a class="reference internal" href="#module-OSmOSE" title="OSmOSE"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a><a class="headerlink" href="#module-OSmOSE" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cluster/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cluster/audio_reshaper/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.audio_reshaper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster/compute_statistics/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster/resample/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.resample</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Dataset/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Dataset</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="Spectrogram/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="config/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.config</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="job/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="timestamps/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></a></li>
+</ul>
+</div>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Permalink to this heading"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.Dataset" title="OSmOSE.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#OSmOSE.Job_builder" title="OSmOSE.Job_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Job_builder</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.Spectrogram" title="OSmOSE.Spectrogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spectrogram</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.write_timestamp" title="OSmOSE.write_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_timestamp</span></code></a>(*, audio_path, date_template[, ...])</p></td>
+<td><p>Read the dates in the filenames of audio files in the <cite>audio_path</cite> folder,</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="OSmOSE.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OSmOSE.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Dataset.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Dataset" title="Permalink to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#OSmOSE.Dataset.name" title="Permalink to this definition"></a></dt>
+<dd><p>The Dataset name. It is readonly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#OSmOSE.Dataset.path" title="Permalink to this definition"></a></dt>
+<dd><p>The Dataset path. It is readonly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.original_folder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">original_folder</span></span><a class="headerlink" href="#OSmOSE.Dataset.original_folder" title="Permalink to this definition"></a></dt>
+<dd><p>The folder containing the original audio file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.gps_coordinates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gps_coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#OSmOSE.Dataset.gps_coordinates" title="Permalink to this definition"></a></dt>
+<dd><p>The GPS coordinates of the listening location. First element is latitude, second is longitude.</p>
+<p>GPS coordinates are used to localize the dataset and required for some utilities, like the
+weather and environment utility.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.owner_group">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">owner_group</span></span><a class="headerlink" href="#OSmOSE.Dataset.owner_group" title="Permalink to this definition"></a></dt>
+<dd><p>The Unix group able to interact with the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.is_built">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_built</span></span><a class="headerlink" href="#OSmOSE.Dataset.is_built" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if self.path/data/audio contains at least one folder and none called “original”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bare_check</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_normalization</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_upload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OSmOSE.config.Path</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Dataset.html#Dataset.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Dataset.build" title="Permalink to this definition"></a></dt>
+<dd><p>Set up the architecture of the dataset.</p>
+<dl class="simple">
+<dt>The following operations will be performed on the dataset. None of them are destructive:</dt><dd><ul class="simple">
+<li><p>open and read the header of audio files located in <cite>raw/audio/original/</cite>.</p></li>
+<li><p>rename files containing illegal characters.</p></li>
+<li><p>generate some stastics regarding the files and dataset durations.</p></li>
+<li><p>write the raw/metadata.csv file.</p></li>
+<li><p>Identify and record files with anomalies (short duration, unreadable header…).</p></li>
+<li><p>Set the permission of the dataset to the osmose group.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_folder</strong> (<cite>str</cite>, optional, keyword-only) – The name of the folder containing the original audio file. It is named “original” by convention.
+If none is passed, the program expects to find either only one folder in the dataset audio folder, or
+a folder named <cite>original</cite></p></li>
+<li><p><strong>owner_group</strong> (<cite>str</cite>, optional, keyword_only) – The name of the group using the osmose dataset. It will have all permissions over the dataset.</p></li>
+<li><p><strong>date_template</strong> (<cite>str</cite>, optional, keyword_only) – the date template in strftime format. For example, <cite>2017/02/24</cite> has the template <cite>%Y/%m/%d</cite>.
+It is used to generate automatically the timestamp.csv file. Alternatively, you can call the script to create the timestamp file first.
+If no template is provided, will assume that the file already exists. In future versions, the template will be guessed automatically.
+For more information on strftime template, see <a class="reference external" href="https://strftime.org/">https://strftime.org/</a>.</p></li>
+<li><p><strong>bare_check</strong> (<cite>bool</cite>, optional, keyword_only) – Only do the checks and build steps that requires low resource usage. If you build the dataset on a login node or
+if you are sure it is already good to use, set to True. Otherwise, it should be inside a job. Default is False.</p></li>
+<li><p><strong>auto_normalization</strong> (<cite>bool</cite>, optional, keyword_only) – If true, automatically normalize audio files if the data would cause issues downstream. The default is False.</p></li>
+<li><p><strong>force_upload</strong> (<cite>bool</cite>, optional, keyword_only) – If true, ignore the file anomalies and build the dataset anyway. The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dataset</strong> – The dataset object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>Dataset</cite></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">OSmOSE</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">,</span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="s2">&quot;my_dataset&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>DONE ! your dataset is on OSmOSE platform !</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.delete_abnormal_files">
+<span class="sig-name descname"><span class="pre">delete_abnormal_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Dataset.html#Dataset.delete_abnormal_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Dataset.delete_abnormal_files" title="Permalink to this definition"></a></dt>
+<dd><p>Delete all files with abnormal durations in the dataset, and rewrite the timestamps.csv file to reflect the changes.
+If no abnormal file is detected, then it does nothing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Dataset._find_or_create_original_folder">
+<span class="sig-name descname"><span class="pre">_find_or_create_original_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OSmOSE.config.Path</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Dataset.html#Dataset._find_or_create_original_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Dataset._find_or_create_original_folder" title="Permalink to this definition"></a></dt>
+<dd><p>Gather all wav files in the original folder, and search for the corresponding timestamp.csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>original_folder</strong> – The path to the folder containing the original files.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Path</cite></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the original folder is not found and could not be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Dataset._get_original_after_build">
+<span class="sig-name descname"><span class="pre">_get_original_after_build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OSmOSE.config.Path</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Dataset.html#Dataset._get_original_after_build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Dataset._get_original_after_build" title="Permalink to this definition"></a></dt>
+<dd><p>Find the original folder path after the dataset has been built.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>original_folder</strong> – The path to the folder containing the original audio file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Path</cite></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no metadata.csv has been found and the original folder is not able to be found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Dataset.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Dataset.html#Dataset.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Dataset.__str__" title="Permalink to this definition"></a></dt>
+<dd><p>Return str(self).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.write_timestamp">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.</span></span><span class="sig-name descname"><span class="pre">write_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timezone</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/timestamps.html#write_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.write_timestamp" title="Permalink to this definition"></a></dt>
+<dd><p>Read the dates in the filenames of audio files in the <cite>audio_path</cite> folder,
+according to the date template in strftime format or the offsets from the beginning and end of the date.</p>
+<p>If both <cite>date_template</cite> and <cite>offsets</cite> are provided, the latter has priority and <cite>date_template</cite> is ignored.</p>
+<p>The result is written in a file named <cite>timestamp.csv</cite> with no header and two columns in this format : [filename],[timestamp].
+The output date is in the template <a href="#id1"><span class="problematic" id="id2">`</span></a>’%Y-%m-%dT%H:%M:%S.%fZ’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_path</strong> (<cite>str</cite>) – the path of the folder containing audio files</p></li>
+<li><p><strong>date_template</strong> (<cite>str</cite>) – the date template in strftime format. For example, <cite>2017/02/24</cite> has the template <cite>%Y/%m/%d</cite>
+For more information on strftime template, see <a class="reference external" href="https://strftime.org/">https://strftime.org/</a></p></li>
+<li><p><strong>timezone</strong> (<cite>str</cite>, optional) – The timezone this timestamp was originally recorded in (the default is UTC).</p></li>
+<li><p><strong>offsets</strong> (<cite>tuple(int,int)</cite>, optional) – a tuple containing the beginning and end offset of the date.
+The first element is the first character of the date, and the second is the last.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OSmOSE.</span></span><span class="sig-name descname"><span class="pre">Job_builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder" title="Permalink to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.config">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#OSmOSE.Job_builder.config" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.prepared_jobs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepared_jobs</span></span><a class="headerlink" href="#OSmOSE.Job_builder.prepared_jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.ongoing_jobs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ongoing_jobs</span></span><a class="headerlink" href="#OSmOSE.Job_builder.ongoing_jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.finished_jobs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">finished_jobs</span></span><a class="headerlink" href="#OSmOSE.Job_builder.finished_jobs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.job_scheduler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">job_scheduler</span></span><a class="headerlink" href="#OSmOSE.Job_builder.job_scheduler" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.env_script">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">env_script</span></span><a class="headerlink" href="#OSmOSE.Job_builder.env_script" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.env_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">env_name</span></span><a class="headerlink" href="#OSmOSE.Job_builder.env_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.queue">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">queue</span></span><a class="headerlink" href="#OSmOSE.Job_builder.queue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#OSmOSE.Job_builder.nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.walltime">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">walltime</span></span><a class="headerlink" href="#OSmOSE.Job_builder.walltime" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.ncpus">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ncpus</span></span><a class="headerlink" href="#OSmOSE.Job_builder.ncpus" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.mem">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mem</span></span><a class="headerlink" href="#OSmOSE.Job_builder.mem" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.outfile">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">outfile</span></span><a class="headerlink" href="#OSmOSE.Job_builder.outfile" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.errfile">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">errfile</span></span><a class="headerlink" href="#OSmOSE.Job_builder.errfile" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.write_configuration">
+<span class="sig-name descname"><span class="pre">write_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder.write_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder.write_configuration" title="Permalink to this definition"></a></dt>
+<dd><p>Writes the configuration to the original configuration file, or a new file if specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.build_job_file">
+<span class="sig-name descname"><span class="pre">build_job_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">low</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">medium</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">high</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">Torque</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Slurm</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder.build_job_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder.build_job_file" title="Permalink to this definition"></a></dt>
+<dd><p>Build a job file corresponding to your job scheduler.</p>
+<p>When a job file is created, it becomes a <cite>prepared_job</cite> and can be launched automatically using the <cite>submit_job()</cite> method
+with no arguments.</p>
+<p>This method can use the configuration file to set default job parameters. Use presets to quickly adjust the resource
+consumption or fill the parameters. If a parameter is left empty, it will fall back to the value in the configuration file.
+The default preset is <cite>low</cite> in order to save as much resource as possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script_path</strong> (<cite>str</cite>, keyword-only) – The path to the script that will be executed in the cluster job</p></li>
+<li><p><strong>script_args</strong> (<cite>str</cite>, keyword-only) – All the arguments required by the script, as one string.</p></li>
+<li><p><strong>jobname</strong> (<cite>str</cite>, optional, keyword-only) – The name of the job as seen on the job list (qstat, squeue, …). The default is the script name.</p></li>
+<li><p><strong>preset</strong> (<cite>{“low”, “medium”, “high”}</cite>, optional, keyword-only) – Resource preset for the job. It is best to set up the presets in the configuration file before using them,
+as the default might not correspond to your structure. The default is <cite>low</cite>.</p></li>
+<li><p><strong>job_scheduler</strong> (<cite>{“Torque”, “Slurm”}</cite>, optional, keyword-only) – The job scheduler to which the jobs will be submitted. As of now, only Torque (PBS) and Slurm (Sbatch) are supported.</p></li>
+<li><p><strong>env_script</strong> (<cite>str</cite>, optional, keyword-only) – The script used to activate the conda environment. If there is no particular script, it can just be <cite>source</cite> or <cite>conda activate</cite></p></li>
+<li><p><strong>env_name</strong> (<cite>str</cite>, optional, keyword-only) – The name of the conda environment this job should run into.</p></li>
+<li><p><strong>queue</strong> (<cite>str</cite>, optional, keyword-only) – The partition/queue/qol in which the job should run. It is very dependant on the cluster.</p></li>
+<li><p><strong>nodes</strong> (<cite>int</cite>, optional, keyword-only) – The number of nodes (i.e. computers) this job will use. If it is not using a protocol like MPI or an adapted job scheduler (like PEGASUS),
+using more than one node will have no effect.</p></li>
+<li><p><strong>walltime</strong> (<cite>str</cite>, optional, keyword-only) – The time limit of the job. If exceeded, the job will be killed by the job scheduler. It is best to view large and ask for 1.5 or 2 times
+more than the anticipated time of the job, especially for tasks with a high degree ofo variability in processing time.</p></li>
+<li><p><strong>ncpus</strong> (<cite>int</cite>, optional, keyword-only) – The number of CPUs required per node.</p></li>
+<li><p><strong>mem</strong> (<cite>str</cite>, optional, keyword-only) – The quantity of RAM required per CPU. Most of the time it is an integer followed by a G for Gigabytes or Mb for Megabytes.</p></li>
+<li><p><strong>outfile</strong> (<cite>str</cite>, optional, keyword-only) – The name of the main log file which will record the standard output from the job. If only the name is provided, it will be created in the current
+directory.</p></li>
+<li><p><strong>errfile</strong> (<cite>str</cite>, optional, keyword-only) – The name of the error log file which will record the error output from the job. If only the name is provided, it will be created in the
+current directory. If there is no error output, it will not be created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>job_path</strong> – The path to the created job file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.submit_job">
+<span class="sig-name descname"><span class="pre">submit_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder.submit_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder.submit_job" title="Permalink to this definition"></a></dt>
+<dd><p>Submits the job file to the cluster using the job scheduler written in the file name or in the configuration file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.update_job_status">
+<span class="sig-name descname"><span class="pre">update_job_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder.update_job_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder.update_job_status" title="Permalink to this definition"></a></dt>
+<dd><p>Iterates over the list of ongoing jobs and mark them as finished if the job file does not exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.update_job_access">
+<span class="sig-name descname"><span class="pre">update_job_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder.update_job_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder.update_job_access" title="Permalink to this definition"></a></dt>
+<dd><p>In case the output files are not accessible by anyone but the owner, running this once will update the permissions for anyone to read them.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Job_builder.read_output_file">
+<span class="sig-name descname"><span class="pre">read_output_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">out</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">err</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'out'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/job.html#Job_builder.read_output_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Job_builder.read_output_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read the content of a specific job output file, or the first in the finished list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outtype</strong> (<cite>{“out”,”err”}</cite>, optional, keyword-only) – The type of the output file to read, whether standard (out) or error (err). The default is out.</p></li>
+<li><p><strong>job_file_name</strong> (<cite>str</cite>, optional, keyword-only) – The path to the job_file to read, which can be retrieved easily from Job_builder.finished_jobs. If not provided, then the first element of the list will be read.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OSmOSE.</span></span><span class="sig-name descname"><span class="pre">Spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sr_analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="Dataset/index.html#OSmOSE.Dataset.Dataset" title="OSmOSE.Dataset.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OSmOSE.Dataset.Dataset</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.sr_analysis">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sr_analysis</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.sr_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>The sampling frequency of the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.nfft">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nfft</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.nfft" title="Permalink to this definition"></a></dt>
+<dd><p>The number of Fast Fourier Transform used to generate the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.window_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">window_size</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.window_size" title="Permalink to this definition"></a></dt>
+<dd><p>The window size of the generated spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.overlap">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overlap</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.overlap" title="Permalink to this definition"></a></dt>
+<dd><p>The overlap percentage between two spectrogram windows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.colormap">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.colormap" title="Permalink to this definition"></a></dt>
+<dd><p>The type of colormap of the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.zoom_level">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zoom_level</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.zoom_level" title="Permalink to this definition"></a></dt>
+<dd><p>Number of zoom levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.dynamic_min">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamic_min</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.dynamic_min" title="Permalink to this definition"></a></dt>
+<dd><p>Minimum value of the colormap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.dynamic_max">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamic_max</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.dynamic_max" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum value of the colormap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.number_adjustment_spectrogram">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_adjustment_spectrogram</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.number_adjustment_spectrogram" title="Permalink to this definition"></a></dt>
+<dd><p>Number of spectrograms used to adjust the parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.spectro_duration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spectro_duration</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.spectro_duration" title="Permalink to this definition"></a></dt>
+<dd><p>Duration of the spectrogram (at the lowest zoom level) in seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.zscore_duration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zscore_duration</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.zscore_duration" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.HPfilter_min_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HPfilter_min_freq</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.HPfilter_min_freq" title="Permalink to this definition"></a></dt>
+<dd><p>Floor frequency for the High Pass Filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.sensitivity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensitivity</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.sensitivity" title="Permalink to this definition"></a></dt>
+<dd><p>Numeric sensitivity of the recording device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.peak_voltage">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">peak_voltage</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.peak_voltage" title="Permalink to this definition"></a></dt>
+<dd><p>The maximum voltage of the device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.spectro_normalization">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spectro_normalization</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.spectro_normalization" title="Permalink to this definition"></a></dt>
+<dd><p>Type of normalization used to generate the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.data_normalization">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_normalization</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.data_normalization" title="Permalink to this definition"></a></dt>
+<dd><p>Type of normalization applied to the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.gain_dB">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain_dB</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.gain_dB" title="Permalink to this definition"></a></dt>
+<dd><p>Gain of the device in decibels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.window_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">window_type</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.window_type" title="Permalink to this definition"></a></dt>
+<dd><p>Type of the window used to generate the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.frequency_resolution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequency_resolution</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.frequency_resolution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.time_resolution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_resolution</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.time_resolution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.__build_path">
+<span class="sig-name descname"><span class="pre">__build_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adjust</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OSmOSE.Spectrogram.__build_path" title="Permalink to this definition"></a></dt>
+<dd><p>Build some internal paths according to the expected architecture and might create them.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.check_spectro_size">
+<span class="sig-name descname"><span class="pre">check_spectro_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.check_spectro_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.check_spectro_size" title="Permalink to this definition"></a></dt>
+<dd><p>Verify if the parameters will generate a spectrogram that can fit one screen properly</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sr_analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshape_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">legacy</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">classic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">none</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_silence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>Prepares everything (path, variables, files) for spectrogram generation. This needs to be run before the spectrograms are generated.
+If the dataset has not yet been build, it is before the rest of the functions are initialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sr_analysis</strong> (<cite>int</cite>, optional, keyword-only) – The sampling frequency of the audio files used to generate the spectrograms. If set, will overwrite the Spectrogram.sr_analysis attribute.</p></li>
+<li><p><strong>reshape_method</strong> (<em>{&quot;legacy&quot;</em><em>, </em><em>&quot;classic&quot;</em><em>, </em><em>&quot;none&quot;}</em><em>, </em><em>optional</em><em>, </em><em>keyword-only</em>) – Which method to use if the desired size of the spectrogram is different from the audio file duration.
+- legacy : Legacy method, use bash and sox software to trim the audio files and fill the empty space with nothing.
+Unpractical when the audio file duration is longer than the desired spectrogram size.
+- classic : Classic method, use python and sox library to cut and concatenate the audio files to fit the desired duration.
+Will rewrite the <cite>timestamp.csv</cite> file, thus timestamps may have unexpected behavior if the concatenated files are not chronologically
+subsequent.
+- none : Don’t reshape, will throw an error if the file duration is different than the desired spectrogram size. (It is the default behavior)</p></li>
+<li><p><strong>batch_ind_min</strong> (<cite>int</cite>, optional, keyword-only) – The index of the first file to consider. Both this parameter and <cite>batch_ind_max</cite> are not commonly used and are
+for very specific use cases. Most of the time, you want to initialize the whole dataset (the default is 0).</p></li>
+<li><p><strong>batch_ind_max</strong> (<cite>int</cite>, optional, keyword-only) – The index of the last file to consider (the default is -1, meaning consider every file).</p></li>
+<li><p><strong>pad_silence</strong> (<cite>bool</cite>, optional, keyword-only) – When using the legacy reshaping method, whether there should be a silence padding or not (default is False).</p></li>
+<li><p><strong>force_init</strong> (<cite>bool</cite>, optional, keyword-only) – Force every parameter of the initialization.</p></li>
+<li><p><strong>date_template</strong> (<cite>str</cite>, optiona, keyword-only) – When initializing a spectrogram of a dataset that has not been built, providing a date_template will generate the timestamp.csv.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.audio_file_list_csv">
+<span class="sig-name descname"><span class="pre">audio_file_list_csv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OSmOSE.config.Path</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.audio_file_list_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.audio_file_list_csv" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.update_parameters">
+<span class="sig-name descname"><span class="pre">update_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.update_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.update_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Read the csv file filename and compare it to the spectrogram parameters. If any parameter is different, the file will be replaced and the fields changed.</p>
+<p>If there is nothing to update, the file won’t be changed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.to_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Outputs the characteristics of the spectrogram the specified file in csv format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.process_file">
+<span class="sig-name descname"><span class="pre">process_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">OSmOSE.config.Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjust</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_adjust_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.process_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.process_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read an audio file and generate the associated spectrogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_file</strong> (<cite>str</cite> or <cite>Path</cite>) – The name of the audio file to be processed</p></li>
+<li><p><strong>adjust</strong> (<cite>bool</cite>, optional, keyword-only) – Indicates whether the file should be processed alone to adjust the spectrogram parameters (the default is False)</p></li>
+<li><p><strong>save_matrix</strong> (<cite>bool</cite>, optional, keyword-only) – Whether to save the spectrogram matrices or not. Note that activating this parameter might increase greatly the volume of the project. (the default is False)</p></li>
+<li><p><strong>clean_adjust_folder</strong> (<cite>bool</cite>, optional, keyword-only) – Whether the adjustment folder should be deleted.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.gen_tiles">
+<span class="sig-name descname"><span class="pre">gen_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.gen_tiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.gen_tiles" title="Permalink to this definition"></a></dt>
+<dd><p>Generate spectrogram tiles corresponding to the zoom levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<cite>np.ndarray</cite>) – The audio data from which the tiles will be generated.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>int</cite>) – The sample rate of the audio data.</p></li>
+<li><p><strong>output_file</strong> (<cite>str</cite>) – The name of the output spectrogram.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.gen_spectro">
+<span class="sig-name descname"><span class="pre">gen_spectro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.gen_spectro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.gen_spectro" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the spectrograms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<cite>np.ndarray</cite>) – The audio data from which the tiles will be generated.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>int</cite>) – The sample rate of the audio data.</p></li>
+<li><p><strong>output_file</strong> (<cite>str</cite>) – The name of the output spectrogram.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Sxx</strong> (<cite>np.NDArray[float64]</cite>)</p></li>
+<li><p><strong>Freq</strong> (<cite>np.NDArray[float]</cite>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.generate_and_save_figures">
+<span class="sig-name descname"><span class="pre">generate_and_save_figures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_spectro</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.generate_and_save_figures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.generate_and_save_figures" title="Permalink to this definition"></a></dt>
+<dd><p>Write the spectrogram figures to the output file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<cite>np.NDArray[floating]</cite>) – </p></li>
+<li><p><strong>freq</strong> (<cite>np.NDArray[floating]</cite>) – </p></li>
+<li><p><strong>log_spectro</strong> (<cite>np.NDArray[signed int]</cite>) – </p></li>
+<li><p><strong>output_file</strong> (<cite>str</cite>) – The name of the spectrogram file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.process_all_files">
+<span class="sig-name descname"><span class="pre">process_all_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram.process_all_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.process_all_files" title="Permalink to this definition"></a></dt>
+<dd><p>Process all the files in the dataset and generates the spectrograms. It uses the python multiprocessing library
+to parallelise the computation, so it is less efficient to use this method rather than the job scheduler if run on a cluster.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cluster/index.html" class="btn btn-neutral float-right" title="OSmOSE.cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Rumengol.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

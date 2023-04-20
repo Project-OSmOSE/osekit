@@ -30,12 +30,14 @@ def display_folder_storage_infos(dir_path: str) -> None:
 
 
 def list_not_built_datasets(datasets_folder_path: str) -> None:
-    """Prints the available datasets that have not been built by the `Dataset.build()` function.
+    """
+    Prints the available datasets that have not been built by the `Dataset.build()` function.
 
     Parameter
     ---------
     dataset_folder_path: str
-        The path to the directory containing the datasets."""
+        The path to the directory containing the datasets.
+    """
 
     ds_folder = Path(datasets_folder_path)
 
@@ -79,7 +81,8 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
 
 
 def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
-    """Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.
+    """
+    Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.
 
     Parameter
     ---------
@@ -98,7 +101,8 @@ def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
     TypeError
         Raised if the raw_config is anything else than a string, a PurePath or a dict.
     NotImplementedError
-        Raised if the raw_config file is in YAML format"""
+        Raised if the raw_config file is in YAML format
+    """
 
     match raw_config:
         case Path():

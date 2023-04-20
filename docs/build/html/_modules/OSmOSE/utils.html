@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSmOSE.utils &mdash; OSmOSE 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OSmOSE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OSmOSE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">OSmOSE.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for OSmOSE.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">as_file</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tomllib</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tomli</span> <span class="k">as</span> <span class="nn">tomllib</span>
+
+<span class="kn">import</span> <span class="nn">soundfile</span> <span class="k">as</span> <span class="nn">sf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">OSmOSE.config</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="display_folder_storage_infos"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.display_folder_storage_infos">[docs]</a><span class="k">def</span> <span class="nf">display_folder_storage_infos</span><span class="p">(</span><span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total storage space (TB):&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">total</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Used storage space (TB):&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">used</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-----------------------&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available storage space (TB):&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">free</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="list_not_built_datasets"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.list_not_built_datasets">[docs]</a><span class="k">def</span> <span class="nf">list_not_built_datasets</span><span class="p">(</span><span class="n">datasets_folder_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints the available datasets that have not been built by the `Dataset.build()` function.</span>
+
+<span class="sd">    Parameter</span>
+<span class="sd">    ---------</span>
+<span class="sd">    dataset_folder_path: str</span>
+<span class="sd">        The path to the directory containing the datasets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ds_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">datasets_folder_path</span><span class="p">)</span>
+
+    <span class="n">dataset_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">directory</span>
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">ds_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ds_folder</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+    <span class="p">]</span>
+
+    <span class="n">dataset_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="n">dataset_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="p">)</span>  <span class="c1"># case insensitive alphabetical sorting of datasets</span>
+
+    <span class="n">list_not_built_datasets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">list_unknown_datasets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">dataset_directory</span> <span class="ow">in</span> <span class="n">dataset_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">ds_folder</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">dataset_directory</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="p">):</span>
+            <span class="n">ds_metadata_path</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                <span class="n">ds_folder</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">dataset_directory</span><span class="p">,</span> <span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span>
+                    <span class="s2">&quot;metadata.csv&quot;</span>
+                <span class="p">),</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ds_metadata_path</span><span class="p">:</span>
+                <span class="n">list_not_built_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset_directory</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">list_unknown_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset_directory</span><span class="p">)</span>
+
+    <span class="n">not_built_formatted</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">list_not_built_datasets</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;List of the datasets that aren&#39;t built yet:</span><span class="se">\n</span><span class="si">{</span><span class="n">not_built_formatted</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">unreachable_formatted</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">list_unknown_datasets</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;&quot;&quot;List of unreachable datasets (probably due to insufficient permissions) :</span><span class="se">\n</span><span class="si">{</span><span class="n">unreachable_formatted</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_config"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.read_config">[docs]</a><span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="n">raw_config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NamedTuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.</span>
+
+<span class="sd">    Parameter</span>
+<span class="sd">    ---------</span>
+<span class="sd">    raw_config : `str` or `Path` or `dict`</span>
+<span class="sd">        The path of the configuration file, or the dict object containing the configuration.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    config : `namedtuple`</span>
+<span class="sd">        The configuration as a `namedtuple` object.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FileNotFoundError</span>
+<span class="sd">        Raised if the raw_config is a string that does not correspond to a valid path, or the raw_config file is not in TOML, JSON or YAML formats.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if the raw_config is anything else than a string, a PurePath or a dict.</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        Raised if the raw_config file is in YAML format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">match</span> <span class="n">raw_config</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">Path</span><span class="p">():</span>
+            <span class="k">with</span> <span class="n">as_file</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_config</span><span class="p">:</span>
+                <span class="n">raw_config</span> <span class="o">=</span> <span class="n">input_config</span>
+
+        <span class="k">case</span> <span class="nb">str</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The configuration file </span><span class="si">{</span><span class="n">raw_config</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">case</span> <span class="nb">dict</span><span class="p">():</span>
+            <span class="k">pass</span>
+        <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The raw_config must be either of type str, dict or Traversable.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_config</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="p">:</span>
+                <span class="k">case</span> <span class="s2">&quot;.toml&quot;</span><span class="p">:</span>
+                    <span class="n">raw_config</span> <span class="o">=</span> <span class="n">tomllib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">input_config</span><span class="p">)</span>
+                <span class="k">case</span> <span class="s2">&quot;.json&quot;</span><span class="p">:</span>
+                    <span class="n">raw_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">input_config</span><span class="p">)</span>
+                <span class="k">case</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="s2">&quot;YAML support will eventually get there (unfortunately)&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The provided configuration file extension (</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2"> is not a valid extension. Please use .toml or .json files.&quot;</span>
+                    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">convert</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="convert"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.convert">[docs]</a><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">dictionary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NamedTuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary in a Named Tuple&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;GenericDict&quot;</span><span class="p">,</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">**</span><span class="n">dictionary</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_header"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.read_header">[docs]</a><span class="k">def</span> <span class="nf">read_header</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the first bytes of a wav file and extract its characteristics.</span>
+<span class="sd">    At the very least, only the first 44 bytes are read. If the `data` chunk is not right after the header chunk,</span>
+<span class="sd">    the subsequent chunks will be read until the `data` chunk is found. If there is no `data` chunk, all the file will be read.</span>
+<span class="sd">    Parameter</span>
+<span class="sd">    ---------</span>
+<span class="sd">    file: str</span>
+<span class="sd">        The absolute path of the wav file whose header will be read.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    samplerate : `int`</span>
+<span class="sd">        The number of samples in one frame.</span>
+<span class="sd">    frames : `float`</span>
+<span class="sd">        The number of frames, corresponding to the file duration in seconds.</span>
+<span class="sd">    channels : `int`</span>
+<span class="sd">        The number of audio channels.</span>
+<span class="sd">    sampwidth : `int`</span>
+<span class="sd">        The sample width.</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    When there is no `data` chunk, the `frames` value will fall back on the size written in the header. This can be incorrect,</span>
+<span class="sd">    if the file has been corrupted or the writing process has been interrupted before completion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;4sI4s&quot;</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
+        <span class="n">chunk_header</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">subchunkid</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;4sI&quot;</span><span class="p">,</span> <span class="n">chunk_header</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">subchunkid</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;fmt &quot;</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">samplerate</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sampwidth</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span>
+                <span class="s2">&quot;HHIIHH&quot;</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">chunkOffset</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">found_data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="n">chunkOffset</span> <span class="o">&lt;</span> <span class="n">size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">found_data</span><span class="p">:</span>
+            <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">chunkOffset</span><span class="p">)</span>
+            <span class="n">subchunk2id</span><span class="p">,</span> <span class="n">subchunk2size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;4sI&quot;</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">subchunk2id</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">:</span>
+                <span class="n">found_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">chunkOffset</span> <span class="o">=</span> <span class="n">chunkOffset</span> <span class="o">+</span> <span class="n">subchunk2size</span> <span class="o">+</span> <span class="mi">8</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_data</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;No data chunk found while reading the header. Will fallback on the header size.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">subchunk2size</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">36</span>
+
+        <span class="n">sampwidth</span> <span class="o">=</span> <span class="p">(</span><span class="n">sampwidth</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">framesize</span> <span class="o">=</span> <span class="n">channels</span> <span class="o">*</span> <span class="n">sampwidth</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">subchunk2size</span> <span class="o">/</span> <span class="n">framesize</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="mi">72</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">subchunk2size</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Warning : the size indicated in the header is not the same as the actual file size. This might mean that the file is truncated or otherwise corrupt.</span><span class="se">\</span>
+<span class="s2">                </span><span class="se">\n</span><span class="s2">Supposed size: </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes </span><span class="se">\n</span><span class="s2">Actual size: </span><span class="si">{</span><span class="n">subchunk2size</span><span class="si">}</span><span class="s2"> bytes.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">samplerate</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">sampwidth</span></div>
+
+
+<div class="viewcode-block" id="safe_read"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.safe_read">[docs]</a><span class="k">def</span> <span class="nf">safe_read</span><span class="p">(</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">nan</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="p">:</span> <span class="nb">any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="p">:</span> <span class="nb">any</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a file using Soundfile and clean up the data to be used safely</span>
+<span class="sd">    Currently, only checks for `NaN`, `inf` and `-inf` presence. The default behavior is the same as `np.nan_to_num`:</span>
+<span class="sd">    `NaNs` are transformed into 0.0, `inf` and `-inf` are transformed into the maximum and minimum values of their dtype.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        file_path: `str`</span>
+<span class="sd">            The path to the audio file to safely read.</span>
+<span class="sd">        nan: `float`, optional, keyword_only</span>
+<span class="sd">            The value that will replace `NaNs`. Default is 0.0</span>
+<span class="sd">        posinf: `any`, optional, keyword_only</span>
+<span class="sd">            The value that will replace `inf`. Default behavior is the maximum value of the data type.</span>
+<span class="sd">        neginf: `any`, optional, keyword_only</span>
+<span class="sd">            The value that will replace `-inf`. Default behavior is the minimum value of the data type.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        audio_data: `NDArray`</span>
+<span class="sd">            The cleaned audio data as a numpy array.</span>
+<span class="sd">        sample_rate: `int`</span>
+<span class="sd">            The sample rate of the data.&quot;&quot;&quot;</span>
+    <span class="n">audio_data</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="n">nan_nb</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">audio_data</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nan_nb</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+        <span class="n">nan_nb</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">nan_nb</span><span class="p">)</span>  <span class="c1"># Double sum to account for multiple channels</span>
+
+    <span class="k">if</span> <span class="n">nan_nb</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nan_nb</span><span class="si">}</span><span class="s2"> NaN detected in file </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. They will be replaced with </span><span class="si">{</span><span class="n">nan</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">audio_data</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">nan</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">posinf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="n">neginf</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">audio_data</span><span class="p">,</span> <span class="n">sample_rate</span></div>
+
+
+<div class="viewcode-block" id="check_n_files"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.check_n_files">[docs]</a><span class="k">def</span> <span class="nf">check_n_files</span><span class="p">(</span>
+    <span class="n">file_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">auto_normalization</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check n files at random for anomalies and may normalize them.</span>
+<span class="sd">    Currently, check if the data for wav in PCM float format are between -1.0 and 1.0. If the number of files that</span>
+<span class="sd">    fail the test is higher than the threshold (which is 10% of n by default, with an absolute minimum of 1), all the</span>
+<span class="sd">    dataset will be normalized and written in another file.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        file_list: `list`</span>
+<span class="sd">            The list of files to be evaluated. It must be equal or longer than n.</span>
+<span class="sd">        n: `int`</span>
+<span class="sd">            The number of files to evaluate. To lower resource consumption, it is advised to check only a subset of the dataset.</span>
+<span class="sd">            10 files taken at random should provide an acceptable idea of the whole dataset.</span>
+<span class="sd">        output_path: `str`, optional, keyword-only</span>
+<span class="sd">            The path to the folder where the normalized files will be written. If auto_normalization is set to True, then</span>
+<span class="sd">            it must have a value.</span>
+<span class="sd">        threshold_percent: `float`, optional, keyword-only</span>
+<span class="sd">            The maximum acceptable percentage of evaluated files that can contain anomalies. Understands fraction and whole numbers. Default is 0.1, or 10%</span>
+<span class="sd">        auto_normalization: `bool`, optional, keyword_only</span>
+<span class="sd">            Whether the normalization should proceed automatically or not if the threshold is reached. As a safeguard, the default is False.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        normalized: `bool`</span>
+<span class="sd">            Indicates whether or not the dataset has been normalized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">auto_normalization</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">output_path</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;When auto_normalization is set to True, an output path must be specified.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">threshold_percent</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">threshold_percent</span> <span class="o">=</span> <span class="n">threshold_percent</span> <span class="o">/</span> <span class="mi">100</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_list</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;float&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">sf</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">threshold_percent</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">bad_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">audio_file</span> <span class="ow">in</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">file_list</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">safe_read</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1.0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">):</span>
+                <span class="n">bad_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bad_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;The treshold has been exceeded, too many files unadequately recorded.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">auto_normalization</span><span class="p">:</span>
+                        <span class="n">normalize</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdin__</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+                            <span class="n">res</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+                                <span class="s2">&quot;Do you want to automatically normalize your dataset? [Y]/n&quot;</span>
+                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]:</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">output_path</span><span class="p">:</span>
+                                    <span class="n">output_path</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+                                        <span class="s2">&quot;Please specify the path to the output folder:&quot;</span>
+                                    <span class="p">)</span>
+                                <span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">normalize</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="s2">&quot;You need to set auto_normalization to True to normalize your dataset automatically.&quot;</span>
+                            <span class="p">)</span>
+
+                    <span class="n">make_path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">DPDEFAULT</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">audio_file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">safe_read</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="o">*</span> <span class="mf">0.063</span>  <span class="c1"># = -24dB</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">data</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+                        <span class="n">outfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">sf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                            <span class="n">outfile</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                            <span class="n">samplerate</span><span class="o">=</span><span class="n">sr</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FPDEFAULT</span><span class="p">)</span>
+                        <span class="c1"># TODO: lock in spectrum mode</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;All files have been normalized. Spectrograms created from them will be locked in spectrum mode.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1"># Will move to pathutils</span>
+<div class="viewcode-block" id="make_path"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.make_path">[docs]</a><span class="k">def</span> <span class="nf">make_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">DPDEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a path folder by folder with correct permissions.</span>
+
+<span class="sd">    If a folder in the path already exists, it will not be modified (even if the specified mode differs).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        path: `Path`</span>
+<span class="sd">            The complete path to create.</span>
+<span class="sd">        mode: `int`, optional, keyword-only</span>
+<span class="sd">            The permission code of the complete path. The default is 0o755, meaning the owner has all permissions over the files of the path,</span>
+<span class="sd">            and the owner group and others only have read and execute rights, but not writing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">parents</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">path</span></div>
+
+<div class="viewcode-block" id="set_umask"><a class="viewcode-back" href="../../autoapi/OSmOSE/utils/index.html#OSmOSE.utils.set_umask">[docs]</a><span class="k">def</span> <span class="nf">set_umask</span><span class="p">():</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">umask</span><span class="p">(</span><span class="mo">0o002</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Rumengol.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
