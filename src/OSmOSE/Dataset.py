@@ -22,15 +22,6 @@ from OSmOSE.config import *
 
 
 class Dataset:
-    """Super class used to create dataset compatible with the rest of the package.
-
-    A dataset is a set of audio files located in a folder whose name is the dataset name.
-    The files must be in the `raw/audio/original`subfolder. and be alongside a `timestamp.csv` file, which includes
-    the name of the file and the associated timestamp, in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.
-
-    This file can be created using the `OSmOSE.write_timestamp` function.
-    """
-
     def __init__(
         self,
         dataset_path: str,
@@ -39,7 +30,15 @@ class Dataset:
         owner_group: str = None,
         original_folder: str = None,
     ) -> None:
-        """Instanciate the dataset with at least its path.
+        """Super class used to create dataset compatible with the rest of the package.
+
+        A dataset is primarily identified by the audio files located in a folder whose name is the dataset name.
+        The files can be anywhere in this folder, but all audio files will be moved to the `data/audio/original` 
+        subfolder when the build() method is called.
+        There should be a `timestamp.csv` file, which includes the name of the file and the associated timestamp, 
+        in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.
+
+        This file can be created using the `OSmOSE.write_timestamp` function.
 
         Parameters
         ----------
@@ -523,24 +522,7 @@ class Dataset:
         )
 
     def _find_or_create_original_folder(self) -> Path:
-        """Search for the original folder or create it from existing files.
-
-        This function does in order:
-<<<<<<< HEAD
-        - If there is any audio file in the top directory, consider them all original and create the data/audio/original/ directory before
-            moving all audio files in it.
-        - If there is only one folder in the top directory, move it to /data/audio/original.
-        - If there is a folder named "original" in the raw audio path, then return it
-        - If there is only one folder in the raw audio path, then return it as the original.
-        If none of the above is true, then a ValueError is raised as the original folder could not be found nor created. 
-=======
-    - If there is any audio file in the top directory, consider them all original and create the data/audio/original/ directory before
-        moving all audio files in it.
-    - If there is only one folder in the top directory, move it to /data/audio/original.
-    - If there is a folder named "original" in the raw audio path, then return it
-    - If there is only one folder in the raw audio path, then return it as the original.
-    If none of the above is true, then a ValueError is raised as the original folder could not be found nor created. 
->>>>>>> cc9dd99... docstring fixes
+        """Gather all wav files in the original folder, and search for the corresponding timestamp.csv file.
 
         Returns
         -------

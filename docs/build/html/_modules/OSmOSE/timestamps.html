@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSmOSE.timestamps &mdash; OSmOSE 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OSmOSE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OSmOSE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">OSmOSE.timestamps</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for OSmOSE.timestamps</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">OSmOSE.config</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">__converter</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;%Y&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[12][0-9]</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%y&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[0-9]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%m&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;(0[1-9]|1[0-2])&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;([0-2][0-9]|3[0-1])&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%H&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;([0-1][0-9]|2[0-4])&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%I&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;(0[1-9]|1[0-2])&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%p&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;(AM|PM)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%M&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[0-5][0-9]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;%S&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[0-5][0-9]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;[0-9]</span><span class="si">{6}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="convert_template_to_re"><a class="viewcode-back" href="../../autoapi/OSmOSE/timestamps/index.html#OSmOSE.convert_template_to_re">[docs]</a><span class="k">def</span> <span class="nf">convert_template_to_re</span><span class="p">(</span><span class="n">date_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a template in strftime format to a matching regular expression.</span>
+
+<span class="sd">    Parameter:</span>
+<span class="sd">        date_template: the template in strftime format.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The regular expression matching the template.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_template</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">date_template</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="n">__converter</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="n">__converter</span><span class="p">[</span><span class="n">date_template</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]]</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="n">date_template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="write_timestamp"><a class="viewcode-back" href="../../autoapi/OSmOSE/timestamps/index.html#OSmOSE.write_timestamp">[docs]</a><span class="k">def</span> <span class="nf">write_timestamp</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">audio_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">date_template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span>
+    <span class="n">offsets</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the dates in the filenames of audio files in the `audio_path` folder,</span>
+<span class="sd">    according to the date template in strftime format or the offsets from the beginning and end of the date.</span>
+
+<span class="sd">    If both `date_template` and `offsets` are provided, the latter has priority and `date_template` is ignored.</span>
+
+<span class="sd">    The result is written in a file named `timestamp.csv` with no header and two columns in this format : [filename],[timestamp].</span>
+<span class="sd">    The output date is in the template `&#39;%Y-%m-%dT%H:%M:%S.%fZ&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        audio_path: `str`</span>
+<span class="sd">            the path of the folder containing audio files</span>
+<span class="sd">        date_template: `str`</span>
+<span class="sd">            the date template in strftime format. For example, `2017/02/24` has the template `%Y/%m/%d`</span>
+<span class="sd">            For more information on strftime template, see https://strftime.org/</span>
+<span class="sd">        timezone: `str`, optional</span>
+<span class="sd">            The timezone this timestamp was originally recorded in (the default is UTC).</span>
+<span class="sd">        offsets: `tuple(int,int)`, optional</span>
+<span class="sd">            a tuple containing the beginning and end offset of the date.</span>
+<span class="sd">            The first element is the first character of the date, and the second is the last.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">offsets</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">offsets</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">off</span><span class="p">)</span> <span class="k">for</span> <span class="n">off</span> <span class="ow">in</span> <span class="n">offsets</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">offsets</span><span class="p">),</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># TODO: extension-agnostic</span>
+    <span class="n">list_audio_file</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">audio_path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.wav&quot;</span><span class="p">)])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_audio_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No audio file found in the </span><span class="si">{</span><span class="n">audio_path</span><span class="si">}</span><span class="s2"> directory. An empty timestamp.csv will be created.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">filename_raw_audio</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">converted</span> <span class="o">=</span> <span class="n">convert_template_to_re</span><span class="p">(</span><span class="n">date_template</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">list_audio_file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">offsets</span><span class="p">:</span>
+            <span class="n">date_extracted</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="p">[</span><span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">date_extracted</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">converted</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The date template does not match any set of character in the file name </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="se">\n</span><span class="s2">Make sure you are not forgetting separator characters, or use the offsets parameter.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">date_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_extracted</span><span class="p">,</span> <span class="n">date_template</span><span class="p">)</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date_obj</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">dates_final</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;Z&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;filename-&gt;&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;extracted timestamp-&gt;&quot;</span><span class="p">,</span> <span class="n">dates_final</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">timestamp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dates_final</span><span class="p">)</span>
+
+        <span class="n">filename_raw_audio</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename_raw_audio</span><span class="p">,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span> <span class="s2">&quot;timezone&quot;</span><span class="p">:</span> <span class="n">timezone</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">audio_path</span><span class="p">,</span> <span class="s2">&quot;timestamp.csv&quot;</span><span class="p">),</span>
+        <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+        <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">audio_path</span><span class="p">,</span> <span class="s2">&quot;timestamp.csv&quot;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">FPDEFAULT</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">argparser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">argparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dataset-name&quot;</span><span class="p">,</span> <span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of the dataset.&quot;</span><span class="p">)</span>
+    <span class="n">argparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--offset&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Offset of the first date character in the dataset names. If the date is not immediately followed by the extension, please provide the offset between the end of the date and the extension of the file, separated by a hyphen (-).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">argparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--date-template&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The date template in strftime format. If not sure, input the whole file name.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">argparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--timezone&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The timezone the date was recorded in. Default is UTC.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">argparser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">write_timestamp</span><span class="p">(</span>
+        <span class="n">audio_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">,</span>
+        <span class="n">date_template</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">date_template</span><span class="p">,</span>
+        <span class="n">timezone</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timezone</span><span class="p">,</span>
+        <span class="n">offsets</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Rumengol.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

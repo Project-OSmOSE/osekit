@@ -1,0 +1,125 @@
+:py:mod:`OSmOSE.cluster`
+========================
+
+.. py:module:: OSmOSE.cluster
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   audio_reshaper/index.rst
+   compute_statistics/index.rst
+   resample/index.rst
+
+
+Package Contents
+----------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.cluster.reshape
+   OSmOSE.cluster.compute_stats
+   OSmOSE.cluster.resample
+
+
+
+.. py:function:: reshape(input_files: Union[str, list], chunk_size: int, *, output_dir_path: str = None, batch_ind_min: int = 0, batch_ind_max: int = -1, max_delta_interval: int = 5, last_file_behavior: Literal[truncate, pad, discard] = 'pad', offset_beginning: int = 0, offset_end: int = 0, timestamp_path: OSmOSE.config.Path = None, verbose: bool = False, overwrite: bool = False, force_reshape: bool = False) -> List[str]
+
+   
+   Reshape all audio files in the folder to be of the specified duration. If chunk_size is superior to the base duration of the files, they will be fused according to their order in the timestamp.csv file in the same folder.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: compute_stats(*, input_dir: pathlib.Path, output_file: pathlib.Path, HPfilter_min_freq: int, batch_ind_min: int = 0, batch_ind_max: int = -1)
+
+   
+   Computes the normalization parameters for the Zscore normalisation of the dataset and writes it to a csv.
+
+   This function can also be called from the command line. Type `get_zscore_params.py -h` to see the list of arguments.
+   Will write the mean and standard deviation for each file in a .csv. To get the parameters, you need to read the csv and
+   compute the means of each columns.
+
+   :param input_dir: The absolute path to the input directory. All audio files within this directory will be used.
+   :type input_dir: `Path`
+   :param output_file: The absolute path of the output csv file.
+   :type output_file: `Path`
+   :param HPfilter_min_freq: The minimum audio frequency under which data will be filtrated. If set to 0, then `sys.float_info.epsilon` will be used.
+   :type HPfilter_min_freq: `int`
+   :param batch_ind_min: The first file of the list to be processed. Default is 0.
+   :type batch_ind_min: `int`
+   :param batch_ind_max: The last file of the list to be processed. Default is -1, meaning the entire list is processed.
+   :type batch_ind_max: `int`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: resample(*, input_dir: pathlib.Path, output_dir: pathlib.Path, target_sr: int, batch_ind_min: int = 0, batch_ind_max: int = -1)
+
+   
+   Resample all audio files in a given directory to a target sample rate and write them to a new directory.
+
+   :param input_dir: The input directory containing the input files.
+   :type input_dir: `Path`, keyword-only
+   :param output_dir: The output directory to write the resampled files.
+   :type output_dir: `Path`, keyword-only
+   :param target_sr: The target sample rate.
+   :type target_sr: `int`, keyword-only
+   :param batch_ind_min: The index of the first file of the batch. The default is 0.
+   :type batch_ind_min: `int`, keyword-only
+   :param batch_ind_max: The index of the last file of the batch. The default is -1, meaning the last file of the input directory.
+   :type batch_ind_max: `int`, keyword-only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
