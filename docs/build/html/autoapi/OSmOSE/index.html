@@ -134,7 +134,7 @@
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.Spectrogram" title="OSmOSE.Spectrogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spectrogram</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.</p></td>
 </tr>
 </tbody>
 </table>
@@ -488,6 +488,58 @@ current directory. If there is no error output, it will not be created.</p></li>
 <dt class="sig sig-object py" id="OSmOSE.Spectrogram">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OSmOSE.</span></span><span class="sig-name descname"><span class="pre">Spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sr_analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/OSmOSE/Spectrogram.html#Spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="Dataset/index.html#OSmOSE.Dataset.Dataset" title="OSmOSE.Dataset.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OSmOSE.Dataset.Dataset</span></code></a></p>
+<p>Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.</p>
+<dl>
+<dt>The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:</dt><dd><ul class="simple">
+<li><p>Use the existing <cite>analysis/analysis_sheet.csv</cite> file. If one exist, it will take priority over the other methods. Note that</p></li>
+</ul>
+<p>when using this file, some attributes will be locked in read-only mode.
+- Fill the <cite>analysis_params</cite> argument. More info on the expected value below.
+- Don’t initialize the attributes in the constructor, and assign their values manually.</p>
+</dd>
+</dl>
+<p>In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, <cite>analysis/analysis_sheet.csv</cite>
+will be written at the end of the <cite>Spectrogram.initialize()</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_path</strong> (<cite>str</cite>) – The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</p></li>
+<li><p><strong>sr_analysis</strong> (<cite>int</cite>, keyword-only) – The sample rate used for the generation of the spectrograms.</p></li>
+<li><p><strong>coordinates</strong> (<cite>str</cite> or <cite>list</cite> or <cite>tuple</cite>, optional, keyword-only) – The GPS coordinates of the listening location. If it is of type <cite>str</cite>, it must be the name of a csv file located in <cite>raw/auxiliary</cite>,
+otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</p></li>
+<li><p><strong>osmose_group_name</strong> (<cite>str</cite>, optional, keyword-only) – The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
+Will not work on Windows.</p></li>
+<li><p><strong>analysis_params</strong> (<cite>dict</cite>, optional, keyword-only) – <p>If <cite>analysis/analysis_sheet.csv</cite> does not exist, the analysis parameters can be submitted in the form of a dict,
+with keys matching what is expected:</p>
+<blockquote>
+<div><ul>
+<li><p>nfft : <cite>int</cite></p></li>
+<li><p>window_size : <cite>int</cite></p></li>
+<li><p>overlap : <cite>int</cite></p></li>
+<li><p>colormap : <cite>str</cite></p></li>
+<li><p>zoom_level : <cite>int</cite></p></li>
+<li><p>dynamic_min : <cite>int</cite></p></li>
+<li><p>dynamic_max : <cite>int</cite></p></li>
+<li><p>number_adjustment_spectrogram : <cite>int</cite></p></li>
+<li><p>spectro_duration : <cite>int</cite></p></li>
+<li><p>zscore_duration : <cite>float</cite> or <cite>str</cite></p></li>
+<li><p>HPfilter_min_freq : <cite>int</cite></p></li>
+<li><p>sensitivity_dB : <cite>int</cite></p></li>
+<li><p>peak_voltage : <cite>float</cite></p></li>
+<li><p>spectro_normalization : <cite>str</cite></p></li>
+<li><p>data_normalization : <cite>str</cite></p></li>
+<li><p>gain_dB : <cite>int</cite></p></li>
+</ul>
+</div></blockquote>
+<p>If additional information is given, it will be ignored. Note that if there is an <cite>analysis/analysis_sheet.csv</cite> file, it will
+always have the priority.</p>
+</p></li>
+<li><p><strong>batch_number</strong> (<cite>int</cite>, optional, keyword_only) – The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).</p></li>
+<li><p><strong>local</strong> (<cite>bool</cite>, optional, keyword_only) – Indicates whether or not the program is run locally. If it is the case, it will not create jobs and will handle the paralelisation
+alone. The default is False.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="OSmOSE.Spectrogram.sr_analysis">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sr_analysis</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.sr_analysis" title="Permalink to this definition"></a></dt>
