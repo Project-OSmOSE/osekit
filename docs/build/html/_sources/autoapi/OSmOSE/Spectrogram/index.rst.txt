@@ -21,6 +21,71 @@ Classes
 
    Bases: :py:obj:`OSmOSE.Dataset.Dataset`
 
+   
+   Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.
+
+   The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:
+       - Use the existing `analysis/analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that
+       when using this file, some attributes will be locked in read-only mode.
+       - Fill the `analysis_params` argument. More info on the expected value below.
+       - Don't initialize the attributes in the constructor, and assign their values manually.
+
+   In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, `analysis/analysis_sheet.csv`
+   will be written at the end of the `Spectrogram.initialize()` method.
+
+   :param dataset_path: The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.
+   :type dataset_path: `str`
+   :param sr_analysis: The sample rate used for the generation of the spectrograms.
+   :type sr_analysis: `int`, keyword-only
+   :param coordinates: The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `raw/auxiliary`,
+                       otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.
+   :type coordinates: `str` or `list` or `tuple`, optional, keyword-only
+   :param osmose_group_name: The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
+                             Will not work on Windows.
+   :type osmose_group_name: `str`, optional, keyword-only
+   :param analysis_params: If `analysis/analysis_sheet.csv` does not exist, the analysis parameters can be submitted in the form of a dict,
+                           with keys matching what is expected:
+                               - nfft : `int`
+                               - window_size : `int`
+                               - overlap : `int`
+                               - colormap : `str`
+                               - zoom_level : `int`
+                               - dynamic_min : `int`
+                               - dynamic_max : `int`
+                               - number_adjustment_spectrogram : `int`
+                               - spectro_duration : `int`
+                               - zscore_duration : `float` or `str`
+                               - HPfilter_min_freq : `int`
+                               - sensitivity_dB : `int`
+                               - peak_voltage : `float`
+                               - spectro_normalization : `str`
+                               - data_normalization : `str`
+                               - gain_dB : `int`
+                           If additional information is given, it will be ignored. Note that if there is an `analysis/analysis_sheet.csv` file, it will
+                           always have the priority.
+   :type analysis_params: `dict`, optional, keyword-only
+   :param batch_number: The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).
+   :type batch_number: `int`, optional, keyword_only
+   :param local: Indicates whether or not the program is run locally. If it is the case, it will not create jobs and will handle the paralelisation
+                 alone. The default is False.
+   :type local: `bool`, optional, keyword_only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
    .. py:property:: sr_analysis
 
       

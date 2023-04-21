@@ -95,6 +95,57 @@
 
 
 <div class="viewcode-block" id="Spectrogram"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Spectrogram.Spectrogram">[docs]</a><span class="k">class</span> <span class="nc">Spectrogram</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.</span>
+
+<span class="sd">    The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:</span>
+<span class="sd">        - Use the existing `analysis/analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that</span>
+<span class="sd">        when using this file, some attributes will be locked in read-only mode.</span>
+<span class="sd">        - Fill the `analysis_params` argument. More info on the expected value below.</span>
+<span class="sd">        - Don&#39;t initialize the attributes in the constructor, and assign their values manually.</span>
+
+<span class="sd">    In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, `analysis/analysis_sheet.csv`</span>
+<span class="sd">    will be written at the end of the `Spectrogram.initialize()` method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset_path : `str`</span>
+<span class="sd">        The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</span>
+<span class="sd">    sr_analysis : `int`, keyword-only</span>
+<span class="sd">        The sample rate used for the generation of the spectrograms.</span>
+<span class="sd">    coordinates : `str` or `list` or `tuple`, optional, keyword-only</span>
+<span class="sd">        The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `raw/auxiliary`,</span>
+<span class="sd">        otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</span>
+<span class="sd">    osmose_group_name : `str`, optional, keyword-only</span>
+<span class="sd">        The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.</span>
+<span class="sd">        Will not work on Windows.</span>
+<span class="sd">    analysis_params : `dict`, optional, keyword-only</span>
+<span class="sd">        If `analysis/analysis_sheet.csv` does not exist, the analysis parameters can be submitted in the form of a dict,</span>
+<span class="sd">        with keys matching what is expected:</span>
+<span class="sd">            - nfft : `int`</span>
+<span class="sd">            - window_size : `int`</span>
+<span class="sd">            - overlap : `int`</span>
+<span class="sd">            - colormap : `str`</span>
+<span class="sd">            - zoom_level : `int`</span>
+<span class="sd">            - dynamic_min : `int`</span>
+<span class="sd">            - dynamic_max : `int`</span>
+<span class="sd">            - number_adjustment_spectrogram : `int`</span>
+<span class="sd">            - spectro_duration : `int`</span>
+<span class="sd">            - zscore_duration : `float` or `str`</span>
+<span class="sd">            - HPfilter_min_freq : `int`</span>
+<span class="sd">            - sensitivity_dB : `int`</span>
+<span class="sd">            - peak_voltage : `float`</span>
+<span class="sd">            - spectro_normalization : `str`</span>
+<span class="sd">            - data_normalization : `str`</span>
+<span class="sd">            - gain_dB : `int`</span>
+<span class="sd">        If additional information is given, it will be ignored. Note that if there is an `analysis/analysis_sheet.csv` file, it will</span>
+<span class="sd">        always have the priority.</span>
+<span class="sd">    batch_number : `int`, optional, keyword_only</span>
+<span class="sd">        The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).</span>
+<span class="sd">    local : `bool`, optional, keyword_only</span>
+<span class="sd">        Indicates whether or not the program is run locally. If it is the case, it will not create jobs and will handle the paralelisation</span>
+<span class="sd">        alone. The default is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -106,56 +157,6 @@
         <span class="n">batch_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">local</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.</span>
-
-<span class="sd">        The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:</span>
-<span class="sd">            - Use the existing `analysis/analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that</span>
-<span class="sd">            when using this file, some attributes will be locked in read-only mode.</span>
-<span class="sd">            - Fill the `analysis_params` argument. More info on the expected value below.</span>
-<span class="sd">            - Don&#39;t initialize the attributes in the constructor, and assign their values manually.</span>
-
-<span class="sd">        In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, `analysis/analysis_sheet.csv`</span>
-<span class="sd">        will be written at the end of the `Spectrogram.initialize()` method.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dataset_path : `str`</span>
-<span class="sd">            The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</span>
-<span class="sd">        sr_analysis : `int`, keyword-only</span>
-<span class="sd">            The sample rate used for the generation of the spectrograms.</span>
-<span class="sd">        coordinates : `str` or `list` or `tuple`, optional, keyword-only</span>
-<span class="sd">            The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `raw/auxiliary`,</span>
-<span class="sd">            otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</span>
-<span class="sd">        osmose_group_name : `str`, optional, keyword-only</span>
-<span class="sd">            The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.</span>
-<span class="sd">            Will not work on Windows.</span>
-<span class="sd">        analysis_params : `dict`, optional, keyword-only</span>
-<span class="sd">            If `analysis/analysis_sheet.csv` does not exist, the analysis parameters can be submitted in the form of a dict,</span>
-<span class="sd">            with keys matching what is expected:</span>
-<span class="sd">                - nfft : `int`</span>
-<span class="sd">                - window_size : `int`</span>
-<span class="sd">                - overlap : `int`</span>
-<span class="sd">                - colormap : `str`</span>
-<span class="sd">                - zoom_level : `int`</span>
-<span class="sd">                - dynamic_min : `int`</span>
-<span class="sd">                - dynamic_max : `int`</span>
-<span class="sd">                - number_adjustment_spectrogram : `int`</span>
-<span class="sd">                - spectro_duration : `int`</span>
-<span class="sd">                - zscore_duration : `float` or `str`</span>
-<span class="sd">                - HPfilter_min_freq : `int`</span>
-<span class="sd">                - sensitivity_dB : `int`</span>
-<span class="sd">                - peak_voltage : `float`</span>
-<span class="sd">                - spectro_normalization : `str`</span>
-<span class="sd">                - data_normalization : `str`</span>
-<span class="sd">                - gain_dB : `int`</span>
-<span class="sd">            If additional information is given, it will be ignored. Note that if there is an `analysis/analysis_sheet.csv` file, it will</span>
-<span class="sd">            always have the priority.</span>
-<span class="sd">        batch_number : `int`, optional, keyword_only</span>
-<span class="sd">            The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).</span>
-<span class="sd">        local : `bool`, optional, keyword_only</span>
-<span class="sd">            Indicates whether or not the program is run locally. If it is the case, it will not create jobs and will handle the paralelisation</span>
-<span class="sd">            alone. The default is False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">dataset_path</span><span class="o">=</span><span class="n">dataset_path</span><span class="p">,</span>
             <span class="n">gps_coordinates</span><span class="o">=</span><span class="n">gps_coordinates</span><span class="p">,</span>

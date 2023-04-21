@@ -22,6 +22,39 @@ from OSmOSE.config import *
 
 
 class Dataset:
+    """
+    Super class used to create dataset compatible with the rest of the package.
+
+    A dataset is primarily identified by the audio files located in a folder whose name is the dataset name.
+    The files can be anywhere in this folder, but all audio files will be moved to the `data/audio/original` 
+    subfolder when the build() method is called.
+    There should be a `timestamp.csv` file, which includes the name of the file and the associated timestamp, 
+    in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.
+
+    This file can be created using the `OSmOSE.write_timestamp` function.
+
+    Parameters
+    ----------
+    dataset_path : `str`
+        The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.
+
+    gps_coordinates : `str` or `list` or `Tuple`, optional, keyword-only
+        The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `data/auxiliary`,
+        otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.
+
+    owner_group : `str`, optional, keyword-only
+        The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
+        Will not work on Windows.
+
+    original_folder : `str`, optional, keyword-only
+        The path to the folder containing the original audio files. It can be set right away, passed in the build() function or automatically detected.
+
+    Example
+    -------
+    >>> from pathlib import Path
+    >>> from OSmOSE import Dataset
+    >>> dataset = Dataset(Path("home","user","my_dataset"), coordinates = [49.2, -5], owner_group = "gosmose")
+    """
     def __init__(
         self,
         dataset_path: str,
@@ -30,38 +63,6 @@ class Dataset:
         owner_group: str = None,
         original_folder: str = None,
     ) -> None:
-        """Super class used to create dataset compatible with the rest of the package.
-
-        A dataset is primarily identified by the audio files located in a folder whose name is the dataset name.
-        The files can be anywhere in this folder, but all audio files will be moved to the `data/audio/original` 
-        subfolder when the build() method is called.
-        There should be a `timestamp.csv` file, which includes the name of the file and the associated timestamp, 
-        in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.
-
-        This file can be created using the `OSmOSE.write_timestamp` function.
-
-        Parameters
-        ----------
-        dataset_path : `str`
-            The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.
-
-        gps_coordinates : `str` or `list` or `Tuple`, optional, keyword-only
-            The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `data/auxiliary`,
-            otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.
-
-        owner_group : `str`, optional, keyword-only
-            The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
-            Will not work on Windows.
-
-        original_folder : `str`, optional, keyword-only
-            The path to the folder containing the original audio files. It can be set right away, passed in the build() function or automatically detected.
-
-        Example
-        -------
-        >>> from pathlib import Path
-        >>> from OSmOSE import Dataset
-        >>> dataset = Dataset(Path("home","user","my_dataset"), coordinates = [49.2, -5], owner_group = "gosmose")
-        """
         self.__path = Path(dataset_path)
         self.__name = self.__path.stem
         self.owner_group = owner_group
