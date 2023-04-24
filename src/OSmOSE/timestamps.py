@@ -70,7 +70,7 @@ def write_timestamp(
             The first element is the first character of the date, and the second is the last.
     """
     # TODO: extension-agnostic
-    list_audio_file = sorted([file for file in Path(audio_path).glob("*.wav")])
+    list_audio_file = sorted([file for file in Path(audio_path).glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")])
 
     if len(list_audio_file) == 0:
         print(

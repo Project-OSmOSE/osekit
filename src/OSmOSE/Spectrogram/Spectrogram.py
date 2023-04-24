@@ -554,7 +554,7 @@ class Spectrogram(Dataset):
             self.dataset_sr = dataset_sr
 
         self.path_input_audio_file = self._get_original_after_build()
-        list_wav_withEvent_comp = sorted(self.path_input_audio_file.glob("*wav"))
+        list_wav_withEvent_comp = sorted(self.path_input_audio_file.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
 
         if batch_ind_max == -1:
             batch_ind_max = len(list_wav_withEvent_comp)
@@ -592,7 +592,7 @@ class Spectrogram(Dataset):
             and not force_init
         ):
             audio_file_count = pd.read_csv(audio_metadata_path)["audio_file_count"][0]
-            if len(list(audio_metadata_path.parent.glob("*.wav")) == audio_file_count):
+            if len(list(audio_metadata_path.parent.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")) == audio_file_count):
                 print(
                     "It seems these spectrogram parameters are already initialized. If it is an error or you want to rerun the initialization, add the `force_init` argument."
                 )
@@ -907,7 +907,7 @@ class Spectrogram(Dataset):
             raise FileNotFoundError("Failed to write adjust_metadata.csv")
 
     def audio_file_list_csv(self) -> Path:
-        list_audio = list(self.audio_path.glob("*.wav"))
+        list_audio = list(self.audio_path.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
         csv_path = self.audio_path.joinpath(f"wav_list_{len(list_audio)}.csv")
 
         if csv_path.exists():

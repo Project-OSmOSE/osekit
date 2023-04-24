@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from OSmOSE.utils import read_header, check_n_files, make_path, set_umask
+from OSmOSE.utils import read_header, check_n_files, make_path, set_umask, is_audio
 from OSmOSE.timestamps import write_timestamp
 from OSmOSE.config import *
 
@@ -559,7 +559,7 @@ class Dataset:
         for path, _, files in os.walk(self.path):
             for f in files:
                 if not Path(f).parent == "original":
-                    if f.endswith(".wav"):
+                    if is_audio(f):
                         audio_files.append(Path(path,f))
                     elif "timestamp.csv" in f:
                         timestamp_files.append(Path(path,f))
@@ -583,35 +583,7 @@ class Dataset:
                 self.path.joinpath(audio.parent).rmdir()
 
         return path_raw_audio.joinpath("original")
-        # if any(
-        #     file.endswith(".wav") for file in os.listdir(self.path)
-        # ):  # If there are audio files in the dataset folder
-        #     make_path(path_raw_audio.joinpath("original"), mode=DPDEFAULT)
-
-        #     for audiofile in os.listdir(self.path):
-        #         if audiofile.endswith(".wav"):
-        #             self.path.joinpath(audiofile).rename(
-        #                 path_raw_audio.joinpath("original", audiofile)
-        #             )
-        #     return path_raw_audio.joinpath("original")
-        # elif path_raw_audio.exists():
-        #     if path_raw_audio.joinpath("original").is_dir():
-        #         return path_raw_audio.joinpath("original")
-        #     elif len(list(path_raw_audio.iterdir())) == 1:
-        #         return path_raw_audio.joinpath(next(path_raw_audio.iterdir()))
-        # elif (
-        #     len(next(os.walk(self.path))[1]) == 1
-        # ):  # If there is exactly one folder in the dataset folder
-        #     make_path(path_raw_audio, mode=DPDEFAULT)
-        #     orig_folder = self.path.joinpath(next(os.walk(self.path))[1][0])
-        #     new_path = orig_folder.rename(path_raw_audio.joinpath(orig_folder.name))
-        #     return new_path
-
-
-        # else:
-        #     raise ValueError(
-        #         f"No folder has been found in {path_raw_audio}. Please create the raw audio file folder and try again."
-        #     )
+        
 
     def _get_original_after_build(self) -> Path:
         """Find the original folder path after the dataset has been built.
