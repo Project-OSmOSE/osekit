@@ -77,7 +77,7 @@ def write_timestamp(
         else:
             offset = [int(offsets), 0]
     # TODO: extension-agnostic
-    list_audio_file = sorted([file for file in Path(audio_path).glob("*.wav")])
+    list_audio_file = sorted([file for file in Path(audio_path).glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")])
 
     if len(list_audio_file) == 0:
         print(
