@@ -8,6 +8,7 @@ from typing import Tuple, Union, Literal
 from math import log10
 from pathlib import Path
 import multiprocessing as mp
+from filelock import FileLock
 
 import soundfile as sf
 import pandas as pd
@@ -954,10 +955,22 @@ class Spectrogram(Dataset):
 
     # region On cluster
 
-    def preprocess_file(self, audio_file: Path, *args):
+    def preprocess_file(self, audio_file: Path, *, last_file_behavior: Literal["pad","truncate","discard"] = "pad", merge_files: bool = True, write_file: bool = False):
+        """Preprocess an audio file to prepare the spectrogram creation.
+        
+        Parameters
+        ----------
+            audio_file: `pathlib.Path`
+                The path to the original audio file
+            merge_files: `bool`, optional, keyword-only
+                Whether the files should be merged if the durations overlap. If True, will raise an error if the timestamps between two files are not continuous.
+                If False, will raise an error if the spectro_duration is greater than the original audio file duration. Default is True.
+            write_file: `bool`, optional, keyword-only
+                If set to True, will write the preprocessed audio file to the output folder. Else, will hold it in memory. Default is False.
+                """
         self.__build_path()
 
-        orig_path = self.path_input_audio_file.joinpath("old_timestamp.csv") if self.path_input_audio_file.joinpath("old_timestamp.csv").exists() else self.path_input_audio_file.joinpath("timestamp.csv")
+        orig_path = self.path_input_audio_file.joinpath1("old_timestamp.csv") if self.path_input_audio_file.joinpath("old_timestamp.csv").exists() else self.path_input_audio_file.joinpath("timestamp.csv")
         orig_timestamp_file = pd.read_csv(
             orig_path,
             header=None,
@@ -969,6 +982,8 @@ class Spectrogram(Dataset):
             header=None,
             names=["filename", "timestamp", "timezone"],
         )
+
+        metadata = pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"))
 
         files_to_load = [audio_file]
         output_files = []
@@ -1010,135 +1025,37 @@ class Spectrogram(Dataset):
             k+=1
         
         offset_end = (end + d1 - N0 + self.spectro_duration).seconds
-
         
-        fileinfo = sf.info(audio_file)
-        sr_origin = fileinfo.samplerate
-        #! RESAMPLING
-        resample_job_id_list = []
-        processes = []
-        resample_done = False
-
-        if self.sr_analysis != sr_origin:
-            resample_done = True
-            shutil.copy(self.path_input_audio_file.joinpath("timestamp.csv"), self.audio_path.joinpath("timestamp.csv"))
-            resample(input_dir=None)
-            self.jb.build_job_file(
-                script_path=Path(inspect.getfile(resample)).resolve(),
-                script_args=f"--input-dir {self.path_input_audio_file} --target-sr {self.sr_analysis} --ind-min {i_min} --ind-max {i_max} --output-dir {self.audio_path}",
-                jobname="OSmOSE_resample",
-                preset="low",
-                logdir=self.path.joinpath("log")
-            )
+        audio_file_origin_duration = metadata["audio_file_origin_duration"][0]
 
         #! RESHAPING
-        # Reshape audio files to fit the maximum spectrogram size, whether it is greater or smaller.
-        reshape_job_id_list = []
-
-        if self.spectro_duration != int(audio_file_origin_duration):
-            # We might reshape the files and create the folder. Note: reshape function might be memory-heavy and deserve a proper qsub job.
-            if self.spectro_duration > int(
-                audio_file_origin_duration
-            ) and reshape_method in ["none", "legacy"]:
-                raise ValueError(
-                    "Spectrogram size cannot be greater than file duration. If you want to automatically reshape your audio files to fit the spectrogram size, consider setting the reshape method to 'reshape'."
-                )
-
-            print(
-                f"Automatically reshaping audio files to fit the spectro duration value. Files will be {self.spectro_duration} seconds long."
+        # We might reshape the files and create the folder. Note: reshape function might be memory-heavy and deserve a proper qsub job.
+        if self.spectro_duration > int(
+            audio_file_origin_duration
+        ) and not merge_files:
+            raise ValueError(
+                "Spectrogram size cannot be greater than file duration when not merging files."
             )
-            input_files = self.audio_path if resample_done else self.path_input_audio_file
 
-            nb_reshaped_files = (
-                audio_file_origin_duration * audio_file_count
-            ) / self.spectro_duration
-            metadata["audio_file_count"] = nb_reshaped_files
-            next_offset_beginning = 0
-            offset_end = 0
-            i_max = -1
+        print(
+            f"Automatically reshaping audio files to fit the spectro duration value. Files will be {self.spectro_duration} seconds long."
+        )
 
-            for batch in range(self.batch_number):
-                if i_max >= len(self.list_wav_to_process) - 1:
-                    continue
-
-                offset_beginning = next_offset_beginning
-                next_offset_beginning = 0
-
-                i_min = i_max + (1 if not offset_beginning else 0)
-                i_max = (
-                    i_min + batch_size
-                    if batch < self.batch_number - 1
-                    and i_min + batch_size < len(self.list_wav_to_process)
-                    else len(self.list_wav_to_process) - 1
-                )  # If it is the last batch, take all files
-
-                while (
-                    (
-                        (i_max - i_min + 1) * audio_file_origin_duration
-                        - offset_end
-                        - offset_beginning  # Determines if the offset would require more than one file
-                    )
-                    % self.spectro_duration
-                    > audio_file_origin_duration
-                    and i_max < len(self.list_wav_to_process)
-                ) or (
-                    i_max - i_min + offset_end - offset_beginning + 1
-                ) * audio_file_origin_duration < self.spectro_duration:
-                    i_max += 1
-
-                last_file_behavior = (
-                    "pad"
-                    if batch == self.batch_number - 1
-                    or i_max == len(self.list_wav_to_process) - 1
-                    else "discard"
-                )
-
-                offset_end = (
-                    (i_max - i_min + 1) * audio_file_origin_duration
-                    - offset_beginning
-                ) % self.spectro_duration
-                if offset_end:
-                    next_offset_beginning = audio_file_origin_duration - offset_end
-                else:
-                    offset_end = 0  # ? ack
-
-                if self.__local:
-                    process = mp.Process(
-                        target=reshape,
-                        kwargs={
-                            "input_files": input_files,
-                            "chunk_size": self.spectro_duration,
-                            "output_dir_path": self.audio_path,
-                            "offset_beginning": int(offset_beginning),
-                            "offset_end": int(offset_end),
-                            "batch_ind_min": i_min,
-                            "batch_ind_max": i_max,
-                            "last_file_behavior": last_file_behavior,
-                        },
-                    )
-
-                    process.start()
-                    processes.append(process)
-                else:
-                    self.jb.build_job_file(
-                        script_path=Path(inspect.getfile(reshape)).resolve(),
-                        script_args=f"--input-files {input_files} --chunk-size {self.spectro_duration} --ind-min {i_min}\
-                                    --ind-max {i_max} --output-dir {self.audio_path} --offset-beginning {int(offset_beginning)} --offset-end {int(offset_end)}\
-                                    --last-file-behavior {last_file_behavior} {'--force' if force_init else ''} {'--overwrite' if resample_done else ''}",
-                        jobname="OSmOSE_reshape_py",
-                        preset="low",
-                        logdir=self.path.joinpath("log")
-                    )
-
-                    job_id = self.jb.submit_job(dependency=norma_job_id_list)
-                    reshape_job_id_list += job_id
-            self.pending_jobs = reshape_job_id_list
-
-            for process in processes:
-                process.join()
+        output = reshape(
+            input_files=files_to_load, 
+            chunk_size=self.spectro_duration,
+            target_sr=self.sr_analysis,
+            output_dir_path=self.audio_path,
+            offset_beginning=offset_beginning,
+            offset_end=offset_end,
+            last_file_behavior=last_file_behavior,
+            write_output=write_file
+            )
+        
+        return output
 
     def process_file(
-        self, audio_file: Union[str, Path], *, adjust: bool = False, save_matrix: bool = False
+        self, audio_file: Union[str, Path], *, adjust: bool = False, save_matrix: bool = False, last_file_behavior: Literal["pad","truncate","discard"] = "pad", merge_files: bool = True, write_audio_file: bool = False
     ) -> None:
         """Read an audio file and generate the associated spectrogram.
 
@@ -1199,30 +1116,46 @@ class Spectrogram(Dataset):
             ]["std_avg"].values[0]
 
         #! File processing
-        data, sample_rate = safe_read(self.audio_path.joinpath(audio_file))
+        audio_data_list = self.preprocess_file(audio_file=audio_file, last_file_behavior=last_file_behavior, merge_files=merge_files, write_file=write_audio_file)
 
-        if self.data_normalization == "instrument":
-            data = (
-                (data * self.peak_voltage)
-                / self.sensitivity
-                / 10 ** (self.gain_dB / 20)
+        # audio_data_list can be a list of data or a list of filepath, if the audio files have been written.
+        if write_audio_file:
+            audio_data_list = [(safe_read(audio_f)[0],audio_f) for audio_f in audio_data_list]
+
+        for data_tuple in audio_data_list:
+            data = data_tuple[0]
+            outfilename = data_tuple[1]
+            output_file = self.path_output_spectrogram.joinpath(outfilename)
+
+            lock = FileLock(str(output_file) + ".lock")
+            lock.acquire(blocking=False)
+
+            if next(self.path_output_spectrogram.glob(f"{output_file.stem}*"), None) is not None:
+                continue
+
+            if self.data_normalization == "instrument":
+                data = (
+                    (data * self.peak_voltage)
+                    / self.sensitivity
+                    / 10 ** (self.gain_dB / 20)
+                )
+
+            bpcoef = signal.butter(
+                20,
+                np.array([self.HPfilter_min_freq, self.sr_analysis / 2 - 1]),
+                fs=self.sr_analysis,
+                output="sos",
+                btype="bandpass",
             )
+            data = signal.sosfilt(bpcoef, data)
 
-        bpcoef = signal.butter(
-            20,
-            np.array([self.HPfilter_min_freq, sample_rate / 2 - 1]),
-            fs=sample_rate,
-            output="sos",
-            btype="bandpass",
-        )
-        data = signal.sosfilt(bpcoef, data)
+            if adjust:
+                make_path(self.path_output_spectrogram, mode=DPDEFAULT)
 
-        if adjust:
-            make_path(self.path_output_spectrogram, mode=DPDEFAULT)
+            self.gen_tiles(data=data, sample_rate=self.sr_analysis, output_file=output_file)
 
-        output_file = self.path_output_spectrogram.joinpath(audio_file)
-
-        self.gen_tiles(data=data, sample_rate=sample_rate, output_file=output_file)
+            lock.release()
+            os.remove(str(output_file) + ".lock")
 
     def gen_tiles(self, *, data: np.ndarray, sample_rate: int, output_file: Path):
         """Generate spectrogram tiles corresponding to the zoom levels.

@@ -1,3 +1,3 @@
-from OSmOSE.spectro import Spectrogram
+from OSmOSE.spectrogram import Spectrogram
 
 __all__ = ["Spectrogram"]
