@@ -23,13 +23,8 @@ Attributes
 
 .. autoapisummary::
 
-   OSmOSE.timestamps.__converter
    OSmOSE.timestamps.argparser
 
-
-.. py:data:: __converter
-
-   
 
 .. py:function:: convert_template_to_re(date_template: str) -> str
 

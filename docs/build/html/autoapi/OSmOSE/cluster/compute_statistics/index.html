@@ -1,94 +1,84 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OSmOSE.cluster.compute_statistics &mdash; OSmOSE 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../../_static/js/theme.js"></script>
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>OSmOSE.cluster.compute_statistics &#8212; OSmOSE 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+
+    
+    
+     
+        <script src="../../../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../../../_static/cloud.js"></script>
+    
+
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="OSmOSE.cluster.resample" href="../resample/index.html" />
     <link rel="prev" title="OSmOSE.cluster.audio_reshaper" href="../audio_reshaper/index.html" /> 
-</head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../resample/index.html" title="OSmOSE.cluster.resample"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../audio_reshaper/index.html" title="OSmOSE.cluster.audio_reshaper"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../index.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../index.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></a></li> 
+      </ul>
+    </div>
+    </div>
+  
 
-          
-          
-          <a href="../../../../index.html" class="icon icon-home">
-            OSmOSE
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">OSmOSE</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster</span></code></a></li>
-      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../../../../_sources/autoapi/OSmOSE/cluster/compute_statistics/index.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <section id="module-OSmOSE.cluster.compute_statistics">
-<span id="osmose-cluster-compute-statistics"></span><h1><a class="reference internal" href="#module-OSmOSE.cluster.compute_statistics" title="OSmOSE.cluster.compute_statistics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></a><a class="headerlink" href="#module-OSmOSE.cluster.compute_statistics" title="Permalink to this heading"></a></h1>
+<span id="osmose-cluster-compute-statistics"></span><h1><a class="reference internal" href="#module-OSmOSE.cluster.compute_statistics" title="OSmOSE.cluster.compute_statistics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></a><a class="headerlink" href="#module-OSmOSE.cluster.compute_statistics" title="Permalink to this heading">¶</a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h3>
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.cluster.compute_statistics.Write_zscore_norma_params" title="OSmOSE.cluster.compute_statistics.Write_zscore_norma_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Write_zscore_norma_params</span></code></a>(*, input_dir, output_file, ...)</p></td>
@@ -98,7 +88,7 @@
 </table>
 </section>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h3>
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.cluster.compute_statistics.parser" title="OSmOSE.cluster.compute_statistics.parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parser</span></code></a></p></td>
@@ -108,7 +98,7 @@
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="OSmOSE.cluster.compute_statistics.Write_zscore_norma_params">
-<span class="sig-prename descclassname"><span class="pre">OSmOSE.cluster.compute_statistics.</span></span><span class="sig-name descname"><span class="pre">Write_zscore_norma_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HPfilter_min_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/OSmOSE/cluster/compute_statistics.html#Write_zscore_norma_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.cluster.compute_statistics.Write_zscore_norma_params" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.cluster.compute_statistics.</span></span><span class="sig-name descname"><span class="pre">Write_zscore_norma_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HPfilter_min_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/OSmOSE/cluster/compute_statistics.html#Write_zscore_norma_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.cluster.compute_statistics.Write_zscore_norma_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the normalization parameters for the Zscore normalisation of the dataset and writes it to a csv.</p>
 <p>This function can also be called from the command line. Type <cite>get_zscore_params.py -h</cite> to see the list of arguments.
 Will write the mean and standard deviation for each file in a .csv. To get the parameters, you need to read the csv and
@@ -128,7 +118,7 @@ compute the means of each columns.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="OSmOSE.cluster.compute_statistics.parser">
-<span class="sig-prename descclassname"><span class="pre">OSmOSE.cluster.compute_statistics.</span></span><span class="sig-name descname"><span class="pre">parser</span></span><a class="headerlink" href="#OSmOSE.cluster.compute_statistics.parser" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.cluster.compute_statistics.</span></span><span class="sig-name descname"><span class="pre">parser</span></span><a class="headerlink" href="#OSmOSE.cluster.compute_statistics.parser" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -136,34 +126,108 @@ compute the means of each columns.</p>
 </section>
 
 
-           </div>
+            <div class="clearer"></div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../audio_reshaper/index.html" class="btn btn-neutral float-left" title="OSmOSE.cluster.audio_reshaper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../resample/index.html" class="btn btn-neutral float-right" title="OSmOSE.cluster.resample" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Rumengol.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
         </div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="../../../../index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></a><ul>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a><ul>
+<li><a class="reference internal" href="#OSmOSE.cluster.compute_statistics.Write_zscore_norma_params"><code class="docutils literal notranslate"><span class="pre">Write_zscore_norma_params()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.cluster.compute_statistics.parser"><code class="docutils literal notranslate"><span class="pre">parser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-</body>
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="../audio_reshaper/index.html"
+                          title="Previous page">&larr; <code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.audio_reshaper</span></code></a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="../resample/index.html"
+                          title="Next page">&rarr; <code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.resample</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../../_sources/autoapi/OSmOSE/cluster/compute_statistics/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../resample/index.html" title="OSmOSE.cluster.resample"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../audio_reshaper/index.html" title="OSmOSE.cluster.audio_reshaper"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../index.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../index.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.cluster.compute_statistics</span></code></a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Rumengol.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
 </html>

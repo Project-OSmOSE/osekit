@@ -12,10 +12,6 @@ Module Contents
 
    
 
-.. py:data:: __global_path_dict
-
-   
-
 .. py:data:: OSMOSE_PATH
 
    
