@@ -1,71 +1,67 @@
+
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OSmOSE.Dataset &mdash; OSmOSE 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OSmOSE.Dataset &#8212; OSmOSE 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+
+    
+    
+     
+        <script src="../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../_static/cloud.js"></script>
+    
+
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-</head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OSmOSE.Dataset</a></li> 
+      </ul>
+    </div>
+    </div>
+  
 
-          
-          
-          <a href="../../index.html" class="icon icon-home">
-            OSmOSE
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
-</ul>
-
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">OSmOSE</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">OSmOSE.Dataset</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <h1>Source code for OSmOSE.Dataset</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">stat</span>
@@ -78,9 +74,9 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">grp</span>
 
-    <span class="n">skip_perms</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">__skip_perms</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="n">skip_perms</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">__skip_perms</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -91,6 +87,39 @@
 
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Super class used to create dataset compatible with the rest of the package.</span>
+
+<span class="sd">    A dataset is primarily identified by the audio files located in a folder whose name is the dataset name.</span>
+<span class="sd">    The files can be anywhere in this folder, but all audio files will be moved to the `data/audio/original` </span>
+<span class="sd">    subfolder when the build() method is called.</span>
+<span class="sd">    There should be a `timestamp.csv` file, which includes the name of the file and the associated timestamp, </span>
+<span class="sd">    in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.</span>
+
+<span class="sd">    This file can be created using the `OSmOSE.write_timestamp` function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset_path : `str`</span>
+<span class="sd">        The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</span>
+
+<span class="sd">    gps_coordinates : `str` or `list` or `Tuple`, optional, keyword-only</span>
+<span class="sd">        The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `data/auxiliary`,</span>
+<span class="sd">        otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</span>
+
+<span class="sd">    owner_group : `str`, optional, keyword-only</span>
+<span class="sd">        The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.</span>
+<span class="sd">        Will not work on Windows.</span>
+
+<span class="sd">    original_folder : `str`, optional, keyword-only</span>
+<span class="sd">        The path to the folder containing the original audio files. It can be set right away, passed in the build() function or automatically detected.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">    &gt;&gt;&gt; from OSmOSE import Dataset</span>
+<span class="sd">    &gt;&gt;&gt; dataset = Dataset(Path(&quot;home&quot;,&quot;user&quot;,&quot;my_dataset&quot;), coordinates = [49.2, -5], owner_group = &quot;gosmose&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -99,38 +128,6 @@
         <span class="n">owner_group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">original_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Super class used to create dataset compatible with the rest of the package.</span>
-
-<span class="sd">        A dataset is primarily identified by the audio files located in a folder whose name is the dataset name.</span>
-<span class="sd">        The files can be anywhere in this folder, but all audio files will be moved to the `data/audio/original` </span>
-<span class="sd">        subfolder when the build() method is called.</span>
-<span class="sd">        There should be a `timestamp.csv` file, which includes the name of the file and the associated timestamp, </span>
-<span class="sd">        in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.</span>
-
-<span class="sd">        This file can be created using the `OSmOSE.write_timestamp` function.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dataset_path : `str`</span>
-<span class="sd">            The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</span>
-
-<span class="sd">        gps_coordinates : `str` or `list` or `Tuple`, optional, keyword-only</span>
-<span class="sd">            The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `data/auxiliary`,</span>
-<span class="sd">            otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</span>
-
-<span class="sd">        owner_group : `str`, optional, keyword-only</span>
-<span class="sd">            The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.</span>
-<span class="sd">            Will not work on Windows.</span>
-
-<span class="sd">        original_folder : `str`, optional, keyword-only</span>
-<span class="sd">            The path to the folder containing the original audio files. It can be set right away, passed in the build() function or automatically detected.</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
-<span class="sd">        &gt;&gt;&gt; from OSmOSE import Dataset</span>
-<span class="sd">        &gt;&gt;&gt; dataset = Dataset(Path(&quot;home&quot;,&quot;user&quot;,&quot;my_dataset&quot;), coordinates = [49.2, -5], owner_group = &quot;gosmose&quot;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="o">.</span><span class="n">stem</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner_group</span> <span class="o">=</span> <span class="n">owner_group</span>
@@ -142,7 +139,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">if</span> <span class="n">skip_perms</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__skip_perms</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="s2">&quot;It seems you are on a non-Unix operating system (probably Windows). The build_dataset() method will not work as intended and permission might be uncorrectly set.&quot;</span>
             <span class="p">)</span>
@@ -246,7 +243,7 @@
 
     <span class="nd">@owner_group</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">owner_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">skip_perms</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__skip_perms</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot set osmose group on a non-Unix operating system.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__group</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span>
@@ -330,7 +327,7 @@
         <span class="k">if</span> <span class="n">owner_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">owner_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner_group</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_perms</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">__skip_perms</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Setting OSmOSE permission to the dataset...&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">owner_group</span><span class="p">:</span>
                     <span class="n">gid</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">getgrnam</span><span class="p">(</span><span class="n">owner_group</span><span class="p">)</span><span class="o">.</span><span class="n">gr_gid</span>
@@ -590,7 +587,7 @@
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> ALL ABNORMAL FILES REMOVED ! you can now re-run the build() method to finish importing it on OSmOSE platform&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Dataset._find_or_create_original_folder"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset._find_or_create_original_folder">[docs]</a>    <span class="k">def</span> <span class="nf">_find_or_create_original_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_find_or_create_original_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gather all wav files in the original folder, and search for the corresponding timestamp.csv file.</span>
 
 <span class="sd">        Returns</span>
@@ -634,7 +631,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">audio</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">audio</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">rmdir</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
         <span class="c1"># if any(</span>
         <span class="c1">#     file.endswith(&quot;.wav&quot;) for file in os.listdir(self.path)</span>
         <span class="c1"># ):  # If there are audio files in the dataset folder</span>
@@ -665,7 +662,7 @@
         <span class="c1">#         f&quot;No folder has been found in {path_raw_audio}. Please create the raw audio file folder and try again.&quot;</span>
         <span class="c1">#     )</span>
 
-<div class="viewcode-block" id="Dataset._get_original_after_build"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset._get_original_after_build">[docs]</a>    <span class="k">def</span> <span class="nf">_get_original_after_build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_original_after_build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the original folder path after the dataset has been built.</span>
 
 <span class="sd">        Returns</span>
@@ -701,9 +698,9 @@
             <span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">audio_file_origin_duration</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">sr_origin</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_folder</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_folder</span>
 
-<div class="viewcode-block" id="Dataset.__str__"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_folder</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;metadata.csv&quot;</span><span class="p">))</span>
         <span class="n">list_display_metadata</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;sr_origin&quot;</span><span class="p">,</span>
@@ -717,34 +714,69 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">metadata</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">list_display_metadata</span><span class="p">:</span>
                 <span class="n">joined_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="n">joined_str</span></div></div>
+        <span class="k">return</span> <span class="n">joined_str</span></div>
 </pre></div>
 
-           </div>
+            <div class="clearer"></div>
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Rumengol.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
         </div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
 
-</body>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OSmOSE.Dataset</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Rumengol.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
 </html>

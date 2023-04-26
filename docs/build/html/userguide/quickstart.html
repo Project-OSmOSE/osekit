@@ -6,8 +6,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview: module code &#8212; OSmOSE 0.1.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Quickstart &#8212; OSmOSE 0.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/cloud.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -50,7 +51,7 @@
              >modules</a> &nbsp; &nbsp;</li>
     <li><a href="../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
 
-        <li class="nav-item nav-item-this"><a href="">Overview: module code</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Quickstart</a></li> 
       </ul>
     </div>
     </div>
@@ -61,23 +62,62 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="OSmOSE/Dataset.html">OSmOSE.Dataset</a></li>
-<li><a href="OSmOSE/Spectrogram.html">OSmOSE.Spectrogram</a></li>
-<li><a href="OSmOSE/cluster/audio_reshaper.html">OSmOSE.cluster.audio_reshaper</a></li>
-<li><a href="OSmOSE/cluster/compute_statistics.html">OSmOSE.cluster.compute_statistics</a></li>
-<li><a href="OSmOSE/cluster/resample.html">OSmOSE.cluster.resample</a></li>
-<li><a href="OSmOSE/job.html">OSmOSE.job</a></li>
-<li><a href="OSmOSE/timestamps.html">OSmOSE.timestamps</a></li>
-<li><a href="OSmOSE/utils.html">OSmOSE.utils</a></li>
-</ul>
+  <section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="basic-use">
+<h2>Basic Use<a class="headerlink" href="#basic-use" title="Permalink to this heading">¶</a></h2>
+<section id="build-a-dataset">
+<h3>Build a Dataset<a class="headerlink" href="#build-a-dataset" title="Permalink to this heading">¶</a></h3>
+<p>To work properly, OSmOSE requires a specific worktree which is flexible within limits. Luckily, it is able to create a workspace in a non-disruptive way. Transforming a folder containing audio files to an OSmOSE dataset is often the first step of any analysis.</p>
+<p>Assuming the folder my_dataset exists and contains only audio files with their date (year, month, day, hour, minute and seconds) included in their names. If that is not the case, you will need to first Generate timestamps.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">OSmOSE</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">path_to_dataset</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/home&quot;</span><span class="p">,</span><span class="s2">&quot;all_datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;my_dataset&quot;</span><span class="p">)</span>
+<span class="n">owner_group</span> <span class="o">=</span> <span class="s2">&quot;gosmose&quot;</span> <span class="c1"># linux-only</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">dataset_path</span><span class="o">=</span><span class="n">path_to_dataset</span><span class="p">,</span> <span class="n">owner_group</span><span class="o">=</span><span class="n">owner_group</span><span class="p">)</span>
+
+<span class="n">date_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">%m%y_%H%M%S&quot;</span> <span class="c1"># the date as it formatted in the audio file names</span>
+
+<span class="n">dataset</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">date_template</span><span class="o">=</span><span class="n">date_template</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will work for files with the name</p>
+</section>
+</section>
+</section>
+
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="../index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Quickstart</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#basic-use">Basic Use</a><ul>
+<li><a class="reference internal" href="#build-a-dataset">Build a Dataset</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/userguide/quickstart.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -122,7 +162,7 @@
              >modules</a> &nbsp; &nbsp;</li>
     <li><a href="../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
 
-        <li class="nav-item nav-item-this"><a href="">Overview: module code</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Quickstart</a></li> 
       </ul>
     </div>
     </div>

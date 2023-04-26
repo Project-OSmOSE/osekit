@@ -503,29 +503,6 @@ Classes
    .. py:property:: time_resolution
 
 
-   .. py:method:: __build_path(adjust: bool = False, dry: bool = False)
-
-      
-      Build some internal paths according to the expected architecture and might create them.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      ..
-          !! processed by numpydoc !!
-
    .. py:method:: check_spectro_size()
 
       
