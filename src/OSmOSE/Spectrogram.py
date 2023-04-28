@@ -24,7 +24,6 @@ from OSmOSE.Dataset import Dataset
 from OSmOSE.utils import safe_read, make_path, set_umask
 from OSmOSE.config import *
 
-
 class Spectrogram(Dataset):
     """
     Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.
@@ -81,7 +80,7 @@ class Spectrogram(Dataset):
         self,
         dataset_path: str,
         *,
-        dataset_sr: int,
+        dataset_sr: int = 0,
         gps_coordinates: Union[str, list, tuple] = None,
         owner_group: str = None,
         analysis_params: dict = None,

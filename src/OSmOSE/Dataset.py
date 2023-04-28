@@ -9,9 +9,9 @@ from statistics import fmean as mean
 try:
     import grp
 
-    __skip_perms = False
+    skip_perms = False
 except ModuleNotFoundError:
-    __skip_perms = True
+    skip_perms = True
 
 import pandas as pd
 import numpy as np
@@ -74,7 +74,7 @@ class Dataset:
 
         self.list_abnormal_filenames = []
 
-        if __skip_perms:
+        if skip_perms:
             print(
                 "It seems you are on a non-Unix operating system (probably Windows). The build_dataset() method will not work as intended and permission might be uncorrectly set."
             )
@@ -178,7 +178,7 @@ class Dataset:
 
     @owner_group.setter
     def owner_group(self, value):
-        if __skip_perms:
+        if skip_perms:
             print("Cannot set osmose group on a non-Unix operating system.")
             self.__group = None
             return
@@ -265,7 +265,7 @@ class Dataset:
         if owner_group is None:
             owner_group = self.owner_group
 
-        if not __skip_perms:
+        if not skip_perms:
                 print("\nSetting OSmOSE permission to the dataset...")
                 if owner_group:
                     gid = grp.getgrnam(owner_group).gr_gid
