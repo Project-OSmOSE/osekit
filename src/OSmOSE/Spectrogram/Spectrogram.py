@@ -26,7 +26,6 @@ from OSmOSE.Dataset import Dataset
 from OSmOSE.utils import safe_read, make_path, set_umask, from_timestamp, to_timestamp
 from OSmOSE.config import *
 
-
 class Spectrogram(Dataset):
     """
     Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.
