@@ -1120,6 +1120,7 @@ class Spectrogram(Dataset):
 
         self.gen_tiles(data=data, sample_rate=sample_rate, output_file=output_file, adjust=adjust)
 
+
     def gen_tiles(self, *, data: np.ndarray, sample_rate: int, output_file: Path, adjust: bool):
         """Generate spectrogram tiles corresponding to the zoom levels.
 

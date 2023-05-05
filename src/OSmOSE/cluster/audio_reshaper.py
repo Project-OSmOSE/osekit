@@ -17,27 +17,36 @@ from OSmOSE.config import *
 def substract_timestamps(
     input_timestamp: pd.DataFrame, files: List[str], index: int
 ) -> timedelta:
-    """Substracts two timestamp_list from the "timestamp" column of a dataframe at the indexes of files[i] and files[i-1] and returns the time delta between them
+    """Substracts the index + 1 timestamp by the index timestamp from the "timestamp" column of a dataframe.
+
+    Note that if you are trying to get the time between two OSmOSE files, the result is the difference between the start date of both files,
+    So you will need to substract the duration of the first file to get the desired time.
 
     Parameters:
     -----------
-        input_timestamp: the pandas DataFrame containing at least two columns: filename and timestamp
+        input_timestamp: pd.DataFrame
+            The pandas DataFrame containing at least two columns: filename and timestamp
 
-        files: the list of file names corresponding to the filename column of the dataframe
+        files: list(str)
+            The list of file names corresponding to the filename column of the dataframe
 
-        index: the index of the file whose timestamp will be substracted
+        index: int
+            The index of the file whose timestamp will be substracted
 
     Returns:
     --------
-        The time between the two timestamp_list as a datetime.timedelta object"""
+        delta: datetime.timedelta
+            The time between the two timestamps."""
 
-    if index == 0:
+    # If we are at the end of the list, then there is no next timestamp.
+    if index == len(files)-1:
         return timedelta(seconds=0)
 
     cur_timestamp: str = input_timestamp[input_timestamp["filename"] == files[index]][
         "timestamp"
     ].values[0]
     cur_timestamp: datetime = datetime.strptime(cur_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+
     next_timestamp: str = input_timestamp[
         input_timestamp["filename"] == files[index + 1]
     ]["timestamp"].values[0]
@@ -124,6 +133,28 @@ def reshape(
     Returns:
     --------
         The list of the path of newly created audio files.
+
+    Example:
+    --------
+    Let us say we have audio files of 1 hour and 5 minutes in the directory "/path/to/my/audio" alongside a timestamp.csv file. They are all continuous chronologically and thus can be fused together.
+
+    ### Segment them in files of 10 minutes.
+    >>> reshape(input_dir="/path/to/my/audio", chunk_size=600, output_dir="/path/to/my/reshaped_audio")
+    
+    Here, the output directory will be filled with 10 minutes files whose names are their start date. The last 5 minutes of the first file will be
+    fused with the first 5 minutes of the second file to match the desired size. If the remaining audio data after all the files are processed is 
+    shorter than 10 minutes, a last file will be created with the remaining data padded with as much silence as is needed to reach 10 minutes.
+
+    ### Shorten them to 1 hour and discard the extra 5 minutes of each file
+    >>> reshape(input_dir="/path/to/my/audio", chunk_size=600, output_dir="/path/to/my/reshaped_audio", last_file_behavior="discard", merge_files=False)
+    
+    This will create 1 hour files from the original ones. They will not be fused together and 5 minutes of data will be discarded each time.
+
+    ### Replace the original files
+    >>> reshape(input_dir="/path/to/my/audio", chunk_size=600, output_dir="/path/to/my/audio", last_file_behavior="discard", overwrite=True, merge_files=False)
+    
+    This is the same as above, but now the output_dir is the same as input_dir. Since overwrite is True, the original files in input_dir will be overwritten by 
+    the reshaped files. If output_dir was not explicitly specified, then there would have been both original and reshaped files in the directory, even with overwrite = True.
     """
     set_umask()
     verbose = True
@@ -192,18 +223,19 @@ def reshape(
     previous_audio_data = np.empty(0)
     sample_rate = 0
     i = 0
+    # Beginning of the first file in batch
     t = math.ceil(
         sf.info(input_dir_path.joinpath(files[i])).duration
         * (batch_ind_min)
         / chunk_size
-    )
+    ) 
     proceed = force_reshape  # Default is False
 
     while i < len(files):
         audio_data, sample_rate = sf.read(input_dir_path.joinpath(files[i]))
         file_duration = len(audio_data)//sample_rate
         
-        if overwrite and not implicit_output and output_dir_path == input_dir_path and output_dir_path == input_dir_path and i<len(files)-1:
+        if overwrite and not implicit_output and output_dir_path == input_dir_path and i<len(files)-1:
             print(f"Deleting {files[i]}")
             input_dir_path.joinpath(files[i]).unlink()
 
