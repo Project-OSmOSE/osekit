@@ -27,7 +27,7 @@ def test_find_or_create_original_folder(input_dataset):
 
     folder2 = dataset._find_or_create_original_folder()
 
-    assert folder2 == input_dataset["orig_audio_dir"].with_name("unconventional_name")
+    assert folder2 == input_dataset["orig_audio_dir"].with_name("original")
 
 
 def test_error_build(input_dir: Path):

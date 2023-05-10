@@ -15,17 +15,17 @@
 
     [Job.Presets.low]
         queue = "sequentiel"
-        walltime = "12:00:00"
+        walltime = "01:00:00"
         ncpus = 1
-        mem = "10g"
+        mem = "1g"
         nodes = 1
 
     [Job.Presets.medium]
-    queue = "omp"
-    walltime = "12:00:00"
-    ncpus = 6
-    mem = "40g"
-    nodes = 1
+        queue = "omp"
+        walltime = "12:00:00"
+        ncpus = 6
+        mem = "40g"
+        nodes = 1
 
     [Job.Presets.high]
         queue = "omp"

@@ -60,7 +60,7 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
                 ),
                 None,
             )
-            if not ds_metadata_path:
+            if not ds_folder.joinpath(dataset_directory, OSMOSE_PATH.raw_audio, "original").exists() or not ds_metadata_path :
                 list_not_built_datasets.append(dataset_directory)
         else:
             list_unknown_datasets.append(dataset_directory)
@@ -74,7 +74,7 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
         [f"  - {dataset.name}" for dataset in list_unknown_datasets]
     )
     print(
-        f"""List of unreachable datasets (probably due to insufficient permissions:\n{unreachable_formatted}"""
+        f"""List of unreachable datasets (probably due to insufficient permissions) :\n{unreachable_formatted}"""
     )
 
 

@@ -74,14 +74,14 @@ if __name__ == "__main__":
         "--target-sr", "-sr", required=True, type=int, help="The target samplerate."
     )
     parser.add_argument(
-        "--ind-min",
+        "--batch-ind-min",
         "-min",
         type=int,
         default=0,
         help="The first file to consider. Default is 0.",
     )
     parser.add_argument(
-        "--ind-max",
+        "--batch-ind-max",
         "-max",
         type=int,
         default=-1,

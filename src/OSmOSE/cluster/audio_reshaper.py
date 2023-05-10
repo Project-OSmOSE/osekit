@@ -26,10 +26,12 @@ def reshape(
     last_file_behavior: Literal["truncate", "pad", "discard"] = "pad",
     offset_beginning: int = 0,
     offset_end: int = 0,
+    timestamp_path: Path = None,
     verbose: bool = False,
     overwrite: bool = False,
     force_reshape: bool = False,
-    write_output: bool = False
+    write_output: bool = False,
+    merge_files: bool = True
 ) -> List[str]:
     """Reshape all audio files in the folder to be of the specified duration. If chunk_size is superior to the base duration of the files, they will be fused according to their order in the timestamp.csv file in the same folder.
 
@@ -59,14 +61,8 @@ def reshape(
         last_file_behavior: `{"truncate","pad","discard"}, optional, keyword-only
             Tells the reshaper what to do with if the last data of the last file is too small to fill a whole file.
             This parameter is only active if `batch_ind_max` is `-1`
-            - `truncate` creates a truncated file with the remaining data, which will have a different duration than the others.
-            - `pad` creates a file of the same duration than the others, where the missing data is filled with 0.
-            - `discard` ignores the remaining data. The last seconds/minutes/hours of audio will be lost in the reshaping.
-        The default methodd is `pad`.
-
-        offset_beginning: `int`, optional, keyword-only
+        The default method is `pad`.
             The number of seconds that should be skipped in the first input file. When parallelising the reshaping,
-            it would mean that the beginning of the file is being processed by another job. Default is 0.
 
         offset_end: `int`, optional, keyword-only
             The number of seconds that should be ignored in the last input file. When parallelising the reshaping, it would mean that the end of this file is processed by another job.
@@ -82,8 +78,9 @@ def reshape(
         force_reshape: `bool`, optional, keyword-only
             Ignore all warnings and non-fatal errors while reshaping.
 
-        lock: `multiprocessing.lock`, optional, keyword-only
-            An optional lock when the reshaping is done locally in parallel.
+        merge_files: `bool`, optional, keyword-only
+            Whether to merge files when reshaping them. If set to False, then the chunk_size can only be smaller than the original duration, and the remaining
+            data will follow the last_file_behavior (default: pad). The default is True.
     Returns:
     --------
         The list of the path of newly created audio files.
@@ -123,15 +120,15 @@ def reshape(
             f"The input files must either be a valid folder path or a list of file path, not {str(input_dir_path)}."
         )
 
-    if not input_dir_path.joinpath("timestamp.csv").exists():
+    if not input_dir_path.joinpath("timestamp.csv").exists() and (not timestamp_path or not timestamp_path.exists()):
         raise FileNotFoundError(
-            f"The timestamp.csv file must be present in the directory {input_dir_path} and correspond to the audio files in the same location."
+            f"The timestamp.csv file must be present in the directory {input_dir_path} and correspond to the audio files in the same location, or be specified in the argument."
         )
 
     make_path(output_dir_path, mode=DPDEFAULT)
 
     input_timestamp = pd.read_csv(
-        input_dir_path.joinpath("timestamp.csv"),
+        timestamp_path if timestamp_path and timestamp_path.exists() else input_dir_path.joinpath("timestamp.csv"),
         header=None,
         names=["filename", "timestamp", "timezone"],
     )
@@ -181,6 +178,10 @@ def reshape(
 
     while i < len(files):
         audio_data, sample_rate = sf.read(input_dir_path.joinpath(files[i]))
+        file_duration = len(audio_data)//sample_rate
+
+        if not merge_files and file_duration < chunk_size:
+            raise ValueError("When not merging files, the file duration must be smaller than the target duration.")
         
         if overwrite and not implicit_output and output_dir_path == input_dir_path and output_dir_path == input_dir_path and i<len(files)-1:
             print(f"Deleting {files[i]}")
@@ -196,7 +197,13 @@ def reshape(
             i == len(files) - 1 and offset_end != 0 and not last_file_behavior == "pad"
         ):
             audio_data = audio_data[: int(len(audio_data) - (offset_end * sample_rate))]
+        elif previous_audio_data.size <= 1:
+            timestamp = to_timestamp(input_timestamp[input_timestamp["filename"] == files[i]][
+                "timestamp"
+            ].values[0])
 
+        if not merge_files and file_duration < chunk_size:
+            raise ValueError("When not merging files, the file duration must be smaller than the target duration.")
         # Need to check if size > 1 because numpy arrays are never empty urgh
         if previous_audio_data.size > 1:
             audio_data = np.concatenate((previous_audio_data, audio_data))
@@ -221,10 +228,45 @@ def reshape(
                 t += 1
                 audio_data = previous_audio_data
 
+                if not merge_files and len(audio_data) < chunk_size * sample_rate:
+                    previous_audio_data = np.empty(0)
+                    match last_file_behavior:
+                        case "truncate":
+                            output = audio_data
+                            audio_data = []
+                        case "pad":
+                            fill = np.zeros((chunk_size * sample_rate) - len(audio_data))
+                            output = np.concatenate((audio_data, fill))
+                            audio_data = []
+                        case "discard":
+                            audio_data = []
+                            break
+
+                    outfilename = output_dir_path.joinpath(
+                        f"{datetime.strftime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')[:-3].replace(':','-').replace('.','_')}.wav"
+                    )
+                    result.append(outfilename.name)
+
+                    timestamp_list.append(
+                        datetime.strftime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+                    )
+                    timestamp += timedelta(seconds=len(output))
+
+                    sf.write(outfilename, output, sample_rate, format="WAV", subtype="DOUBLE")
+                    os.chmod(outfilename, mode=FPDEFAULT)
+
+                    pad_text = f"Padded with {fill.size // sample_rate} seconds." if last_file_behavior == "pad" and fill.size > 0 else ""
+
+                    if verbose:
+                        print(
+                            f"{outfilename} written! File is {(len(output)/sample_rate)} seconds long. {pad_text}"
+                        )
+
             # If after we get out of the previous while loop we don't have any audio_data left, then we look at the next file.
             if len(audio_data) == 0:
                 i += 1
                 continue
+            
         #! AUDIO DURATION == CHUNK SIZE
         # Else if audio_data is already in the desired duration, output it
         if len(audio_data) == chunk_size * sample_rate:
@@ -244,13 +286,10 @@ def reshape(
                 previous_audio_data = np.empty(0)
             else:
                 # Check if the timestamp_list can safely be merged
-                if not (
-                    len(audio_data) - max_delta_interval * sample_rate
-                    < substract_timestamps(input_timestamp, files, i).seconds
-                    < len(audio_data) + max_delta_interval * sample_rate
-                ):
+                delta = substract_timestamps(input_timestamp, files, i).seconds - file_duration
+                if ( delta > max_delta_interval):
                     print(
-                        f"Warning: You are trying to merge two audio files that are not chronologically consecutive.\n{files[i-1]} starts at {input_timestamp[input_timestamp['filename'] == files[i-1]]['timestamp'].values[0]} and {files[i]} starts at {input_timestamp[input_timestamp['filename'] == files[i]]['timestamp'].values[0]}."
+                        f"""Warning: You are trying to merge two audio files that are not chronologically consecutive.\n{files[i]} ends at {to_timestamp(input_timestamp[input_timestamp['filename'] == files[i]]['timestamp'].values[0]) + timedelta(seconds=file_duration)} and {files[i+1]} starts at {to_timestamp(input_timestamp[input_timestamp['filename'] == files[i+1]]['timestamp'].values[0])}.\nThere is {delta} seconds of difference between the two files, which is over the maximum tolerance of {max_delta_interval} seconds."""
                     )
                     if (
                         not proceed and sys.__stdin__.isatty()
@@ -261,12 +300,17 @@ def reshape(
                         if "yes" in res.lower() or res == "":
                             proceed = True
                         else:
-                            sys.exit()
-                    elif not proceed and not sys.__stdin__.isatty():
-                        print(
+                            # This is meant to close the program with an error while still be user-friendly and test compliant.
+                            # Thus we disable the error trace just before raising it to avoid a long trace when the error is clearly identified.
+                            sys.tracebacklimit = 0 
+                            raise ValueError(
                             "Error: Cannot merge non-continuous audio files if force_reshape is false."
                         )
-                        sys.exit(1)
+                    elif not proceed and not sys.__stdin__.isatty():
+                        sys.tracebacklimit = 0 
+                        raise ValueError(
+                            "Error: Cannot merge non-continuous audio files if force_reshape is false."
+                        )
 
                 while len(audio_data) < chunk_size * sample_rate and i + 1 < len(files):
                     nextdata, next_sample_rate = sf.read(
@@ -315,12 +359,14 @@ def reshape(
             case "discard":
                 skip_last = True
 
-        if overwrite and not implicit_output and output_dir_path == input_dir_path:
-                        print(f"Deleting {files[i]}")
-                        input_dir_path.joinpath(files[i]).unlink()
         if not skip_last:
             write_file(output,timestamp, sample_rate)
 
+
+    for remaining_file in [f for f in files if input_dir_path.joinpath(f).exists()]:
+        if overwrite and not implicit_output and output_dir_path == input_dir_path:
+            print(f"Deleting {remaining_file}")
+            input_dir_path.joinpath(remaining_file).unlink()
 
     path_csv = output_dir_path.joinpath("timestamp.csv")
 
@@ -367,14 +413,14 @@ if __name__ == "__main__":
         help="The path to the directory to write reshaped files. Default is same as --input-files directory.",
     )
     parser.add_argument(
-        "--ind-min",
+        "--batch-ind-min",
         "-min",
         type=int,
         default=0,
         help="The first file of the list to be processed. Default is 0.",
     )
     parser.add_argument(
-        "--ind-max",
+        "--batch-ind-max",
         "-max",
         type=int,
         default=-1,
@@ -415,7 +461,6 @@ if __name__ == "__main__":
         "--force",
         "-f",
         action="store_true",
-        default=False,
         help="Ignore all warnings and non-fatal errors while reshaping.",
     )
     parser.add_argument(
@@ -423,6 +468,16 @@ if __name__ == "__main__":
         default="pad",
         help="Tells the program what to do with the remaining data that are shorter than the chunk size. Possible arguments are pad (the default), which pads with silence until the last file has the same length as the others; truncate to create a shorter file with only the leftover data; discard to not do anything with the last data and throw it away.",
     )
+    parser.add_argument(
+        "--timestamp-path",
+        default=None,
+        help="Path to the original timestamp file."
+    )
+    parser.add_argument(
+        "--no-merge",
+        action="store_false",
+        help="Don't try to merge the reshaped files."
+    ) # When absent = we merge file; when present = we don't merge -> merge_file is False
 
     args = parser.parse_args()
 
@@ -438,15 +493,17 @@ if __name__ == "__main__":
         chunk_size=args.chunk_size,
         input_files=input_files,
         output_dir_path=args.output_dir,
-        batch_ind_min=args.ind_min,
-        batch_ind_max=args.ind_max,
+        batch_ind_min=args.batch_ind_min,
+        batch_ind_max=args.batch_ind_max,
         offset_beginning=args.offset_beginning,
         offset_end=args.offset_end,
+        timestamp_path=Path(args.timestamp_path),
         max_delta_interval=args.max_delta_interval,
         last_file_behavior=args.last_file_behavior,
         verbose=args.verbose,
         overwrite=args.overwrite,
         force_reshape=args.force,
+        merge_files=args.no_merge
     )
 
     if args.verbose:

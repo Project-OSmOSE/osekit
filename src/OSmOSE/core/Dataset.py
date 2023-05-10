@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from OSmOSE.utils import read_header, check_n_files, make_path, set_umask
+from OSmOSE.utils import read_header, check_n_files, make_path, set_umask, is_audio
 from OSmOSE.timestamps import write_timestamp
 from OSmOSE.config import *
 
@@ -47,7 +47,7 @@ class Dataset:
             The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.
 
         gps_coordinates : `str` or `list` or `Tuple`, optional, keyword-only
-            The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `raw/auxiliary`,
+            The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `data/auxiliary`,
             otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.
 
         owner_group : `str`, optional, keyword-only
@@ -143,9 +143,9 @@ class Dataset:
                 csvFileArray = pd.read_csv(
                     self.path.joinpath(OSMOSE_PATH.auxiliary, new_coordinates)
                 )
-                self.__gps_coordinates = [
-                    (np.min(csvFileArray["lat"]), np.max(csvFileArray["lat"])),
-                    (np.min(csvFileArray["lon"]), np.max(csvFileArray["lon"])),
+                self.__gps_coordinates = [np.mean(csvFileArray["lat"]), np.mean(csvFileArray["lon"])
+                    #(np.min(csvFileArray["lat"]), np.max(csvFileArray["lat"])),
+                    #(np.min(csvFileArray["lon"]), np.max(csvFileArray["lon"])),
                 ]
             case tuple():
                 self.__gps_coordinates = new_coordinates
@@ -198,7 +198,10 @@ class Dataset:
         metadata_path = next(
             self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), None
         )
-        return metadata_path and metadata_path.exists()
+        timestamp_path = next(
+            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), None
+        )
+        return metadata_path and metadata_path.exists() and timestamp_path and timestamp_path.exists() and not self.path.joinpath(OSMOSE_PATH.raw_audio,"original").exists()
 
     # endregion
 
@@ -266,13 +269,15 @@ class Dataset:
                 print("\nSetting OSmOSE permission to the dataset...")
                 if owner_group:
                     gid = grp.getgrnam(owner_group).gr_gid
-                    os.chown(self.path, -1, gid)
+                    try:
+                        os.chown(self.path, -1, gid)
+                    except PermissionError:
+                        print(f"You have not the permission to change the owner of the {self.path} folder. This might be because you are trying to rebuild an existing dataset. The group owner has not been changed.")
 
                 # Add the setgid bid to the folder's permissions, in order for subsequent created files to be created by the same user group.
                 os.chmod(self.path, DPDEFAULT)
 
         path_raw_audio = original_folder if original_folder is not None else self._find_or_create_original_folder()
-
         path_timestamp_formatted = path_raw_audio.joinpath("timestamp.csv")
 
         if not path_timestamp_formatted.exists():
@@ -411,7 +416,8 @@ class Dataset:
             print(
                 "So YOUR DATASET HAS NOT BEEN IMPORTED ON OSMOSE PLATFORM, but you have the choice now : either 1) you can force the upload using the variable force_upbload , or 2) you can first delete those files with small durations, they have been put into the variable list_abnormalFilename_name and can be removed from your dataset using the cell below"
             )
-
+            return
+        
         else:
             df = pd.DataFrame({"filename": filename_rawaudio, "timestamp": timestamp})
             df.sort_values(by=["timestamp"], inplace=True)
@@ -447,13 +453,13 @@ class Dataset:
                 os.chmod(subset_path, mode=FPDEFAULT)
 
             # change permission on the dataset
-            if force_upload:
+            if ct_abnormal_duration > 0 and force_upload:
                 print("\n Well you have anomalies but you choose to FORCE UPLOAD")
 
 
         # write metadata.csv
         data = {
-            "sr_origin": int(mean(list_samplingRate)),
+            "origin_sr": int(mean(list_samplingRate)),
             "sample_bits": int(8 * mean(list_sampwidth)),
             "channel_count": int(channel_count),
             "audio_file_count": len(filename_csv),
@@ -474,13 +480,12 @@ class Dataset:
             "is_built": True,
         }
         df = pd.DataFrame.from_records([data])
-
         if self.gps_coordinates:
             df["lat"] = self.gps_coordinates[0]
             df["lon"] = self.gps_coordinates[1]
 
         df["dataset_sr"] = int(mean(list_samplingRate))
-        df["dataset_fileDuration"] = int(round(mean(list_duration), 2))
+        df["audio_file_dataset_duration"] = int(round(mean(list_duration), 2))
         df.to_csv(
             path_raw_audio.joinpath("metadata.csv"),
             index=False
@@ -546,35 +551,39 @@ class Dataset:
                 If the original folder is not found and could not be created.
         """
         path_raw_audio = self.path.joinpath(OSMOSE_PATH.raw_audio)
-        if any(
-            file.endswith(".wav") for file in os.listdir(self.path)
-        ):  # If there are audio files in the dataset folder
-            make_path(path_raw_audio.joinpath("original"), mode=DPDEFAULT)
+        audio_files = []
+        timestamp_files = []
 
-            for audiofile in os.listdir(self.path):
-                if audiofile.endswith(".wav"):
-                    self.path.joinpath(audiofile).rename(
-                        path_raw_audio.joinpath("original", audiofile)
-                    )
-            return path_raw_audio.joinpath("original")
-        elif path_raw_audio.exists():
-            if path_raw_audio.joinpath("original").is_dir():
-                return path_raw_audio.joinpath("original")
-            elif len(list(path_raw_audio.iterdir())) == 1:
-                return path_raw_audio.joinpath(next(path_raw_audio.iterdir()))
-        elif (
-            len(next(os.walk(self.path))[1]) == 1
-        ):  # If there is exactly one folder in the dataset folder
-            make_path(path_raw_audio, mode=DPDEFAULT)
-            orig_folder = self.path.joinpath(next(os.walk(self.path))[1][0])
-            new_path = orig_folder.rename(path_raw_audio.joinpath(orig_folder.name))
-            return new_path
+        make_path(path_raw_audio.joinpath("original"), mode=DPDEFAULT)
 
+        for path, _, files in os.walk(self.path):
+            for f in files:
+                if not Path(f).parent == "original":
+                    if is_audio(f):
+                        audio_files.append(Path(path,f))
+                    elif "timestamp.csv" in f:
+                        timestamp_files.append(Path(path,f))
+        
+        if len(timestamp_files) > 1:
+            res = "-1"
+            choice = ""
+            for i, ts in enumerate(timestamp_files):
+                choice += f"{i+1}: {ts}"
+            while int(res) not in range(1,len(timestamp_files) +1):
+                res = input(f"Multiple timestamp.csv detected. Choose which one should be considered the original:\n{choice}")
 
-        else:
-            raise ValueError(
-                f"No folder has been found in {path_raw_audio}. Please create the raw audio file folder and try again."
-            )
+                timestamp_files[int(res)-1].rename(path_raw_audio.joinpath("original","timestamp.csv"))
+        elif len(timestamp_files) == 1:
+            timestamp_files[0].rename(path_raw_audio.joinpath("original","timestamp.csv"))
+
+        for audio in audio_files:
+            audio.rename(path_raw_audio.joinpath("original",audio.name))
+            os.chmod(path_raw_audio.joinpath("original",audio.name), mode=FPDEFAULT)
+            if len(os.listdir(audio.parent)) == 0:
+                self.path.joinpath(audio.parent).rmdir()
+
+        return path_raw_audio.joinpath("original")
+        
 
     def _get_original_after_build(self) -> Path:
         """Find the original folder path after the dataset has been built.
@@ -606,7 +615,7 @@ class Dataset:
         metadata = pd.read_csv(metadata_path)
         # Catch the parameters inscribed in the original folder name
         audio_file_origin_duration = int(metadata["audio_file_origin_duration"][0])
-        sr_origin = int(metadata["sr_origin"][0])
+        sr_origin = int(metadata["dataset_sr"][0])
 
         self.__original_folder = self.path.joinpath(
             OSMOSE_PATH.raw_audio, f"{audio_file_origin_duration}_{sr_origin}"
@@ -617,7 +626,7 @@ class Dataset:
     def __str__(self):
         metadata = pd.read_csv(self.original_folder.joinpath("metadata.csv"))
         list_display_metadata = [
-            "sr_origin",
+            "dataset_sr",
             "audio_file_count",
             "start_date",
             "end_date",

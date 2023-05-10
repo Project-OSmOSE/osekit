@@ -8,7 +8,7 @@ from OSmOSE.cluster import compute_stats
 def test_output_file_written(input_dir: Path, output_dir: Path):
     output_file = output_dir.joinpath("output.csv")
     print(output_file)
-    compute_stats(input_dir=input_dir, output_file=output_file, HPfilter_min_freq=100)
+    compute_stats(input_dir=input_dir, output_file=output_file, hp_filter_min_freq=100)
 
     assert output_file.exists()
     assert output_file.stat().st_size > 0
@@ -18,7 +18,7 @@ def test_output_file_columns(input_dir, output_dir: Path):
     output_file = output_dir.joinpath("output.csv")
     # Call the function to write normalization parameters
     compute_stats(
-        input_dir=str(input_dir), output_file=str(output_file), HPfilter_min_freq=100
+        input_dir=str(input_dir), output_file=str(output_file), hp_filter_min_freq=100
     )
     # Check that the output file has the correct columns
     with open(str(output_file), "r") as f:
@@ -38,7 +38,7 @@ def test_output_file_content(input_dir, output_dir):
     sf.write(wav_file2, data2, 44100)
     # Call the function to write normalization parameters
     compute_stats(
-        input_dir=str(input_dir), output_file=str(output_file), HPfilter_min_freq=0
+        input_dir=str(input_dir), output_file=str(output_file), hp_filter_min_freq=0
     )
     # Check that the output file has the correct content
     with open(str(output_file), "r") as f:
