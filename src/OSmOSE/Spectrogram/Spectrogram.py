@@ -1252,6 +1252,7 @@ class Spectrogram(Dataset):
             lock.release()
             os.remove(str(output_file) + ".lock")
 
+
     def gen_tiles(self, *, data: np.ndarray, sample_rate: int, output_file: Path, adjust: bool):
         """Generate spectrogram tiles corresponding to the zoom levels.
 
