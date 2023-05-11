@@ -438,7 +438,7 @@ class Dataset:
             self.__original_folder = path_raw_audio
 
             for subpath in OSMOSE_PATH:
-                if "data" in str(subpath):
+                if not "processed" in str(subpath):
                     make_path(self.path.joinpath(subpath), mode=DPDEFAULT)
 
             # rename filenames in the subset_files.csv if any to replace -' by '_'

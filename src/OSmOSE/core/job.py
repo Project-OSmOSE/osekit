@@ -12,7 +12,7 @@ from warnings import warn
 from pathlib import Path
 from datetime import datetime, timedelta
 from importlib import resources
-from OSmOSE.utils import read_config, set_umask
+from OSmOSE.utils import read_config, set_umask, make_path
 from OSmOSE.config import *
 
 
@@ -262,13 +262,16 @@ class Job_builder:
 
         pwd = Path(__file__).parent
 
+        today = datetime.today().strftime("%Y_%m_%d")
+
         if logdir is None:
-            logdir = pwd.joinpath("log_job")
-            jobdir = pwd.joinpath("ongoing_jobs")
-            logdir.mkdir(mode=DPDEFAULT, exist_ok=True)
-            jobdir.mkdir(mode=DPDEFAULT, exist_ok=True)
+            logdir = pwd.joinpath("log_job",today)
+            jobdir = pwd.joinpath("ongoing_jobs",today)
+            make_path(logdir, mode=DPDEFAULT)
+            make_path(jobdir, mode=DPDEFAULT)
         else:
-            logdir.mkdir(mode=DPDEFAULT, exist_ok=True)
+            logdir = logdir.joinpath(today)
+            make_path(logdir, mode=DPDEFAULT)
             jobdir = logdir
         
 
@@ -445,6 +448,7 @@ class Job_builder:
                 )
                 print(f'Sent command {" ".join(cmd)}')
                 jobid_list.append(jobid)
+
             elif "slurm" in str(jobinfo["path"]).lower():
                 dep = f"-d afterok:{dependency}" if dependency else ""
                 jobid = (
@@ -549,6 +553,22 @@ class Job_builder:
 
         with open(job_file_name, "r") as f:
             print("".join(f.readlines()))
+
+    def clear(self, all_jobs:bool=False):
+        """Clear the queue of any job stuck.
+        
+        Parameter
+        ---------
+            all: bool, optional, keyword-only
+                If set to True, will clear the job history of the job builder."""
+        if all_jobs:
+            for jobinfo in self.all_jobs:
+                jobinfo["path"].unlink()
+
+        for jobinfo in self.ongoing_jobs:
+            res = subprocess.run(f"qstat {jobinfo['job_id']}", shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8").rstrip("\n")
+            if f"{jobinfo['job_id']} has finished" in res:
+                jobinfo["path"].unlink()
 
 def get_dict_index_in_list(list: list, key: str, value: any) -> int:
     for i, d in enumerate(list):
