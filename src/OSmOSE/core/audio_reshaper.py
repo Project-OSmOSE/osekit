@@ -10,6 +10,7 @@ from filelock import FileLock
 import soundfile as sf
 import numpy as np
 import pandas as pd
+from scipy.signal import resample
 
 from OSmOSE.utils import make_path, set_umask, substract_timestamps, from_timestamp, to_timestamp
 from OSmOSE.config import *
@@ -19,6 +20,7 @@ def reshape(
     input_files: Union[str, list],
     chunk_size: int,
     *,
+    new_sr: int = -1,
     output_dir_path: str = None,
     batch_ind_min: int = 0,
     batch_ind_max: int = -1,
@@ -184,7 +186,16 @@ def reshape(
         yield outfilename
 
     while i < len(files):
-        audio_data, sample_rate = sf.read(input_dir_path.joinpath(files[i]))
+        with sf.SoundFile(input_dir_path.joinpath(files[i])) as audio_file:
+            frames = audio_file.frames
+            audio_data, sample_rate = audio_file.read()
+
+        if new_sr == -1: 
+            new_sr = sample_rate
+        elif new_sr != sample_rate:
+            new_samples = frames*new_sr//sample_rate
+            audio_data = resample(audio_data, new_samples)
+            
         file_duration = len(audio_data)//sample_rate
 
         if not merge_files and file_duration < chunk_size:
