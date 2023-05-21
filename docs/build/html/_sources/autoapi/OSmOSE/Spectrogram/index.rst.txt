@@ -1,0 +1,771 @@
+:py:mod:`OSmOSE.Spectrogram`
+============================
+
+.. py:module:: OSmOSE.Spectrogram
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.Spectrogram.Spectrogram
+
+
+
+
+.. py:class:: Spectrogram(dataset_path: str, *, sr_analysis: int, gps_coordinates: Union[str, list, tuple] = None, owner_group: str = None, analysis_params: dict = None, batch_number: int = 10, local: bool = False)
+
+   Bases: :py:obj:`OSmOSE.Dataset.Dataset`
+
+   
+   Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.
+
+   The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:
+       - Use the existing `analysis/analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that
+       when using this file, some attributes will be locked in read-only mode.
+       - Fill the `analysis_params` argument. More info on the expected value below.
+       - Don't initialize the attributes in the constructor, and assign their values manually.
+
+   In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, `analysis/analysis_sheet.csv`
+   will be written at the end of the `Spectrogram.initialize()` method.
+
+   :param dataset_path: The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.
+   :type dataset_path: `str`
+   :param sr_analysis: The sample rate used for the generation of the spectrograms.
+   :type sr_analysis: `int`, keyword-only
+   :param coordinates: The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `raw/auxiliary`,
+                       otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.
+   :type coordinates: `str` or `list` or `tuple`, optional, keyword-only
+   :param osmose_group_name: The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
+                             Will not work on Windows.
+   :type osmose_group_name: `str`, optional, keyword-only
+   :param analysis_params: If `analysis/analysis_sheet.csv` does not exist, the analysis parameters can be submitted in the form of a dict,
+                           with keys matching what is expected:
+                               - nfft : `int`
+                               - window_size : `int`
+                               - overlap : `int`
+                               - colormap : `str`
+                               - zoom_level : `int`
+                               - dynamic_min : `int`
+                               - dynamic_max : `int`
+                               - number_adjustment_spectrogram : `int`
+                               - spectro_duration : `int`
+                               - zscore_duration : `float` or `str`
+                               - HPfilter_min_freq : `int`
+                               - sensitivity_dB : `int`
+                               - peak_voltage : `float`
+                               - spectro_normalization : `str`
+                               - data_normalization : `str`
+                               - gain_dB : `int`
+                           If additional information is given, it will be ignored. Note that if there is an `analysis/analysis_sheet.csv` file, it will
+                           always have the priority.
+   :type analysis_params: `dict`, optional, keyword-only
+   :param batch_number: The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).
+   :type batch_number: `int`, optional, keyword_only
+   :param local: Indicates whether or not the program is run locally. If it is the case, it will not create jobs and will handle the paralelisation
+                 alone. The default is False.
+   :type local: `bool`, optional, keyword_only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+   .. py:property:: sr_analysis
+
+      
+      The sampling frequency of the dataset.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: nfft
+
+      
+      The number of Fast Fourier Transform used to generate the spectrograms.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: window_size
+
+      
+      The window size of the generated spectrograms.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: overlap
+
+      
+      The overlap percentage between two spectrogram windows.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: colormap
+
+      
+      The type of colormap of the spectrograms.
+
+      :type: str
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: zoom_level
+
+      
+      Number of zoom levels.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: dynamic_min
+
+      
+      Minimum value of the colormap.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: dynamic_max
+
+      
+      Maximum value of the colormap.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: number_adjustment_spectrogram
+
+      
+      Number of spectrograms used to adjust the parameters.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: spectro_duration
+
+      
+      Duration of the spectrogram (at the lowest zoom level) in seconds.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: zscore_duration
+
+
+   .. py:property:: HPfilter_min_freq
+
+      
+      Floor frequency for the High Pass Filter.
+
+      :type: float
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: sensitivity
+
+      
+      Numeric sensitivity of the recording device.
+
+      :type: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: peak_voltage
+
+      
+      The maximum voltage of the device.
+
+      :type: float
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: spectro_normalization
+
+      
+      Type of normalization used to generate the spectrograms.
+
+      :type: str
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: data_normalization
+
+      
+      Type of normalization applied to the data.
+
+      :type: str
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: gain_dB
+
+      
+      Gain of the device in decibels.
+
+      :type: float
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: window_type
+
+      
+      Type of the window used to generate the spectrograms.
+
+      :type: str
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:property:: frequency_resolution
+
+
+   .. py:property:: time_resolution
+
+
+   .. py:method:: check_spectro_size()
+
+      
+      Verify if the parameters will generate a spectrogram that can fit one screen properly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: initialize(*, sr_analysis: int = None, reshape_method: Literal[legacy, classic, none] = 'none', batch_ind_min: int = 0, batch_ind_max: int = -1, pad_silence: bool = False, force_init: bool = False, date_template: str = None) -> None
+
+      
+      Prepares everything (path, variables, files) for spectrogram generation. This needs to be run before the spectrograms are generated.
+      If the dataset has not yet been build, it is before the rest of the functions are initialized.
+
+      :param sr_analysis: The sampling frequency of the audio files used to generate the spectrograms. If set, will overwrite the Spectrogram.sr_analysis attribute.
+      :type sr_analysis: `int`, optional, keyword-only
+      :param reshape_method: Which method to use if the desired size of the spectrogram is different from the audio file duration.
+                             - legacy : Legacy method, use bash and sox software to trim the audio files and fill the empty space with nothing.
+                             Unpractical when the audio file duration is longer than the desired spectrogram size.
+                             - classic : Classic method, use python and sox library to cut and concatenate the audio files to fit the desired duration.
+                             Will rewrite the `timestamp.csv` file, thus timestamps may have unexpected behavior if the concatenated files are not chronologically
+                             subsequent.
+                             - none : Don't reshape, will throw an error if the file duration is different than the desired spectrogram size. (It is the default behavior)
+      :type reshape_method: {"legacy", "classic", "none"}, optional, keyword-only
+      :param batch_ind_min: The index of the first file to consider. Both this parameter and `batch_ind_max` are not commonly used and are
+                            for very specific use cases. Most of the time, you want to initialize the whole dataset (the default is 0).
+      :type batch_ind_min: `int`, optional, keyword-only
+      :param batch_ind_max: The index of the last file to consider (the default is -1, meaning consider every file).
+      :type batch_ind_max: `int`, optional, keyword-only
+      :param pad_silence: When using the legacy reshaping method, whether there should be a silence padding or not (default is False).
+      :type pad_silence: `bool`, optional, keyword-only
+      :param force_init: Force every parameter of the initialization.
+      :type force_init: `bool`, optional, keyword-only
+      :param date_template: When initializing a spectrogram of a dataset that has not been built, providing a date_template will generate the timestamp.csv.
+      :type date_template: `str`, optiona, keyword-only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: audio_file_list_csv() -> OSmOSE.config.Path
+
+
+   .. py:method:: update_parameters(filename: OSmOSE.config.Path) -> bool
+
+      
+      Read the csv file filename and compare it to the spectrogram parameters. If any parameter is different, the file will be replaced and the fields changed.
+
+      If there is nothing to update, the file won't be changed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: to_csv(filename: OSmOSE.config.Path) -> None
+
+      
+      Outputs the characteristics of the spectrogram the specified file in csv format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: process_file(audio_file: Union[str, OSmOSE.config.Path], *, adjust: bool = False, save_matrix: bool = False, clean_adjust_folder: bool = False) -> None
+
+      
+      Read an audio file and generate the associated spectrogram.
+
+      :param audio_file: The name of the audio file to be processed
+      :type audio_file: `str` or `Path`
+      :param adjust: Indicates whether the file should be processed alone to adjust the spectrogram parameters (the default is False)
+      :type adjust: `bool`, optional, keyword-only
+      :param save_matrix: Whether to save the spectrogram matrices or not. Note that activating this parameter might increase greatly the volume of the project. (the default is False)
+      :type save_matrix: `bool`, optional, keyword-only
+      :param clean_adjust_folder: Whether the adjustment folder should be deleted.
+      :type clean_adjust_folder: `bool`, optional, keyword-only
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: gen_tiles(*, data: numpy.ndarray, sample_rate: int, output_file: OSmOSE.config.Path)
+
+      
+      Generate spectrogram tiles corresponding to the zoom levels.
+
+      :param data: The audio data from which the tiles will be generated.
+      :type data: `np.ndarray`
+      :param sample_rate: The sample rate of the audio data.
+      :type sample_rate: `int`
+      :param output_file: The name of the output spectrogram.
+      :type output_file: `str`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: gen_spectro(*, data: numpy.ndarray, sample_rate: int, output_file: OSmOSE.config.Path) -> Tuple[numpy.ndarray, numpy.ndarray[float]]
+
+      
+      Generate the spectrograms
+
+      :param data: The audio data from which the tiles will be generated.
+      :type data: `np.ndarray`
+      :param sample_rate: The sample rate of the audio data.
+      :type sample_rate: `int`
+      :param output_file: The name of the output spectrogram.
+      :type output_file: `str`
+
+      :returns: * **Sxx** (`np.NDArray[float64]`)
+                * **Freq** (`np.NDArray[float]`)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: generate_and_save_figures(*, time: numpy.ndarray[float], freq: numpy.ndarray[float], log_spectro: numpy.ndarray[int], output_file: OSmOSE.config.Path)
+
+      
+      Write the spectrogram figures to the output file.
+
+      :param time:
+      :type time: `np.NDArray[floating]`
+      :param freq:
+      :type freq: `np.NDArray[floating]`
+      :param log_spectro:
+      :type log_spectro: `np.NDArray[signed int]`
+      :param output_file: The name of the spectrogram file.
+      :type output_file: `str`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+   .. py:method:: process_all_files(*, save_matrix: bool = False)
+
+      
+      Process all the files in the dataset and generates the spectrograms. It uses the python multiprocessing library
+      to parallelise the computation, so it is less efficient to use this method rather than the job scheduler if run on a cluster.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+

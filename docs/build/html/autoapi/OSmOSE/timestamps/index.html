@@ -1,0 +1,252 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>OSmOSE.timestamps &#8212; OSmOSE 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+
+    
+    
+     
+        <script src="../../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../../_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="OSmOSE.utils" href="../utils/index.html" />
+    <link rel="prev" title="OSmOSE.job" href="../job/index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../utils/index.html" title="OSmOSE.utils"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../job/index.html" title="OSmOSE.job"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-OSmOSE.timestamps">
+<span id="osmose-timestamps"></span><h1><a class="reference internal" href="#module-OSmOSE.timestamps" title="OSmOSE.timestamps"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a><a class="headerlink" href="#module-OSmOSE.timestamps" title="Permalink to this heading">¶</a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.timestamps.convert_template_to_re" title="OSmOSE.timestamps.convert_template_to_re"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_template_to_re</span></code></a>(→ str)</p></td>
+<td><p>Converts a template in strftime format to a matching regular expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#OSmOSE.timestamps.write_timestamp" title="OSmOSE.timestamps.write_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_timestamp</span></code></a>(*, audio_path, date_template[, ...])</p></td>
+<td><p>Read the dates in the filenames of audio files in the <cite>audio_path</cite> folder,</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.timestamps.argparser" title="OSmOSE.timestamps.argparser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argparser</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.timestamps.convert_template_to_re">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.timestamps.</span></span><span class="sig-name descname"><span class="pre">convert_template_to_re</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/timestamps.html#convert_template_to_re"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.timestamps.convert_template_to_re" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a template in strftime format to a matching regular expression.</p>
+<dl class="simple">
+<dt>Parameter:</dt><dd><p>date_template: the template in strftime format.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The regular expression matching the template.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="OSmOSE.timestamps.write_timestamp">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.timestamps.</span></span><span class="sig-name descname"><span class="pre">write_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timezone</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/timestamps.html#write_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.timestamps.write_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the dates in the filenames of audio files in the <cite>audio_path</cite> folder,
+according to the date template in strftime format or the offsets from the beginning and end of the date.</p>
+<p>If both <cite>date_template</cite> and <cite>offsets</cite> are provided, the latter has priority and <cite>date_template</cite> is ignored.</p>
+<p>The result is written in a file named <cite>timestamp.csv</cite> with no header and two columns in this format : [filename],[timestamp].
+The output date is in the template <a href="#id1"><span class="problematic" id="id2">`</span></a>’%Y-%m-%dT%H:%M:%S.%fZ’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_path</strong> (<cite>str</cite>) – the path of the folder containing audio files</p></li>
+<li><p><strong>date_template</strong> (<cite>str</cite>) – the date template in strftime format. For example, <cite>2017/02/24</cite> has the template <cite>%Y/%m/%d</cite>
+For more information on strftime template, see <a class="reference external" href="https://strftime.org/">https://strftime.org/</a></p></li>
+<li><p><strong>timezone</strong> (<cite>str</cite>, optional) – The timezone this timestamp was originally recorded in (the default is UTC).</p></li>
+<li><p><strong>offsets</strong> (<cite>tuple(int,int)</cite>, optional) – a tuple containing the beginning and end offset of the date.
+The first element is the first character of the date, and the second is the last.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="OSmOSE.timestamps.argparser">
+<span class="sig-prename descclassname"><span class="pre">OSmOSE.timestamps.</span></span><span class="sig-name descname"><span class="pre">argparser</span></span><a class="headerlink" href="#OSmOSE.timestamps.argparser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="../../../index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a><ul>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a><ul>
+<li><a class="reference internal" href="#OSmOSE.timestamps.convert_template_to_re"><code class="docutils literal notranslate"><span class="pre">convert_template_to_re()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.timestamps.write_timestamp"><code class="docutils literal notranslate"><span class="pre">write_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.timestamps.argparser"><code class="docutils literal notranslate"><span class="pre">argparser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="../job/index.html"
+                          title="Previous page">&larr; <code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.job</span></code></a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="../utils/index.html"
+                          title="Next page">&rarr; <code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.utils</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/autoapi/OSmOSE/timestamps/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../utils/index.html" title="OSmOSE.utils"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../job/index.html" title="OSmOSE.job"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.timestamps</span></code></a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Rumengol.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

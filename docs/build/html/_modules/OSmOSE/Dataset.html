@@ -1,0 +1,782 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OSmOSE.Dataset &#8212; OSmOSE 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+
+    
+    
+     
+        <script src="../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OSmOSE.Dataset</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for OSmOSE.Dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">fmean</span> <span class="k">as</span> <span class="n">mean</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">grp</span>
+
+    <span class="n">__skip_perms</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="n">__skip_perms</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">OSmOSE.utils</span> <span class="kn">import</span> <span class="n">read_header</span><span class="p">,</span> <span class="n">check_n_files</span><span class="p">,</span> <span class="n">make_path</span><span class="p">,</span> <span class="n">set_umask</span>
+<span class="kn">from</span> <span class="nn">OSmOSE.timestamps</span> <span class="kn">import</span> <span class="n">write_timestamp</span>
+<span class="kn">from</span> <span class="nn">OSmOSE.config</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Super class used to create dataset compatible with the rest of the package.</span>
+
+<span class="sd">    A dataset is primarily identified by the audio files located in a folder whose name is the dataset name.</span>
+<span class="sd">    The files can be anywhere in this folder, but all audio files will be moved to the `data/audio/original` </span>
+<span class="sd">    subfolder when the build() method is called.</span>
+<span class="sd">    There should be a `timestamp.csv` file, which includes the name of the file and the associated timestamp, </span>
+<span class="sd">    in the `%Y-%m-%dT%H:%M:%S.%fZ` strftime format.</span>
+
+<span class="sd">    This file can be created using the `OSmOSE.write_timestamp` function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset_path : `str`</span>
+<span class="sd">        The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</span>
+
+<span class="sd">    gps_coordinates : `str` or `list` or `Tuple`, optional, keyword-only</span>
+<span class="sd">        The GPS coordinates of the listening location. If it is of type `str`, it must be the name of a csv file located in `data/auxiliary`,</span>
+<span class="sd">        otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</span>
+
+<span class="sd">    owner_group : `str`, optional, keyword-only</span>
+<span class="sd">        The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.</span>
+<span class="sd">        Will not work on Windows.</span>
+
+<span class="sd">    original_folder : `str`, optional, keyword-only</span>
+<span class="sd">        The path to the folder containing the original audio files. It can be set right away, passed in the build() function or automatically detected.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">    &gt;&gt;&gt; from OSmOSE import Dataset</span>
+<span class="sd">    &gt;&gt;&gt; dataset = Dataset(Path(&quot;home&quot;,&quot;user&quot;,&quot;my_dataset&quot;), coordinates = [49.2, -5], owner_group = &quot;gosmose&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">gps_coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">owner_group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">original_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="o">.</span><span class="n">stem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner_group</span> <span class="o">=</span> <span class="n">owner_group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">gps_coordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gps_coordinates</span> <span class="o">=</span> <span class="n">gps_coordinates</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__original_folder</span> <span class="o">=</span> <span class="n">original_folder</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">__skip_perms</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;It seems you are on a non-Unix operating system (probably Windows). The build_dataset() method will not work as intended and permission might be uncorrectly set.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.float_format&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># region Properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The Dataset name. It is readonly.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path: The Dataset path. It is readonly.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">original_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path: The folder containing the original audio file.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__original_folder</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__original_folder</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_original_after_build</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gps_coordinates</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The GPS coordinates of the listening location. First element is latitude, second is longitude.</span>
+
+<span class="sd">        GPS coordinates are used to localize the dataset and required for some utilities, like the</span>
+<span class="sd">        weather and environment utility.</span>
+
+<span class="sd">        Parameter</span>
+<span class="sd">        ---------</span>
+<span class="sd">        coordinates: `str` or `list` or `tuple`</span>
+<span class="sd">            If the coordinates are a string, it must be the name of a csv file located in `raw/auxiliary/`, containing two columns: &#39;lat&#39; and &#39;long&#39;</span>
+<span class="sd">            Else, they can be either a list or a tuple of two float, the first being the latitude and second the longitude; or a</span>
+<span class="sd">            list or a tuple containing two lists or tuples respectively of floats. In this case, the coordinates are not treated as a point but</span>
+<span class="sd">            as an area.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The GPS coordinates as a tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This dataset has no GPS coordinates.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span>
+
+    <span class="nd">@gps_coordinates</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">gps_coordinates</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+            <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+            <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+            <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="p">],</span>
+    <span class="p">):</span>
+        <span class="c1"># TODO: Allow any iterator?</span>
+        <span class="k">match</span> <span class="n">new_coordinates</span><span class="p">:</span>
+            <span class="k">case</span> <span class="nb">str</span><span class="p">():</span>
+                <span class="n">csvFileArray</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">auxiliary</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">csvFileArray</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">csvFileArray</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">])</span>
+                    <span class="c1">#(np.min(csvFileArray[&quot;lat&quot;]), np.max(csvFileArray[&quot;lat&quot;])),</span>
+                    <span class="c1">#(np.min(csvFileArray[&quot;lon&quot;]), np.max(csvFileArray[&quot;lon&quot;])),</span>
+                <span class="p">]</span>
+            <span class="k">case</span> <span class="nb">tuple</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span> <span class="o">=</span> <span class="n">new_coordinates</span>
+            <span class="k">case</span> <span class="nb">list</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">new_coordinates</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">new_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+                        <span class="p">(</span><span class="n">new_coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__gps_coordinates</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="c1"># TODO : set a standard type for coordinates</span>
+                <span class="c1"># else:</span>
+                <span class="c1">#     raise ValueError(</span>
+                <span class="c1">#         f&quot;The coordinates list must contain either only floats or only sublists of two elements.&quot;</span>
+                <span class="c1">#     )</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;GPS coordinates must be either a list of coordinates or the name of csv containing the coordinates, but </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">)</span><span class="si">}</span><span class="s2"> found.&quot;</span>
+                <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">owner_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The Unix group able to interact with the dataset.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;The OSmOSE group name is not defined. Please specify the group name before trying to build the dataset.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span>
+
+    <span class="nd">@owner_group</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">owner_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">__skip_perms</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot set osmose group on a non-Unix operating system.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__group</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+              <span class="n">gid</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">getgrnam</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">gr_gid</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+              <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The group </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> does not exist on the system. Full error trace: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__group</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_built</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if self.path/data/audio contains at least one folder and none called &quot;original&quot;.&quot;&quot;&quot;</span>
+        <span class="n">metadata_path</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;metadata.csv&quot;</span><span class="p">),</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">metadata_path</span> <span class="ow">and</span> <span class="n">metadata_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+    <span class="c1"># endregion</span>
+
+<div class="viewcode-block" id="Dataset.build"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">original_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">owner_group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">date_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bare_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">auto_normalization</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">force_upload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the architecture of the dataset.</span>
+
+<span class="sd">        The following operations will be performed on the dataset. None of them are destructive:</span>
+<span class="sd">            - open and read the header of audio files located in `raw/audio/original/`.</span>
+<span class="sd">            - rename files containing illegal characters.</span>
+<span class="sd">            - generate some stastics regarding the files and dataset durations.</span>
+<span class="sd">            - write the raw/metadata.csv file.</span>
+<span class="sd">            - Identify and record files with anomalies (short duration, unreadable header...).</span>
+<span class="sd">            - Set the permission of the dataset to the osmose group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            original_folder: `str`, optional, keyword-only</span>
+<span class="sd">                The name of the folder containing the original audio file. It is named &quot;original&quot; by convention.</span>
+<span class="sd">                If none is passed, the program expects to find either only one folder in the dataset audio folder, or</span>
+<span class="sd">                a folder named `original`</span>
+<span class="sd">            owner_group: `str`, optional, keyword_only</span>
+<span class="sd">                The name of the group using the osmose dataset. It will have all permissions over the dataset.</span>
+<span class="sd">            date_template: `str`, optional, keyword_only</span>
+<span class="sd">                the date template in strftime format. For example, `2017/02/24` has the template `%Y/%m/%d`.</span>
+<span class="sd">                It is used to generate automatically the timestamp.csv file. Alternatively, you can call the script to create the timestamp file first.</span>
+<span class="sd">                If no template is provided, will assume that the file already exists. In future versions, the template will be guessed automatically.</span>
+<span class="sd">                For more information on strftime template, see https://strftime.org/.</span>
+<span class="sd">            bare_check : `bool`, optional, keyword_only</span>
+<span class="sd">                Only do the checks and build steps that requires low resource usage. If you build the dataset on a login node or</span>
+<span class="sd">                if you are sure it is already good to use, set to True. Otherwise, it should be inside a job. Default is False.</span>
+<span class="sd">            auto_normalization: `bool`, optional, keyword_only</span>
+<span class="sd">                If true, automatically normalize audio files if the data would cause issues downstream. The default is False.</span>
+<span class="sd">            force_upload: `bool`, optional, keyword_only</span>
+<span class="sd">                If true, ignore the file anomalies and build the dataset anyway. The default is False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            dataset: `Dataset`</span>
+<span class="sd">                The dataset object.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">            &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">            &gt;&gt;&gt; from OSmOSE import Dataset</span>
+<span class="sd">            &gt;&gt;&gt; dataset = Dataset(Path(&quot;home&quot;,&quot;user&quot;,&quot;my_dataset&quot;))</span>
+<span class="sd">            &gt;&gt;&gt; dataset.build()</span>
+
+<span class="sd">            DONE ! your dataset is on OSmOSE platform !</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">set_umask</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">owner_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">owner_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner_group</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">__skip_perms</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Setting OSmOSE permission to the dataset...&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">owner_group</span><span class="p">:</span>
+                    <span class="n">gid</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">getgrnam</span><span class="p">(</span><span class="n">owner_group</span><span class="p">)</span><span class="o">.</span><span class="n">gr_gid</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">chown</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">gid</span><span class="p">)</span>
+
+                <span class="c1"># Add the setgid bid to the folder&#39;s permissions, in order for subsequent created files to be created by the same user group.</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">DPDEFAULT</span><span class="p">)</span>
+
+        <span class="n">path_raw_audio</span> <span class="o">=</span> <span class="n">original_folder</span> <span class="k">if</span> <span class="n">original_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_or_create_original_folder</span><span class="p">()</span>
+        <span class="n">path_timestamp_formatted</span> <span class="o">=</span> <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;timestamp.csv&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path_timestamp_formatted</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">date_template</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The timestamp.csv file has not been found in </span><span class="si">{</span><span class="n">path_raw_audio</span><span class="si">}</span><span class="s2">. You can create it automatically by setting the date template as argument.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">write_timestamp</span><span class="p">(</span><span class="n">audio_path</span><span class="o">=</span><span class="n">path_raw_audio</span><span class="p">,</span> <span class="n">date_template</span><span class="o">=</span><span class="n">date_template</span><span class="p">)</span>
+
+        <span class="n">csvFileArray</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path_timestamp_formatted</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">timestamp_csv</span> <span class="o">=</span> <span class="n">csvFileArray</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">filename_csv</span> <span class="o">=</span> <span class="n">csvFileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">list_filename_abnormal_duration</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">list_file_problem</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">filename_rawaudio</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_duration</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_samplingRate</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_interWavInterval</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_size</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_sampwidth</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_filename</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lost_levels</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">audio_file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="p">,</span> <span class="n">indiv</span><span class="p">)</span> <span class="k">for</span> <span class="n">indiv</span> <span class="ow">in</span> <span class="n">filename_csv</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bare_check</span><span class="p">:</span>
+            <span class="n">lost_levels</span> <span class="o">=</span> <span class="n">check_n_files</span><span class="p">(</span>
+                <span class="n">audio_file_list</span><span class="p">,</span>
+                <span class="mi">10</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
+                    <span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">,</span> <span class="s2">&quot;normalized_original&quot;</span>
+                <span class="p">),</span>
+                <span class="n">auto_normalization</span><span class="o">=</span><span class="n">auto_normalization</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ind_dt</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamp_csv</span><span class="p">))):</span>
+            <span class="k">if</span> <span class="n">ind_dt</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">timestamp_csv</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="n">timestamp_csv</span><span class="p">[</span><span class="n">ind_dt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">Z&quot;</span>
+                <span class="p">)</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">timestamp_csv</span><span class="p">[</span><span class="n">ind_dt</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">Z&quot;</span><span class="p">)</span>
+                <span class="n">list_interWavInterval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+
+            <span class="n">audio_file</span> <span class="o">=</span> <span class="n">audio_file_list</span><span class="p">[</span><span class="n">ind_dt</span><span class="p">]</span>
+            <span class="n">list_filename</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sr</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">sampwidth</span><span class="p">,</span> <span class="n">channel_count</span> <span class="o">=</span> <span class="n">read_header</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">list_file_problem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The audio file </span><span class="si">{</span><span class="n">audio_file</span><span class="si">}</span><span class="s2"> could not be loaded, its importation has been canceled.</span><span class="se">\n</span><span class="s2">Description of the error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">list_filename_abnormal_duration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)</span>
+
+            <span class="n">list_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio_file</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
+
+            <span class="n">list_duration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frames</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">sr</span><span class="p">))</span>
+            <span class="c1">#     list_volumeFile.append( np.round(sr * params.channel_count * (sampwidth) * frames / float(sr) /1024 /1000))</span>
+            <span class="n">list_samplingRate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sr</span><span class="p">))</span>
+            <span class="n">list_sampwidth</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sampwidth</span><span class="p">)</span>
+
+            <span class="c1"># reformat timestamp.csv</span>
+            <span class="n">date_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">timestamp_csv</span><span class="p">[</span><span class="n">ind_dt</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">Z&quot;</span><span class="p">)</span>
+            <span class="n">dates</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date_obj</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># simply chopping !</span>
+            <span class="n">dates_final</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;Z&quot;</span>
+            <span class="n">timestamp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dates_final</span><span class="p">)</span>
+
+            <span class="c1"># we remove the sign &#39;-&#39; in filenames (because of our qsub_resample.sh)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">audio_file</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">cur_filename</span> <span class="o">=</span> <span class="n">audio_file</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+                <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">audio_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+                    <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">cur_filename</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cur_filename</span> <span class="o">=</span> <span class="n">audio_file</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">filename_rawaudio</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">list_filename_abnormal_duration</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Please see list of audio files above that canceled your dataset importation (maybe corrupted files with 0kb volume ?). You can also find it in the list list_filename_abnormal_duration, and execute following cell to directly delete them. Those filenames have been written in the file ./raw/audio/files_not_loaded.csv&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;files_not_loaded.csv&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">list_filename_abnormal_duration</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="n">list_filename_abnormal_duration</span>
+
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">list_interWavInterval</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Summary statistics on your INTER-FILE DURATION&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">dd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">dd</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;std&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+            <span class="n">dutyCycle_percent</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+                <span class="mi">100</span> <span class="o">*</span> <span class="n">mean</span><span class="p">(</span><span class="n">list_duration</span><span class="p">)</span> <span class="o">/</span> <span class="n">mean</span><span class="p">(</span><span class="n">list_interWavInterval</span><span class="p">),</span>
+                <span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dutyCycle_percent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># get files with too small duration</span>
+        <span class="n">nominalVal_duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">list_duration</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Summary statistics on your file DURATION&quot;</span><span class="p">)</span>
+        <span class="n">dd_duration</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">list_duration</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">dd_duration</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+        <span class="c1"># go through the duration and check whether abnormal files</span>
+        <span class="n">ct_abnormal_duration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_abnormalFilename_duration</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">duration</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">list_filename</span><span class="p">,</span> <span class="n">list_duration</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">nominalVal_duration</span><span class="p">):</span>
+                <span class="n">ct_abnormal_duration</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">list_abnormalFilename_duration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ct_abnormal_duration</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force_upload</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> SORRY but your dataset contains files with different durations, especially&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span><span class="p">)),</span>
+                <span class="s2">&quot;files that have durations smaller than the 10th percentile of all your file durations.. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Here are their summary stats:&quot;</span><span class="p">,</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">list_abnormalFilename_duration</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;So YOUR DATASET HAS NOT BEEN IMPORTED ON OSMOSE PLATFORM, but you have the choice now : either 1) you can force the upload using the variable force_upbload , or 2) you can first delete those files with small durations, they have been put into the variable list_abnormalFilename_name and can be removed from your dataset using the cell below&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename_rawaudio</span><span class="p">,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">})</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;timestamp.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+                <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;timestamp.csv&quot;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">FPDEFAULT</span><span class="p">)</span>
+
+            <span class="c1"># change name of the original wav folder</span>
+            <span class="n">new_folder_name</span> <span class="o">=</span> <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">list_duration</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">list_samplingRate</span><span class="p">)))</span>
+            <span class="p">)</span>
+
+            <span class="n">path_raw_audio</span> <span class="o">=</span> <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">new_folder_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__original_folder</span> <span class="o">=</span> <span class="n">path_raw_audio</span>
+
+            <span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="n">OSMOSE_PATH</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">subpath</span><span class="p">):</span>
+                    <span class="n">make_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">DPDEFAULT</span><span class="p">)</span>
+
+            <span class="c1"># rename filenames in the subset_files.csv if any to replace -&#39; by &#39;_&#39;</span>
+            <span class="n">subset_path</span> <span class="o">=</span> <span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">processed</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;subset_files.csv&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">subset_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="n">xx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">subset_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">ff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">xx</span><span class="p">])</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                    <span class="n">subset_path</span><span class="p">,</span>
+                    <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">subset_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FPDEFAULT</span><span class="p">)</span>
+
+            <span class="c1"># change permission on the dataset</span>
+            <span class="k">if</span> <span class="n">force_upload</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Well you have anomalies but you choose to FORCE UPLOAD&quot;</span><span class="p">)</span>
+
+
+        <span class="c1"># write metadata.csv</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sr_origin&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">list_samplingRate</span><span class="p">)),</span>
+            <span class="s2">&quot;sample_bits&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">mean</span><span class="p">(</span><span class="n">list_sampwidth</span><span class="p">)),</span>
+            <span class="s2">&quot;channel_count&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">channel_count</span><span class="p">),</span>
+            <span class="s2">&quot;audio_file_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filename_csv</span><span class="p">),</span>
+            <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="n">timestamp_csv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="n">timestamp_csv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;duty_cycle&quot;</span><span class="p">:</span> <span class="n">dutyCycle_percent</span><span class="p">,</span>
+            <span class="s2">&quot;audio_file_origin_duration&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">list_duration</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;audio_file_origin_volume&quot;</span><span class="p">:</span> <span class="n">mean</span><span class="p">(</span><span class="n">list_size</span><span class="p">),</span>
+            <span class="s2">&quot;dataset_origin_volume&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span>
+                <span class="nb">sum</span><span class="p">(</span><span class="n">list_size</span><span class="p">),</span>
+                <span class="mi">1</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;dataset_origin_duration&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span>
+                <span class="nb">sum</span><span class="p">(</span><span class="n">list_duration</span><span class="p">),</span>  <span class="c1"># miiiiight break smth. We&#39;ll see.</span>
+                <span class="mi">2</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;lost_levels_in_normalization&quot;</span><span class="p">:</span> <span class="n">lost_levels</span><span class="p">,</span>
+            <span class="s2">&quot;is_built&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">([</span><span class="n">data</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gps_coordinates</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gps_coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gps_coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;dataset_sr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">list_samplingRate</span><span class="p">))</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;dataset_fileDuration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">list_duration</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;metadata.csv&quot;</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;metadata.csv&quot;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">FPDEFAULT</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> DONE ! your dataset is on OSmOSE platform !&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.delete_abnormal_files"><a class="viewcode-back" href="../../autoapi/OSmOSE/index.html#OSmOSE.Dataset.Dataset.delete_abnormal_files">[docs]</a>    <span class="k">def</span> <span class="nf">delete_abnormal_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all files with abnormal durations in the dataset, and rewrite the timestamps.csv file to reflect the changes.</span>
+<span class="sd">        If no abnormal file is detected, then it does nothing.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;No abnormal file detected. You need to run the Dataset.build() method in order to detect abnormal files before using this method.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">timestamp_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;timestamp.csv&quot;</span><span class="p">)</span>
+
+        <span class="n">csvFileArray</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">timestamp_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">abnormal_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_abnormal_filenames</span><span class="p">:</span>
+            <span class="n">csvFileArray</span> <span class="o">=</span> <span class="n">csvFileArray</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                <span class="n">csvFileArray</span><span class="p">[</span><span class="n">csvFileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="n">abnormal_file</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;removing : </span><span class="si">{</span><span class="n">abnormal_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">abnormal_file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+        <span class="n">csvFileArray</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">csvFileArray</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">timestamp_path</span><span class="p">,</span>
+            <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;NaN&quot;</span><span class="p">,</span>
+            <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">timestamp_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FPDEFAULT</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> ALL ABNORMAL FILES REMOVED ! you can now re-run the build() method to finish importing it on OSmOSE platform&quot;</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_find_or_create_original_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gather all wav files in the original folder, and search for the corresponding timestamp.csv file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            original_folder: `Path`</span>
+<span class="sd">                The path to the folder containing the original files.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">            ValueError</span>
+<span class="sd">                If the original folder is not found and could not be created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path_raw_audio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">)</span>
+        <span class="n">audio_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">timestamp_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">make_path</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">DPDEFAULT</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="s2">&quot;original&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.wav&quot;</span><span class="p">):</span>
+                        <span class="n">audio_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">f</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="s2">&quot;timestamp.csv&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">timestamp_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">f</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">timestamp_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;-1&quot;</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">timestamp_files</span><span class="p">):</span>
+                <span class="n">choice</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">while</span> <span class="nb">int</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamp_files</span><span class="p">)</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multiple timestamp.csv detected. Choose which one should be considered the original:</span><span class="se">\n</span><span class="si">{</span><span class="n">choice</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">timestamp_files</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">,</span><span class="s2">&quot;timestamp.csv&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">timestamp_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">timestamp_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">,</span><span class="s2">&quot;timestamp.csv&quot;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">audio</span> <span class="ow">in</span> <span class="n">audio_files</span><span class="p">:</span>
+            <span class="n">audio</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">,</span><span class="n">audio</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">audio</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">audio</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">rmdir</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">path_raw_audio</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
+        <span class="c1"># if any(</span>
+        <span class="c1">#     file.endswith(&quot;.wav&quot;) for file in os.listdir(self.path)</span>
+        <span class="c1"># ):  # If there are audio files in the dataset folder</span>
+        <span class="c1">#     make_path(path_raw_audio.joinpath(&quot;original&quot;), mode=DPDEFAULT)</span>
+
+        <span class="c1">#     for audiofile in os.listdir(self.path):</span>
+        <span class="c1">#         if audiofile.endswith(&quot;.wav&quot;):</span>
+        <span class="c1">#             self.path.joinpath(audiofile).rename(</span>
+        <span class="c1">#                 path_raw_audio.joinpath(&quot;original&quot;, audiofile)</span>
+        <span class="c1">#             )</span>
+        <span class="c1">#     return path_raw_audio.joinpath(&quot;original&quot;)</span>
+        <span class="c1"># elif path_raw_audio.exists():</span>
+        <span class="c1">#     if path_raw_audio.joinpath(&quot;original&quot;).is_dir():</span>
+        <span class="c1">#         return path_raw_audio.joinpath(&quot;original&quot;)</span>
+        <span class="c1">#     elif len(list(path_raw_audio.iterdir())) == 1:</span>
+        <span class="c1">#         return path_raw_audio.joinpath(next(path_raw_audio.iterdir()))</span>
+        <span class="c1"># elif (</span>
+        <span class="c1">#     len(next(os.walk(self.path))[1]) == 1</span>
+        <span class="c1"># ):  # If there is exactly one folder in the dataset folder</span>
+        <span class="c1">#     make_path(path_raw_audio, mode=DPDEFAULT)</span>
+        <span class="c1">#     orig_folder = self.path.joinpath(next(os.walk(self.path))[1][0])</span>
+        <span class="c1">#     new_path = orig_folder.rename(path_raw_audio.joinpath(orig_folder.name))</span>
+        <span class="c1">#     return new_path</span>
+
+
+        <span class="c1"># else:</span>
+        <span class="c1">#     raise ValueError(</span>
+        <span class="c1">#         f&quot;No folder has been found in {path_raw_audio}. Please create the raw audio file folder and try again.&quot;</span>
+        <span class="c1">#     )</span>
+
+    <span class="k">def</span> <span class="nf">_get_original_after_build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the original folder path after the dataset has been built.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            original_folder: `Path`</span>
+<span class="sd">                The path to the folder containing the original audio file.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">            ValueError</span>
+<span class="sd">                If no metadata.csv has been found and the original folder is not able to be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># First, grab any metadata.csv</span>
+        <span class="n">all_datasets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">)</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">audio_dir</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">all_datasets</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">audio_dir</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;metadata.csv&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="c1"># If we get to the end of the generator, it means that no metadata file has been found, so we raise a more explicit error.</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No metadata file found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">,</span><span class="w"> </span><span class="n">audio_dir</span><span class="p">)</span><span class="si">}</span><span class="s2">. Impossible to find the original data file.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">metadata_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">break</span>
+
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">)</span>
+        <span class="c1"># Catch the parameters inscribed in the original folder name</span>
+        <span class="n">audio_file_origin_duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;audio_file_origin_duration&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">sr_origin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;sr_origin&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__original_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
+            <span class="n">OSMOSE_PATH</span><span class="o">.</span><span class="n">raw_audio</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">audio_file_origin_duration</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">sr_origin</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_folder</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_folder</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;metadata.csv&quot;</span><span class="p">))</span>
+        <span class="n">list_display_metadata</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;sr_origin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;audio_file_count&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;start_date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;end_date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;audio_file_origin_duration&quot;</span><span class="p">,</span>
+        <span class="p">]</span>  <span class="c1"># restrain metadata to a shorter list of fileds to be displayed</span>
+        <span class="n">joined_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metadata of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> :&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">metadata</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">list_display_metadata</span><span class="p">:</span>
+                <span class="n">joined_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">joined_str</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OSmOSE.Dataset</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Rumengol.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

@@ -1,0 +1,27 @@
+:py:mod:`OSmOSE.config`
+=======================
+
+.. py:module:: OSmOSE.config
+
+
+Module Contents
+---------------
+
+.. py:data:: SUPPORTED_AUDIO_FORMAT
+   :value: ['.wav']
+
+   
+
+.. py:data:: OSMOSE_PATH
+
+   
+
+.. py:data:: FPDEFAULT
+   :value: 436
+
+   
+
+.. py:data:: DPDEFAULT
+
+   
+

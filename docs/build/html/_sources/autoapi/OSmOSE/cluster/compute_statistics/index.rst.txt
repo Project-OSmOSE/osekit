@@ -1,0 +1,68 @@
+:py:mod:`OSmOSE.cluster.compute_statistics`
+===========================================
+
+.. py:module:: OSmOSE.cluster.compute_statistics
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.cluster.compute_statistics.Write_zscore_norma_params
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   OSmOSE.cluster.compute_statistics.parser
+
+
+.. py:function:: Write_zscore_norma_params(*, input_dir: pathlib.Path, output_file: pathlib.Path, HPfilter_min_freq: int, batch_ind_min: int = 0, batch_ind_max: int = -1)
+
+   
+   Computes the normalization parameters for the Zscore normalisation of the dataset and writes it to a csv.
+
+   This function can also be called from the command line. Type `get_zscore_params.py -h` to see the list of arguments.
+   Will write the mean and standard deviation for each file in a .csv. To get the parameters, you need to read the csv and
+   compute the means of each columns.
+
+   :param input_dir: The absolute path to the input directory. All audio files within this directory will be used.
+   :type input_dir: `Path`
+   :param output_file: The absolute path of the output csv file.
+   :type output_file: `Path`
+   :param HPfilter_min_freq: The minimum audio frequency under which data will be filtrated. If set to 0, then `sys.float_info.epsilon` will be used.
+   :type HPfilter_min_freq: `int`
+   :param batch_ind_min: The first file of the list to be processed. Default is 0.
+   :type batch_ind_min: `int`
+   :param batch_ind_max: The last file of the list to be processed. Default is -1, meaning the entire list is processed.
+   :type batch_ind_max: `int`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: parser
+
+   
+

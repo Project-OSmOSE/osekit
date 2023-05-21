@@ -1,0 +1,226 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>OSmOSE_package &#8212; OSmOSE 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="autoapi/index.html" title="API Reference"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+    <li><a href="#">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">OSmOSE_package</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="osmose-package">
+<h1>OSmOSE_package<a class="headerlink" href="#osmose-package" title="Permalink to this heading">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<p>OSmOSE is currently in development, and no release exist yet. Thus, installing the package means using an unstable, unfinished version.</p>
+<section id="local-installation">
+<h3>Local installation<a class="headerlink" href="#local-installation" title="Permalink to this heading">¶</a></h3>
+<p>Follow this step if you are installing the package from scratch locally on your computer. To use on Datarmor, skip to the <strong>Use on DATARMOR</strong> section.</p>
+<ol class="arabic simple">
+<li><p>First, create an empty git repository in a newly created folder and clone this repository.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>init
+
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Project-ODE/OSmOSE_package.git
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Create a Conda virtual environment in python 3.10.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>osmose<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>-y
+conda<span class="w"> </span>activate<span class="w"> </span>osmose
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Install poetry and use it to install the package.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>poetry
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Note: if <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> fails with the message <code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">cannot</span> <span class="pre">import</span> <span class="pre">name</span> <span class="pre">'PyProjectException'</span></code>, run this line instead:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">poetry</span><span class="o">==</span><span class="m">1</span>.3.2
+</pre></div>
+</div>
+<p>The package is installed in editable mode! You can call it just like any regular python package as long as you are in the environment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">OSmOSE</span> <span class="k">as</span> <span class="nn">osm</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">osm</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that it is installed in editable mode, meaning that any change made to the package’s file will be reflected immediately on the environment, without needing to reload it.</p>
+</section>
+<section id="use-on-datarmor">
+<h3>Use on DATARMOR<a class="headerlink" href="#use-on-datarmor" title="Permalink to this heading">¶</a></h3>
+<p>If you are on DATARMOR, then the initial setup is already done! The conda environment is named osmose_dev and the package can be found on <code class="docutils literal notranslate"><span class="pre">/home/datawork-osmose/osmose_package/</span></code>. If you are using Jupyter Hub, then you can just change the kernel to <code class="docutils literal notranslate"><span class="pre">osmose_dev</span></code> and start using the OSmOSE package. Note that without the command line, you will not automatically update the package and might be missing a newer version.</p>
+<p>On the command line, run this line just once:</p>
+<div class="highlight-csh notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;alias osmose_activate=&#39;cd /home/datawork-osmose/osmose_package; git checkout main; git pull origin main; . /appli/anaconda/latest/etc/profile.d/conda.sh; conda activate /home/datawork-osmose/conda-env/osmose_dev/; cd -&#39;&quot;</span> &gt;&gt; .bashrc
+</pre></div>
+</div>
+<p>Then reload the shell. From now on, typing</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash
+osmose_activate
+</pre></div>
+</div>
+<p>will:</p>
+<ul class="simple">
+<li><p>Update the local package to the latest version.</p></li>
+<li><p>Activate the conda environment.</p></li>
+<li><p>Update or install any dependency that is not present.</p></li>
+</ul>
+<p>Note that the environment is a development environment and might not be suitable for production.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="#">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">OSmOSE_package</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#local-installation">Local installation</a></li>
+<li><a class="reference internal" href="#use-on-datarmor">Use on DATARMOR</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="autoapi/index.html"
+                          title="Next page">&rarr; API Reference</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="autoapi/index.html" title="API Reference"
+             >next</a> &nbsp; &nbsp;</li>
+    <li><a href="#">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+        <li class="nav-item nav-item-this"><a href="">OSmOSE_package</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Rumengol.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

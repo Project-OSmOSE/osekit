@@ -1,0 +1,613 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>OSmOSE.Spectrogram &#8212; OSmOSE 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/cloud.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+
+    
+    
+     
+        <script src="../../../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../../../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../../../_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="OSmOSE.config" href="../config/index.html" />
+    <link rel="prev" title="OSmOSE.Dataset" href="../Dataset/index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../config/index.html" title="OSmOSE.config"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../Dataset/index.html" title="OSmOSE.Dataset"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-OSmOSE.Spectrogram">
+<span id="osmose-spectrogram"></span><h1><a class="reference internal" href="../index.html#OSmOSE.Spectrogram" title="OSmOSE.Spectrogram"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a><a class="headerlink" href="#module-OSmOSE.Spectrogram" title="Permalink to this heading">¶</a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">¶</a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram" title="OSmOSE.Spectrogram.Spectrogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spectrogram</span></code></a></p></td>
+<td><p>Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">OSmOSE.Spectrogram.</span></span><span class="sig-name descname"><span class="pre">Spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sr_analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps_coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../Dataset/index.html#OSmOSE.Dataset.Dataset" title="OSmOSE.Dataset.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OSmOSE.Dataset.Dataset</span></code></a></p>
+<p>Main class for spectrogram-related computations. Can resample, reshape and normalize audio files before generating spectrograms.</p>
+<dl>
+<dt>The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:</dt><dd><ul class="simple">
+<li><p>Use the existing <cite>analysis/analysis_sheet.csv</cite> file. If one exist, it will take priority over the other methods. Note that</p></li>
+</ul>
+<p>when using this file, some attributes will be locked in read-only mode.
+- Fill the <cite>analysis_params</cite> argument. More info on the expected value below.
+- Don’t initialize the attributes in the constructor, and assign their values manually.</p>
+</dd>
+</dl>
+<p>In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, <cite>analysis/analysis_sheet.csv</cite>
+will be written at the end of the <cite>Spectrogram.initialize()</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_path</strong> (<cite>str</cite>) – The absolute path to the dataset folder. The last folder in the path will be considered as the name of the dataset.</p></li>
+<li><p><strong>sr_analysis</strong> (<cite>int</cite>, keyword-only) – The sample rate used for the generation of the spectrograms.</p></li>
+<li><p><strong>coordinates</strong> (<cite>str</cite> or <cite>list</cite> or <cite>tuple</cite>, optional, keyword-only) – The GPS coordinates of the listening location. If it is of type <cite>str</cite>, it must be the name of a csv file located in <cite>raw/auxiliary</cite>,
+otherwise a list or a tuple with the first element being the latitude coordinates and second the longitude coordinates.</p></li>
+<li><p><strong>osmose_group_name</strong> (<cite>str</cite>, optional, keyword-only) – The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
+Will not work on Windows.</p></li>
+<li><p><strong>analysis_params</strong> (<cite>dict</cite>, optional, keyword-only) – <p>If <cite>analysis/analysis_sheet.csv</cite> does not exist, the analysis parameters can be submitted in the form of a dict,
+with keys matching what is expected:</p>
+<blockquote>
+<div><ul>
+<li><p>nfft : <cite>int</cite></p></li>
+<li><p>window_size : <cite>int</cite></p></li>
+<li><p>overlap : <cite>int</cite></p></li>
+<li><p>colormap : <cite>str</cite></p></li>
+<li><p>zoom_level : <cite>int</cite></p></li>
+<li><p>dynamic_min : <cite>int</cite></p></li>
+<li><p>dynamic_max : <cite>int</cite></p></li>
+<li><p>number_adjustment_spectrogram : <cite>int</cite></p></li>
+<li><p>spectro_duration : <cite>int</cite></p></li>
+<li><p>zscore_duration : <cite>float</cite> or <cite>str</cite></p></li>
+<li><p>HPfilter_min_freq : <cite>int</cite></p></li>
+<li><p>sensitivity_dB : <cite>int</cite></p></li>
+<li><p>peak_voltage : <cite>float</cite></p></li>
+<li><p>spectro_normalization : <cite>str</cite></p></li>
+<li><p>data_normalization : <cite>str</cite></p></li>
+<li><p>gain_dB : <cite>int</cite></p></li>
+</ul>
+</div></blockquote>
+<p>If additional information is given, it will be ignored. Note that if there is an <cite>analysis/analysis_sheet.csv</cite> file, it will
+always have the priority.</p>
+</p></li>
+<li><p><strong>batch_number</strong> (<cite>int</cite>, optional, keyword_only) – The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).</p></li>
+<li><p><strong>local</strong> (<cite>bool</cite>, optional, keyword_only) – Indicates whether or not the program is run locally. If it is the case, it will not create jobs and will handle the paralelisation
+alone. The default is False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.sr_analysis">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sr_analysis</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.sr_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sampling frequency of the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.nfft">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nfft</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.nfft" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of Fast Fourier Transform used to generate the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.window_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">window_size</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.window_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The window size of the generated spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.overlap">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overlap</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>The overlap percentage between two spectrogram windows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.colormap">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.colormap" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of colormap of the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.zoom_level">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zoom_level</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.zoom_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of zoom levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.dynamic_min">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamic_min</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.dynamic_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum value of the colormap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.dynamic_max">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamic_max</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.dynamic_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum value of the colormap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.number_adjustment_spectrogram">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_adjustment_spectrogram</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.number_adjustment_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of spectrograms used to adjust the parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.spectro_duration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spectro_duration</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.spectro_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Duration of the spectrogram (at the lowest zoom level) in seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.zscore_duration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zscore_duration</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.zscore_duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.HPfilter_min_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HPfilter_min_freq</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.HPfilter_min_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Floor frequency for the High Pass Filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.sensitivity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensitivity</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.sensitivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Numeric sensitivity of the recording device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.peak_voltage">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">peak_voltage</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.peak_voltage" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum voltage of the device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.spectro_normalization">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spectro_normalization</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.spectro_normalization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of normalization used to generate the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.data_normalization">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_normalization</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.data_normalization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of normalization applied to the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.gain_dB">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain_dB</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.gain_dB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gain of the device in decibels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.window_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">window_type</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.window_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the window used to generate the spectrograms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.frequency_resolution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequency_resolution</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.frequency_resolution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.time_resolution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_resolution</span></span><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.time_resolution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.check_spectro_size">
+<span class="sig-name descname"><span class="pre">check_spectro_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.check_spectro_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.check_spectro_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify if the parameters will generate a spectrogram that can fit one screen properly</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sr_analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshape_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="pre">legacy</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">classic</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">none</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_ind_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_silence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares everything (path, variables, files) for spectrogram generation. This needs to be run before the spectrograms are generated.
+If the dataset has not yet been build, it is before the rest of the functions are initialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sr_analysis</strong> (<cite>int</cite>, optional, keyword-only) – The sampling frequency of the audio files used to generate the spectrograms. If set, will overwrite the Spectrogram.sr_analysis attribute.</p></li>
+<li><p><strong>reshape_method</strong> (<em>{&quot;legacy&quot;</em><em>, </em><em>&quot;classic&quot;</em><em>, </em><em>&quot;none&quot;}</em><em>, </em><em>optional</em><em>, </em><em>keyword-only</em>) – Which method to use if the desired size of the spectrogram is different from the audio file duration.
+- legacy : Legacy method, use bash and sox software to trim the audio files and fill the empty space with nothing.
+Unpractical when the audio file duration is longer than the desired spectrogram size.
+- classic : Classic method, use python and sox library to cut and concatenate the audio files to fit the desired duration.
+Will rewrite the <cite>timestamp.csv</cite> file, thus timestamps may have unexpected behavior if the concatenated files are not chronologically
+subsequent.
+- none : Don’t reshape, will throw an error if the file duration is different than the desired spectrogram size. (It is the default behavior)</p></li>
+<li><p><strong>batch_ind_min</strong> (<cite>int</cite>, optional, keyword-only) – The index of the first file to consider. Both this parameter and <cite>batch_ind_max</cite> are not commonly used and are
+for very specific use cases. Most of the time, you want to initialize the whole dataset (the default is 0).</p></li>
+<li><p><strong>batch_ind_max</strong> (<cite>int</cite>, optional, keyword-only) – The index of the last file to consider (the default is -1, meaning consider every file).</p></li>
+<li><p><strong>pad_silence</strong> (<cite>bool</cite>, optional, keyword-only) – When using the legacy reshaping method, whether there should be a silence padding or not (default is False).</p></li>
+<li><p><strong>force_init</strong> (<cite>bool</cite>, optional, keyword-only) – Force every parameter of the initialization.</p></li>
+<li><p><strong>date_template</strong> (<cite>str</cite>, optiona, keyword-only) – When initializing a spectrogram of a dataset that has not been built, providing a date_template will generate the timestamp.csv.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.audio_file_list_csv">
+<span class="sig-name descname"><span class="pre">audio_file_list_csv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OSmOSE.config.Path</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.audio_file_list_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.audio_file_list_csv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.update_parameters">
+<span class="sig-name descname"><span class="pre">update_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.update_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.update_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the csv file filename and compare it to the spectrogram parameters. If any parameter is different, the file will be replaced and the fields changed.</p>
+<p>If there is nothing to update, the file won’t be changed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs the characteristics of the spectrogram the specified file in csv format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.process_file">
+<span class="sig-name descname"><span class="pre">process_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">OSmOSE.config.Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjust</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_adjust_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.process_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.process_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an audio file and generate the associated spectrogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_file</strong> (<cite>str</cite> or <cite>Path</cite>) – The name of the audio file to be processed</p></li>
+<li><p><strong>adjust</strong> (<cite>bool</cite>, optional, keyword-only) – Indicates whether the file should be processed alone to adjust the spectrogram parameters (the default is False)</p></li>
+<li><p><strong>save_matrix</strong> (<cite>bool</cite>, optional, keyword-only) – Whether to save the spectrogram matrices or not. Note that activating this parameter might increase greatly the volume of the project. (the default is False)</p></li>
+<li><p><strong>clean_adjust_folder</strong> (<cite>bool</cite>, optional, keyword-only) – Whether the adjustment folder should be deleted.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.gen_tiles">
+<span class="sig-name descname"><span class="pre">gen_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.gen_tiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.gen_tiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate spectrogram tiles corresponding to the zoom levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<cite>np.ndarray</cite>) – The audio data from which the tiles will be generated.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>int</cite>) – The sample rate of the audio data.</p></li>
+<li><p><strong>output_file</strong> (<cite>str</cite>) – The name of the output spectrogram.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.gen_spectro">
+<span class="sig-name descname"><span class="pre">gen_spectro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.gen_spectro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.gen_spectro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the spectrograms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<cite>np.ndarray</cite>) – The audio data from which the tiles will be generated.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>int</cite>) – The sample rate of the audio data.</p></li>
+<li><p><strong>output_file</strong> (<cite>str</cite>) – The name of the output spectrogram.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Sxx</strong> (<cite>np.NDArray[float64]</cite>)</p></li>
+<li><p><strong>Freq</strong> (<cite>np.NDArray[float]</cite>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.generate_and_save_figures">
+<span class="sig-name descname"><span class="pre">generate_and_save_figures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_spectro</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OSmOSE.config.Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.generate_and_save_figures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.generate_and_save_figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the spectrogram figures to the output file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<cite>np.NDArray[floating]</cite>) – </p></li>
+<li><p><strong>freq</strong> (<cite>np.NDArray[floating]</cite>) – </p></li>
+<li><p><strong>log_spectro</strong> (<cite>np.NDArray[signed int]</cite>) – </p></li>
+<li><p><strong>output_file</strong> (<cite>str</cite>) – The name of the spectrogram file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OSmOSE.Spectrogram.Spectrogram.process_all_files">
+<span class="sig-name descname"><span class="pre">process_all_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/OSmOSE/Spectrogram.html#Spectrogram.process_all_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OSmOSE.Spectrogram.Spectrogram.process_all_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all the files in the dataset and generates the spectrograms. It uses the python multiprocessing library
+to parallelise the computation, so it is less efficient to use this method rather than the job scheduler if run on a cluster.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="../../../index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a><ul>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a><ul>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram"><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code></a><ul>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.sr_analysis"><code class="docutils literal notranslate"><span class="pre">Spectrogram.sr_analysis</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.nfft"><code class="docutils literal notranslate"><span class="pre">Spectrogram.nfft</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.window_size"><code class="docutils literal notranslate"><span class="pre">Spectrogram.window_size</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.overlap"><code class="docutils literal notranslate"><span class="pre">Spectrogram.overlap</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.colormap"><code class="docutils literal notranslate"><span class="pre">Spectrogram.colormap</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.zoom_level"><code class="docutils literal notranslate"><span class="pre">Spectrogram.zoom_level</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.dynamic_min"><code class="docutils literal notranslate"><span class="pre">Spectrogram.dynamic_min</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.dynamic_max"><code class="docutils literal notranslate"><span class="pre">Spectrogram.dynamic_max</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.number_adjustment_spectrogram"><code class="docutils literal notranslate"><span class="pre">Spectrogram.number_adjustment_spectrogram</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.spectro_duration"><code class="docutils literal notranslate"><span class="pre">Spectrogram.spectro_duration</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.zscore_duration"><code class="docutils literal notranslate"><span class="pre">Spectrogram.zscore_duration</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.HPfilter_min_freq"><code class="docutils literal notranslate"><span class="pre">Spectrogram.HPfilter_min_freq</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.sensitivity"><code class="docutils literal notranslate"><span class="pre">Spectrogram.sensitivity</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.peak_voltage"><code class="docutils literal notranslate"><span class="pre">Spectrogram.peak_voltage</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.spectro_normalization"><code class="docutils literal notranslate"><span class="pre">Spectrogram.spectro_normalization</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.data_normalization"><code class="docutils literal notranslate"><span class="pre">Spectrogram.data_normalization</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.gain_dB"><code class="docutils literal notranslate"><span class="pre">Spectrogram.gain_dB</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.window_type"><code class="docutils literal notranslate"><span class="pre">Spectrogram.window_type</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.frequency_resolution"><code class="docutils literal notranslate"><span class="pre">Spectrogram.frequency_resolution</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.time_resolution"><code class="docutils literal notranslate"><span class="pre">Spectrogram.time_resolution</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.check_spectro_size"><code class="docutils literal notranslate"><span class="pre">Spectrogram.check_spectro_size()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.initialize"><code class="docutils literal notranslate"><span class="pre">Spectrogram.initialize()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.audio_file_list_csv"><code class="docutils literal notranslate"><span class="pre">Spectrogram.audio_file_list_csv()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.update_parameters"><code class="docutils literal notranslate"><span class="pre">Spectrogram.update_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.to_csv"><code class="docutils literal notranslate"><span class="pre">Spectrogram.to_csv()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.process_file"><code class="docutils literal notranslate"><span class="pre">Spectrogram.process_file()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.gen_tiles"><code class="docutils literal notranslate"><span class="pre">Spectrogram.gen_tiles()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.gen_spectro"><code class="docutils literal notranslate"><span class="pre">Spectrogram.gen_spectro()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.generate_and_save_figures"><code class="docutils literal notranslate"><span class="pre">Spectrogram.generate_and_save_figures()</span></code></a></li>
+<li><a class="reference internal" href="#OSmOSE.Spectrogram.Spectrogram.process_all_files"><code class="docutils literal notranslate"><span class="pre">Spectrogram.process_all_files()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="../Dataset/index.html"
+                          title="Previous page">&larr; <code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Dataset</span></code></a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="../config/index.html"
+                          title="Next page">&rarr; <code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.config</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/autoapi/OSmOSE/Spectrogram/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../config/index.html" title="OSmOSE.config"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../Dataset/index.html" title="OSmOSE.Dataset"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="../../../index.html">OSmOSE 0.1.0 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">OSmOSE.Spectrogram</span></code></a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, Rumengol.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>
