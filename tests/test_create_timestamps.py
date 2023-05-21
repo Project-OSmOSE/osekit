@@ -1,7 +1,6 @@
 import OSmOSE.timestamps as tm
 import re
-import importlib
-
+import pytest
 
 def test_convert_template_to_re():
     raw_all = "".join(tm.__converter.keys())
@@ -20,8 +19,26 @@ def test_convert_template_to_re():
 
 
 # a monkeypatch
-def test_write_timestamp():
+def test_write_timestamp(tmp_path):
     true_template = "%d%m%y_%H%M%S"
-    true_offsets = (8, 4)
+    bad_template = "%Y%I%S%p"
+    true_offsets = (5, 4)
+    expected_result = []
+    resfile = tmp_path.joinpath("timestamp.csv")
 
-    # TODO
+    for i in range(10):
+        filename = f"test_120723_1815{str(3*i).zfill(2)}.wav"
+        open(tmp_path.joinpath(filename), "w").close()
+        expected_result.append(f"{filename},2023-07-12T18:15:{str(3*i).zfill(2)}.000Z,UTC\n")
+    
+    tm.write_timestamp(audio_path=tmp_path, date_template = true_template)
+
+    with open(resfile, "r") as f:
+        assert expected_result == f.readlines()
+    resfile.unlink()
+
+    with pytest.raises(ValueError) as excinfo:
+        tm.write_timestamp(audio_path=tmp_path, date_template = bad_template)
+    
+    assert "The date template does not match" in str(excinfo.value)
+

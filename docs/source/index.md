@@ -6,4 +6,5 @@
 :hidden:
 
 autoapi/index
+userguide
 ```

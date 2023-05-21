@@ -24,3 +24,5 @@ date_template = "%d%m%y_%H%M%S" # the date as it formatted in the audio file nam
 
 dataset.build(date_template=date_template)
 ```
+
+In this example, all the files in the dataset must have the date in their name formatted the same way. For instance, a file named "180721_185420_UTC_mydataset.wav" will be treated as beginning on the 18/07/2021, at 18:54:20. 

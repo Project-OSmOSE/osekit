@@ -21,11 +21,11 @@
         nodes = 1
 
     [Job.Presets.medium]
-    queue = "omp"
-    walltime = "12:00:00"
-    ncpus = 6
-    mem = "40g"
-    nodes = 1
+        queue = "omp"
+        walltime = "12:00:00"
+        ncpus = 6
+        mem = "40g"
+        nodes = 1
 
     [Job.Presets.high]
         queue = "omp"

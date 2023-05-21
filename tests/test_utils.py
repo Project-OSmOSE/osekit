@@ -132,3 +132,13 @@ def test_check_n_files_under_threshold_bad_files(input_dir, output_dir, monkeypa
         file_list=file_list, n=11, output_path=output_dir, threshold_percent=0.1, auto_normalization=autonorm
     )
     assert len(os.listdir(output_dir)) == 11
+
+def test_make_path(tmp_path):
+    simple_path = tmp_path / "simple_path"
+    complex_path = tmp_path / "not" / "so" / "simple" / "path"
+    make_path(simple_path)
+    make_path(complex_path, mode=0o276)
+
+    assert simple_path.exists()
+    assert complex_path.exists()
+    assert os.stat(complex_path).st_mode == 0o276

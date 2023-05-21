@@ -1,36 +1,36 @@
 #!/bin/bash
 
-while getopts ":d:i:t:m:x:o:n:s" arg; do
+while getopts :d:i:t:m:x:o:n:s arg; do
     case "$arg" in
-        d) 
+        (d) 
             dataset_path=${OPTARG}
             ;;
-        i)
+        (i)
             folder_in=${OPTARG}
             ;;
-        t) 
+        (t) 
             target_fs=${OPTARG}
             ;;
-        m)
+        (m)
             ind_min=${OPTARG}
             ;;
-        x)
+        (x)
             ind_max=${OPTARG}
             ;;
-        o)  
+        (o)  
             output_folder=${OPTARG}
             ;;
-        n) 
+        (n) 
             new_audioFileDuration=${OPTARG}
             ;;
-        s) 
+        (s) 
             pad_silence=1
             ;;
-        h) 
+        (h) 
             usage
             exit 0
             ;;
-        *)  
+        (*)  
             usage
             exit 1
             ;;

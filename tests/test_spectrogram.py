@@ -30,7 +30,7 @@ PARAMS = {
 def test_build_path(input_dataset):
     dataset = Spectrogram(
         dataset_path=input_dataset["main_dir"],
-        sr_analysis=240,
+        dataset_sr=240,
         analysis_params=PARAMS,
         local=True,
     )
@@ -73,7 +73,7 @@ def test_initialize_5s(input_dataset):
     sr = 44100 if platform.system() else 240
     dataset = Spectrogram(
         dataset_path=input_dataset["main_dir"],
-        sr_analysis=sr,
+        dataset_sr=sr,
         analysis_params=PARAMS,
         local=True,
     )
@@ -136,7 +136,7 @@ def test_initialize_2s(input_dataset):
     sr = 44100 if platform.system() else 240
     dataset = Spectrogram(
         dataset_path=input_dataset["main_dir"],
-        sr_analysis=sr,
+        dataset_sr=sr,
         analysis_params=PARAMS,
         local=True,
     )

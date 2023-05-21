@@ -13,10 +13,11 @@ def Write_zscore_norma_params(
     *,
     input_dir: Path,
     output_file: Path,
-    HPfilter_min_freq: int,
+    hp_filter_min_freq: int,
     batch_ind_min: int = 0,
     batch_ind_max: int = -1
 ):
+
     """Computes the normalization parameters for the Zscore normalisation of the dataset and writes it to a csv.
 
     This function can also be called from the command line. Type `get_zscore_params.py -h` to see the list of arguments.
@@ -31,7 +32,7 @@ def Write_zscore_norma_params(
     output_file: `Path`
         The absolute path of the output csv file.
 
-    HPfilter_min_freq: `int`
+    hp_filter_min_freq: `int`
         The minimum audio frequency under which data will be filtrated. If set to 0, then `sys.float_info.epsilon` will be used.
 
     batch_ind_min: `int`
@@ -41,11 +42,14 @@ def Write_zscore_norma_params(
         The last file of the list to be processed. Default is -1, meaning the entire list is processed.
     """
     set_umask()
+
     all_files = sorted(Path(input_dir).glob("*wav"))
     # If batch_ind_max is -1, we go to the end of the list.
     wav_list = all_files[
         batch_ind_min : batch_ind_max if batch_ind_max != -1 else len(all_files)
     ]
+
+    print(f"Computing statistics over {len(wav_list)} files.")
 
     list_summaryStats = []
 
@@ -55,7 +59,7 @@ def Write_zscore_norma_params(
         bpcoef = signal.butter(
             20,
             np.array(
-                [max(HPfilter_min_freq, sys.float_info.epsilon), sample_rate / 2 - 1]
+                [max(hp_filter_min_freq, sys.float_info.epsilon), sample_rate / 2 - 1]
             ),
             fs=sample_rate,
             output="sos",
@@ -70,6 +74,7 @@ def Write_zscore_norma_params(
         write.writerow(["filename", "mean", "std"])
         write.writerows(list_summaryStats)
 
+    print(f"{output_file} written.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -89,7 +94,7 @@ if __name__ == "__main__":
         help="The csv file where the results will be written.",
     )
     required.add_argument(
-        "--hpfilter-min-freq",
+        "--hp-filter-min-freq",
         "-fmin",
         required=True,
         type=int,
@@ -115,7 +120,8 @@ if __name__ == "__main__":
     Write_zscore_norma_params(
         input_dir=Path(args.input_dir),
         output_file=Path(args.output_file),
-        HPfilter_min_freq=args.HPfilter_min_freq,
+        hp_filter_min_freq=args.hp_filter_min_freq,
         batch_ind_min=args.batch_ind_min,
         batch_ind_max=args.batch_ind_max,
     )
+

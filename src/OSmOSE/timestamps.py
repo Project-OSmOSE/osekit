@@ -50,13 +50,11 @@ def write_timestamp(
     audio_path: str,
     date_template: str,
     timezone: str = "UTC",
-    offsets: tuple = None,
+    offset: tuple = None,
 ):
     """
     Read the dates in the filenames of audio files in the `audio_path` folder,
     according to the date template in strftime format or the offsets from the beginning and end of the date.
-
-    If both `date_template` and `offsets` are provided, the latter has priority and `date_template` is ignored.
 
     The result is written in a file named `timestamp.csv` with no header and two columns in this format : [filename],[timestamp].
     The output date is in the template `'%Y-%m-%dT%H:%M:%S.%fZ'.
@@ -74,13 +72,8 @@ def write_timestamp(
             a tuple containing the beginning and end offset of the date.
             The first element is the first character of the date, and the second is the last.
     """
-    if offsets:
-        if "-" in offsets:
-            offset = [int(off) for off in offsets.split("-")]
-        else:
-            offset = [int(offsets), 0]
     # TODO: extension-agnostic
-    list_audio_file = sorted([file for file in Path(audio_path).glob("*.wav")])
+    list_audio_file = sorted([file for file in Path(audio_path).glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")])
 
     if len(list_audio_file) == 0:
         print(
@@ -92,15 +85,15 @@ def write_timestamp(
 
     converted = convert_template_to_re(date_template)
     for filename in list_audio_file:
-        if offsets:
-            date_extracted = filename.stem[offset[0] : offset[1] + 1]
-        else:
-            try:
+        try:
+            if offset:
+                date_extracted = re.search(converted, filename.stem[offset[0] : offset[1] + 1])[0]
+            else:
                 date_extracted = re.search(converted, str(filename))[0]
-            except TypeError:
-                raise ValueError(
-                    f"The date template does not match any set of character in the file name {filename}\nMake sure you are not forgetting separator characters, or use the offsets parameter."
-                )
+        except TypeError:
+            raise ValueError(
+                f"The date template does not match any set of character in the file name {filename}\nMake sure you are not forgetting separator characters, or use the offsets parameter."
+            )
 
         date_obj = datetime.datetime.strptime(date_extracted, date_template)
         dates = datetime.datetime.strftime(date_obj, "%Y-%m-%dT%H:%M:%S.%f")
@@ -148,9 +141,17 @@ if __name__ == "__main__":
     )
     args = argparser.parse_args()
 
+    if args.offset and "-" in args.offset:
+        split = args.offset.split("-")
+        offset = (int(split[0]), int(split[1]))
+    elif args.offset:
+        offset = int(args.offset)
+    else:
+        offset = None
+
     write_timestamp(
         audio_path=args.dataset_name,
         date_template=args.date_template,
         timezone=args.timezone,
-        offsets=args.offset,
+        offsets=offset,
     )
