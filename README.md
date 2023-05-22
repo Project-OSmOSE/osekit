@@ -1,3 +1,12 @@
+[![Continuous integration][ci-badge]][ci-link]
+[![Code style: black][black-badge]][black-link]
+[![][coverage-badge]][coverage-link]
+
+[ci-badge]: https://github.com/Project-ODE/osmose-toolkit/actions/workflows/github-ci.yml/badge.svg
+[ci-link]: https://github.com/Project-ODE/osmose-toolkit/actions/workflows/github-ci.yml
+[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black-link]: https://github.com/psf/black
+
 # OSmOSE_package
 
 
