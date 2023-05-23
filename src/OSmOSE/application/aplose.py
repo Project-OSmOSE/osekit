@@ -3,6 +3,7 @@ from filelock import FileLock
 from typing import Literal, Union
 import shutil
 from OSmOSE.config import *
+from termcolor import colored
 from OSmOSE.features import Welch
 from OSmOSE.utils import set_umask, make_path
 import numpy as np
@@ -12,6 +13,158 @@ from pathlib import Path
 class Aplose(Welch):
     def __init__(self, dataset_path: str, *, dataset_sr: int = None, gps_coordinates: str | list | tuple = None, owner_group: str = None, analysis_params: dict = None, batch_number: int = 10, local: bool = False) -> None:
         super().__init__(dataset_path, dataset_sr=dataset_sr, gps_coordinates=gps_coordinates, owner_group=owner_group, analysis_params=analysis_params, batch_number=batch_number, local=local)
+
+        self.colormap: str = (
+            self.__analysis_sheet["colormap"][0] if "colormap" in self.__analysis_sheet else "viridis"
+        )
+        self.zoom_level: int = (
+            self.__analysis_sheet["zoom_level"][0] if "zoom_level" in self.__analysis_sheet else 0
+        )
+        self.dynamic_min: int = (
+            self.__analysis_sheet["dynamic_min"][0]
+            if "dynamic_min" in self.__analysis_sheet
+            else None
+        )
+        self.dynamic_max: int = (
+            self.__analysis_sheet["dynamic_max"][0]
+            if "dynamic_max" in self.__analysis_sheet
+            else None
+        )
+        plt.switch_backend("agg")
+
+        fontsize = 16
+        ticksize = 12
+        plt.rc("font", size=fontsize)  # controls default text sizes
+        plt.rc("axes", titlesize=fontsize)  # fontsize of the axes title
+        plt.rc("axes", labelsize=fontsize)  # fontsize of the x and y labels
+        plt.rc("xtick", labelsize=ticksize)  # fontsize of the tick labels
+        plt.rc("ytick", labelsize=ticksize)  # fontsize of the tick labels
+        plt.rc("legend", fontsize=ticksize)  # legend fontsize
+        plt.rc("figure", titlesize=ticksize)  # fontsize of the figure title
+
+        self.adjust = False
+        self.__build_path(dry=True)
+
+    @property
+    def colormap(self):
+        """str: The type of colormap of the spectrograms."""
+        return self.__colormap
+
+    @colormap.setter
+    def colormap(self, value: str):
+        self.__colormap = value
+
+    @property
+    def zoom_level(self):
+        """int: Number of zoom levels."""
+        return self.__zoom_level
+
+    @zoom_level.setter
+    def zoom_level(self, value: int):
+        self.__zoom_level = value
+
+    @property
+    def dynamic_min(self):
+        """int: Minimum value of the colormap."""
+        return self.__dynamic_min
+
+    @dynamic_min.setter
+    def dynamic_min(self, value: int):
+        self.__dynamic_min = value
+
+    @property
+    def dynamic_max(self):
+        """int: Maximum value of the colormap."""
+        return self.__dynamic_max
+
+    @dynamic_max.setter
+    def dynamic_max(self, value: int):
+        self.__dynamic_max = value
+
+
+    def __build_path(self, adjust: bool = False, dry: bool = False):
+        """Build some internal paths according to the expected architecture and might create them.
+
+        Parameter
+        ---------
+            adjust : `bool`, optional
+                Whether or not the paths are used to adjust spectrogram parameters.
+            dry: `bool`, optional
+                If set to True, will not create the folders and just return the file path.
+        """
+        set_umask()
+        processed_path = self.path.joinpath(OSMOSE_PATH.spectrogram)
+        audio_foldername = f"{str(self.spectro_duration)}_{str(self.dataset_sr)}"
+        self.audio_path = self.path.joinpath(OSMOSE_PATH.raw_audio, audio_foldername)
+
+        if adjust:
+            self.__spectro_foldername = "adjustment_spectros"
+        else:
+            self.__spectro_foldername = (
+                f"{str(self.nfft)}_{str(self.window_size)}_{str(self.overlap)}"
+            )
+
+        self.path_output_spectrogram = processed_path.joinpath(
+            audio_foldername, self.__spectro_foldername, "image"
+        )
+
+        self.path_output_spectrogram_matrix = processed_path.joinpath(
+            audio_foldername, self.__spectro_foldername, "matrix"
+        )
+
+        # Create paths
+        if not dry:
+            make_path(self.audio_path, mode=DPDEFAULT)
+            make_path(self.path_output_spectrogram, mode=DPDEFAULT)
+            if not adjust:
+                make_path(self.path_output_spectrogram_matrix, mode=DPDEFAULT)
+                make_path(self.path.joinpath(OSMOSE_PATH.statistics), mode=DPDEFAULT)
+
+    def check_spectro_size(self):
+        """Verify if the parameters will generate a spectrogram that can fit one screen properly"""
+        if self.nfft > 2048:
+            print("your nfft is :", self.nfft)
+            print(
+                colored(
+                    "PLEASE REDUCE IT UNLESS YOU HAVE A VERY HD SCREEN WITH MORE THAN 1k pixels vertically !!!! ",
+                    "red",
+                )
+            )
+
+        tile_duration = self.spectro_duration / 2 ** (self.zoom_level)
+
+        data = np.zeros([int(tile_duration * self.dataset_sr), 1])
+
+        Noverlap = int(self.window_size * self.overlap / 100)
+
+        Nbech = np.size(data)
+        Noffset = self.window_size - Noverlap
+        Nbwin = int((Nbech - self.window_size) / Noffset)
+        Freq = np.fft.rfftfreq(self.nfft, d=1 / self.dataset_sr)
+        Time = np.linspace(0, Nbech / self.dataset_sr, Nbwin)
+
+        print("your smallest tile has a duration of:", tile_duration, "(s)")
+        print("\n")
+
+        if Nbwin > 3500:
+            print(
+                colored(
+                    "PLEASE REDUCE IT UNLESS YOU HAVE A VERY HD SCREEN WITH MORE THAN 2k pixels horizontally !!!! ",
+                    "red",
+                )
+            )
+
+        print("\n")
+        print("your number of time windows in this tile is:", Nbwin)
+        print("\n")
+        print(
+            "your resolutions : time = ",
+            round(Time[1] - Time[0], 3),
+            "(s) / frequency = ",
+            round(Freq[1] - Freq[0], 3),
+            "(Hz)",
+        )
+
 
     def generate_spectrogram(
         self, 
@@ -179,6 +332,200 @@ class Aplose(Welch):
                         ),
                         adjust=self.adjust
                     )
+
+    def initialize(
+        self,
+        *,
+        dataset_sr: int = None,
+        batch_ind_min: int = 0,
+        batch_ind_max: int = -1,
+        force_init: bool = False,
+        date_template: str = None
+    ) -> None:
+        """Prepares everything (path, variables, files) for spectrogram generation. This needs to be run before the spectrograms are generated.
+        If the dataset has not yet been build, it is before the rest of the functions are initialized.
+
+        Parameters
+        ----------
+        dataset_sr : `int`, optional, keyword-only
+            The sampling frequency of the audio files used to generate the spectrograms. If set, will overwrite the Spectrogram.dataset_sr attribute.
+        reshape_method : {"legacy", "classic", "none"}, optional, keyword-only
+            Which method to use if the desired size of the spectrogram is different from the audio file duration.
+            - legacy : Legacy method, use bash and sox software to trim the audio files and fill the empty space with nothing.
+            Unpractical when the audio file duration is longer than the desired spectrogram size.
+            - classic : Classic method, use python and sox library to cut and concatenate the audio files to fit the desired duration.
+            Will rewrite the `timestamp.csv` file, thus timestamps may have unexpected behavior if the concatenated files are not chronologically
+            subsequent.
+            - none : Don't reshape, will throw an error if the file duration is different than the desired spectrogram size. (It is the default behavior)
+
+        batch_ind_min : `int`, optional, keyword-only
+            The index of the first file to consider. Both this parameter and `batch_ind_max` are not commonly used and are
+            for very specific use cases. Most of the time, you want to initialize the whole dataset (the default is 0).
+        batch_ind_max : `int`, optional, keyword-only
+            The index of the last file to consider (the default is -1, meaning consider every file).
+        pad_silence : `bool`, optional, keyword-only
+            When using the legacy reshaping method, whether there should be a silence padding or not (default is False).
+        force_init : `bool`, optional, keyword-only
+            Force every parameter of the initialization.
+        date_template : `str`, optiona, keyword-only
+            When initializing a spectrogram of a dataset that has not been built, providing a date_template will generate the timestamp.csv.
+        """
+        self.__build_path()
+        super().initialize(batch_ind_min=batch_ind_min, batch_ind_max=batch_ind_max, force_init=force_init, date_template=date_template)
+
+        if dataset_sr:
+            self.dataset_sr = dataset_sr
+
+        self.path_input_audio_file = self._get_original_after_build()
+        list_wav_withEvent_comp = sorted(self.path_input_audio_file.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
+
+        if batch_ind_max == -1:
+            batch_ind_max = len(list_wav_withEvent_comp)
+        list_wav_withEvent = list_wav_withEvent_comp[batch_ind_min:batch_ind_max]
+
+        self.list_wav_to_process = [
+            audio_file.name for audio_file in list_wav_withEvent
+        ]
+
+        """List containing the last job ids to grab outside of the class."""
+        self.pending_jobs = []
+
+        # Stop initialization if already done
+        final_path = self.path.joinpath(
+            OSMOSE_PATH.spectrogram,
+            f"{str(self.spectro_duration)}_{str(self.dataset_sr)}",
+            f"{str(self.nfft)}_{str(self.window_size)}_{str(self.overlap)}",
+            "metadata.csv",
+        )
+        temp_path = self.path.joinpath(OSMOSE_PATH.spectrogram, "adjust_metadata.csv")
+        audio_metadata_path = self.path.joinpath(
+            OSMOSE_PATH.raw_audio,
+            f"{str(self.spectro_duration)}_{str(self.dataset_sr)}",
+            "metadata.csv",
+        )
+
+        if (
+            (final_path.exists() or temp_path.exists())
+            and audio_metadata_path.exists()
+            and audio_metadata_path.with_stem("timestamp").exists()
+            and not force_init
+        ):
+            audio_file_count = pd.read_csv(audio_metadata_path)["audio_file_count"][0]
+            if len(list(audio_metadata_path.parent.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")) == audio_file_count):
+                print(
+                    "It seems these spectrogram parameters are already initialized. If it is an error or you want to rerun the initialization, add the `force_init` argument."
+                )
+                return
+
+        # Load variables from raw metadata
+        metadata = pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"))
+        audio_file_origin_duration = metadata["audio_file_origin_duration"][0]
+        sr_origin = metadata["dataset_sr"][0]
+        audio_file_count = metadata["audio_file_count"][0]
+
+        metadata["dataset_fileDuration"] = self.spectro_duration
+        new_meta_path = self.audio_path.joinpath("metadata.csv")
+        metadata.to_csv(new_meta_path)
+        os.chmod(new_meta_path, mode=FPDEFAULT)
+
+        data = {
+            "dataset_name": self.name,
+            "dataset_sr": self.dataset_sr,
+            "nfft": self.nfft,
+            "window_size": self.window_size,
+            "overlap": self.overlap,
+            "colormap": self.colormap,
+            "zoom_level": self.zoom_level,
+            "number_adjustment_spectrogram": self.number_adjustment_spectrogram,
+            "dynamic_min": self.dynamic_min,
+            "dynamic_max": self.dynamic_max,
+            "spectro_duration": self.spectro_duration,
+            "audio_file_folder_name": self.audio_path.name,
+            "data_normalization": self.data_normalization,
+            "hp_filter_min_freq": self.hp_filter_min_freq,
+            "sensitivity_dB": 20 * log10(self.sensitivity / 1e6),
+            "peak_voltage": self.peak_voltage,
+            "spectro_normalization": self.spectro_normalization,
+            "gain_dB": self.gain_dB,
+            "zscore_duration": self.zscore_duration,
+            "window_type": self.window_type,
+            "frequency_resolution": self.frequency_resolution,
+        }
+
+        for i, time_res in enumerate(self.time_resolution):
+            data.update({f"time_resolution_{i}": time_res})
+
+        self.__analysis_sheet = pd.DataFrame.from_records([data])
+
+        adjust_path = self.path.joinpath(OSMOSE_PATH.spectrogram, "adjust_metadata.csv")
+        if adjust_path.exists():
+            adjust_path.unlink() # Always overwrite this file
+
+        self.__analysis_sheet.to_csv(
+            adjust_path
+        )
+        os.chmod(adjust_path, mode=FPDEFAULT)
+        
+        if not adjust_path.exists():
+            raise FileNotFoundError("Failed to write adjust_metadata.csv")
+
+    def update_parameters(self, filename: Path) -> bool:
+        """Read the csv file filename and compare it to the spectrogram parameters. If any parameter is different, the file will be replaced and the fields changed.
+        
+        If there is nothing to update, the file won't be changed.
+        
+        Parameter
+        ---------
+        filename: Path
+            The path to the csv file to be updated.
+        
+        Returns
+        -------
+            True if the parameters were updated else False."""
+        
+        if not filename.suffix == ".csv":
+            raise ValueError("The file must be a .csv file to be updated.")
+        new_params = {
+            "dataset_name": self.name,
+            "dataset_sr": self.dataset_sr,
+            "nfft": self.nfft,
+            "window_size": self.window_size,
+            "overlap": self.overlap,
+            "colormap": self.colormap,
+            "zoom_level": self.zoom_level,
+            "number_adjustment_spectrogram": self.number_adjustment_spectrogram,
+            "dynamic_min": self.dynamic_min,
+            "dynamic_max": self.dynamic_max,
+            "spectro_duration": self.spectro_duration,
+            "audio_file_folder_name": self.audio_path.name,
+            "data_normalization": self.data_normalization,
+            "hp_filter_min_freq": self.hp_filter_min_freq,
+            "sensitivity_dB": 20 * log10(self.sensitivity / 1e6),
+            "peak_voltage": self.peak_voltage,
+            "spectro_normalization": self.spectro_normalization,
+            "gain_dB": self.gain_dB,
+            "zscore_duration": self.zscore_duration,
+            "window_type": self.window_type,
+            "frequency_resolution": self.frequency_resolution,
+        }
+        for i, time_res in enumerate(self.time_resolution):
+            new_params.update({f"time_resolution_{i}": time_res})
+
+        if not filename.exists():
+            pd.DataFrame.from_records([new_params]).to_csv(filename)
+
+            os.chmod(filename, mode=DPDEFAULT)
+            return True
+        
+        orig_params = pd.read_csv(filename)
+        
+        if any([param not in orig_params or str(orig_params[param]) != str(new_params[param]) for param in new_params]):
+            filename.unlink()
+            pd.DataFrame.from_records([new_params]).to_csv(filename)
+
+            os.chmod(filename, mode=DPDEFAULT)
+            return True
+        return False
 
     def generate_and_save_figures(
         self,
