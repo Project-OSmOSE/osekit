@@ -490,7 +490,15 @@ class Welch(Dataset):
                 If False, will raise an error if the spectro_duration is greater than the original audio file duration. Default is True.
             write_file: `bool`, optional, keyword-only
                 If set to True, will write the preprocessed audio file to the output folder. Else, will hold it in memory. Default is False.
-                """
+            adjust : `bool`, optional, keyword-only
+                Indicates whether the file should be processed alone to adjust the spectrogram parameters (the default is False)
+            save_matrix : `bool`, optional, keyword-only
+                Whether to save the spectrogram matrices or not. Note that activating this parameter might increase greatly the volume of the project. (the default is False)
+            overwrite: `bool`, optional, keyword-only
+                If set to False, will skip the processing if all output files already exist. If set to True, will first delete the existing files before processing.
+            clean_adjust_folder: `bool`, optional, keyword-only
+                Whether the adjustment folder should be deleted.
+        """
         set_umask()
 
         self.__build_path(self.adjust)
@@ -640,37 +648,11 @@ class Welch(Dataset):
             if adjust:
                 make_path(self.path_output_spectrogram, mode=DPDEFAULT)
 
-            if len(reshaped) == 1:
-                return data
-            else:
-                yield data
-
-    def process_file(
-        self, audio_file: Union[str, Path], *, adjust: bool = False, last_file_behavior: Literal["pad","truncate","discard"] = "pad", merge_files: bool = True, write_audio_file: bool = False
-    ) -> None:
-        """Read an audio file and generate the associated spectrogram.
-
-        Parameters
-        ----------
-        audio_file : `str` or `Path`
-            The name of the audio file to be processed
-        adjust : `bool`, optional, keyword-only
-            Indicates whether the file should be processed alone to adjust the spectrogram parameters (the default is False)
-        save_matrix : `bool`, optional, keyword-only
-            Whether to save the spectrogram matrices or not. Note that activating this parameter might increase greatly the volume of the project. (the default is False)
-        overwrite: `bool`, optional, keyword-only
-            If set to False, will skip the processing if all output files already exist. If set to True, will first delete the existing files before processing.
-        clean_adjust_folder: `bool`, optional, keyword-only
-            Whether the adjustment folder should be deleted.
-        """
-
-
-        #! File processing
-        audio_data_list = 
+            yield data, output_file
 
 
     def compute_welch(
-        self, *, audio_file: Path, merge_files:bool = False, last_file_behavior: Literal["pad","truncate","discard"], write_file: bool = False
+        self, *, data: np.ndarray, sample_rate: int
     ) -> Tuple[np.ndarray, np.ndarray[float]]:
         """Generate the spectrograms
 
@@ -686,7 +668,6 @@ class Welch(Dataset):
         Sxx : `np.NDArray[float64]`
         Freq : `np.NDArray[float]`
         """
-        self.preprocess_file(audio_file=audio_file, last_file_behavior=last_file_behavior, merge_files=merge_files, write_file=write_file)
 
         if self.data_normalization == "instrument":
             data = (

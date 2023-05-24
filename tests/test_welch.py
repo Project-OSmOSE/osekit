@@ -3,7 +3,7 @@ import platform
 import pandas as pd
 import numpy as np
 
-from OSmOSE import Spectrogram
+from OSmOSE.features import Welch
 from OSmOSE.config import OSMOSE_PATH
 import soundfile as sf
 
@@ -28,16 +28,16 @@ PARAMS = {
 
 
 def test_build_path(input_dataset):
-    dataset = Spectrogram(
+    dataset = Welch(
         dataset_path=input_dataset["main_dir"],
         dataset_sr=240,
         analysis_params=PARAMS,
         local=True,
     )
     dataset.build()
-    dataset._Spectrogram__build_path(adjust=True, dry=True)
+    dataset._Welch__build_path(adjust=True, dry=True)
 
-    print("Values of spectrogram")
+    print("Values of Welch")
 
     print(
         "\n".join([f"{attr} : {getattr(dataset, str(attr))}" for attr in dir(dataset)])
@@ -48,7 +48,7 @@ def test_build_path(input_dataset):
     assert dataset.path.joinpath(OSMOSE_PATH.raw_audio, "3_44100").exists()
     assert len(list(dataset.path.joinpath(OSMOSE_PATH.raw_audio, "3_44100").glob("*.wav"))) == 10
     assert dataset.audio_path == dataset.path.joinpath(OSMOSE_PATH.raw_audio, "5_240")
-    assert dataset._Spectrogram__spectro_foldername == "adjustment_spectros"
+    assert dataset._Welch__spectro_foldername == "adjustment_spectros"
     assert dataset.path_output_spectrogram == dataset.path.joinpath(
         OSMOSE_PATH.spectrogram, "5_240", "adjustment_spectros", "image"
     )
@@ -71,7 +71,7 @@ def test_build_path(input_dataset):
 
 def test_initialize_5s(input_dataset):
     sr = 44100 if platform.system() else 240
-    dataset = Spectrogram(
+    dataset = Welch(
         dataset_path=input_dataset["main_dir"],
         dataset_sr=sr,
         analysis_params=PARAMS,
@@ -134,7 +134,7 @@ def test_initialize_5s(input_dataset):
 def test_initialize_2s(input_dataset):
     PARAMS["spectro_duration"] = 2
     sr = 44100 if platform.system() else 240
-    dataset = Spectrogram(
+    dataset = Welch(
         dataset_path=input_dataset["main_dir"],
         dataset_sr=sr,
         analysis_params=PARAMS,

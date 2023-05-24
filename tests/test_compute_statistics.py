@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import soundfile as sf
 from pathlib import Path
-from OSmOSE.cluster import compute_stats
+from OSmOSE.features import compute_stats
 
 
 def test_output_file_written(input_dir: Path, output_dir: Path):

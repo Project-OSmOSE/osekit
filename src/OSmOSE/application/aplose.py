@@ -3,6 +3,7 @@ from filelock import FileLock
 from typing import Literal, Union
 import shutil
 from OSmOSE.config import *
+import pandas as pd
 from termcolor import colored
 from OSmOSE.features import Welch
 from OSmOSE.utils import set_umask, make_path
@@ -164,175 +165,6 @@ class Aplose(Welch):
             round(Freq[1] - Freq[0], 3),
             "(Hz)",
         )
-
-
-    def generate_spectrogram(
-        self, 
-        audio_file: Union[str, Path], 
-        *, 
-        adjust: bool = False, 
-        save_matrix: bool = False, 
-        save_image: bool = False,
-        last_file_behavior: Literal["pad","truncate","discard"] = "pad", 
-        merge_files: bool = True, 
-        write_audio_file: bool = False,
-        clean_adjust_folder: bool = False,
-        overwrite: bool = False
-    ) -> None:
-        if not save_image and not save_matrix:
-            raise ValueError("Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data.")
-
-        set_umask()
-        try:
-            if clean_adjust_folder and (self.path_output_spectrogram.parent.parent.joinpath(
-                    "adjustment_spectros"
-                ).exists()
-            ):
-                shutil.rmtree(
-                    self.path_output_spectrogram.parent.parent.joinpath(
-                        "adjustment_spectros"
-                    ), ignore_errors=True
-                )
-        except: 
-            pass
-
-        self.save_matrix = save_matrix
-        self.save_image = save_image
-        
-        self.adjust = adjust
-        output_file = self.path_output_spectrogram.joinpath(audio_file)
-
-        def check_existing_matrix():
-            return len(list(self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"))) == 2**self.zoom_level if save_matrix else True
-
-        if len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))) == sum(2**i for i in range(self.zoom_level+1)) and check_existing_matrix():
-            if overwrite:
-                print(f"Existing files detected for audio file {audio_file}! They will be overwritten.")
-                for old_file in self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"):
-                    old_file.unlink()
-                if save_matrix:
-                    for old_matrix in self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"):
-                        old_matrix.unlink()
-            else:
-                print(f"The spectrograms for the file {audio_file} have already been generated, skipping...")
-                return
-
-
-        lock = FileLock(str(output_file) + ".lock")
-        lock.acquire(blocking=False)
-
-        self.process_file(audio_file=audio_file,
-                          adjust=adjust,
-                          last_file_behavior=last_file_behavior,
-                          merge_files=merge_files,
-                          write_audio_file=write_audio_file)
-        
-        lock.release()
-        os.remove(str(output_file) + ".lock")
-
-
-    def gen_tiles(self, *, data: np.ndarray, sample_rate: int, output_file: Path):
-        """Generate spectrogram tiles corresponding to the zoom levels.
-
-        Parameters
-        ----------
-        data : `np.ndarray`
-            The audio data from which the tiles will be generated.
-        sample_rate : `int`
-            The sample rate of the audio data.
-        output_file : `str`
-            The name of the output spectrogram."""
-
-        duration = len(data) / int(sample_rate)
-
-        nber_tiles_lowest_zoom_level = 2 ** (self.zoom_level)
-        tile_duration = duration / nber_tiles_lowest_zoom_level
-
-        Sxx_2 = np.empty((int(self.nfft / 2) + 1, 1))
-        for tile in range(0, nber_tiles_lowest_zoom_level):
-            start = tile * tile_duration
-            end = start + tile_duration
-
-            sample_data = data[int(start * sample_rate) : int((end + 1) * sample_rate)]
-
-            Sxx, Freq = self.gen_spectro(
-                data=sample_data,
-                sample_rate=sample_rate,
-                output_file=output_file.parent.joinpath(
-                    f"{output_file.stem}_{nber_tiles_lowest_zoom_level}_{str(tile)}.png"
-                ),
-            )            
-        # save spectrogram matrices (intensity, time and freq) in a npz file
-        if self.save_matrix:
-            Nbech = np.size(data)
-            Noffset = self.window_size - int(self.window_size * self.overlap / 100)
-            Nbwin = int((Nbech - self.window_size) / Noffset)
-            Time = np.linspace(0, Nbech / sample_rate, Nbwin)
-            if self.spectro_normalization == "density":
-                log_spectro = 10 * np.log10((Sxx / (1e-12)) + (1e-20))
-            if self.spectro_normalization == "spectrum":
-                log_spectro = 10 * np.log10(Sxx + (1e-20))
-
-            make_path(self.path_output_spectrogram_matrix, mode=DPDEFAULT)
-
-            output_matrix = self.path_output_spectrogram_matrix.joinpath(
-                output_file.name
-            ).with_suffix(".npz")
-
-            # TODO: add an option to force regeneration (in case of corrupted file)
-            if not output_matrix.exists():
-                np.savez(
-                    output_matrix,
-                    Sxx=Sxx,
-                    log_spectro=log_spectro,
-                    Freq=Freq,
-                    Time=Time,
-                )
-
-                os.chmod(output_matrix, mode=FPDEFAULT)
-
-            os.chmod(output_matrix, mode=FPDEFAULT)
-
-            Sxx_2 = np.hstack((Sxx_2, Sxx))
-
-        Sxx_lowest_level = Sxx_2[:, 1:]
-
-        segment_times = np.linspace(
-            0, len(data) / sample_rate, Sxx_lowest_level.shape[1]
-        )[np.newaxis, :]
-
-        self.time_resolution[0] = segment_times[1] - segment_times[0]
-
-        if self.save_image:
-            # loop over the zoom levels from the second lowest to the highest one
-            for zoom_level in range(self.zoom_level + 1)[::-1]:
-                nberspec = Sxx_lowest_level.shape[1] // (2**zoom_level)
-
-                # loop over the tiles at each zoom level
-                for tile in range(2**zoom_level):
-                    Sxx_int = Sxx_lowest_level[:, tile * nberspec : (tile + 1) * nberspec][
-                        :, :: 2 ** (self.zoom_level - zoom_level)
-                    ]
-
-                    segment_times_int = segment_times[
-                        :, tile * nberspec : (tile + 1) * nberspec
-                    ][:, :: 2 ** (self.zoom_level - zoom_level)]
-
-                    if self.spectro_normalization == "density":
-                        log_spectro = 10 * np.log10(Sxx_int / (1e-12))
-                    if self.spectro_normalization == "spectrum":
-                        log_spectro = 10 * np.log10(Sxx_int)
-
-                    self.generate_and_save_figures(
-                        time=segment_times_int,
-                        freq=Freq,
-                        log_spectro=log_spectro,
-                        output_file=output_file.parent.joinpath(
-                            f"{output_file.stem}_{str(2 ** zoom_level)}_{str(tile)}.png"
-                        ),
-                        adjust=self.adjust
-                    )
-
     def initialize(
         self,
         *,
@@ -443,7 +275,7 @@ class Aplose(Welch):
             "audio_file_folder_name": self.audio_path.name,
             "data_normalization": self.data_normalization,
             "hp_filter_min_freq": self.hp_filter_min_freq,
-            "sensitivity_dB": 20 * log10(self.sensitivity / 1e6),
+            "sensitivity_dB": 20 * np.log10(self.sensitivity / 1e6),
             "peak_voltage": self.peak_voltage,
             "spectro_normalization": self.spectro_normalization,
             "gain_dB": self.gain_dB,
@@ -500,7 +332,7 @@ class Aplose(Welch):
             "audio_file_folder_name": self.audio_path.name,
             "data_normalization": self.data_normalization,
             "hp_filter_min_freq": self.hp_filter_min_freq,
-            "sensitivity_dB": 20 * log10(self.sensitivity / 1e6),
+            "sensitivity_dB": 20 * np.log10(self.sensitivity / 1e6),
             "peak_voltage": self.peak_voltage,
             "spectro_normalization": self.spectro_normalization,
             "gain_dB": self.gain_dB,
@@ -526,6 +358,176 @@ class Aplose(Welch):
             os.chmod(filename, mode=DPDEFAULT)
             return True
         return False
+
+    def generate_spectrogram(
+        self, 
+        audio_file: Union[str, Path], 
+        *, 
+        adjust: bool = False, 
+        save_matrix: bool = False, 
+        save_image: bool = False,
+        last_file_behavior: Literal["pad","truncate","discard"] = "pad", 
+        merge_files: bool = True, 
+        write_audio_file: bool = False,
+        clean_adjust_folder: bool = False,
+        overwrite: bool = False
+    ) -> None:
+        if not save_image and not save_matrix:
+            raise ValueError("Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data.")
+
+        set_umask()
+        try:
+            if clean_adjust_folder and (self.path_output_spectrogram.parent.parent.joinpath(
+                    "adjustment_spectros"
+                ).exists()
+            ):
+                shutil.rmtree(
+                    self.path_output_spectrogram.parent.parent.joinpath(
+                        "adjustment_spectros"
+                    ), ignore_errors=True
+                )
+        except: 
+            pass
+
+        self.save_matrix = save_matrix
+        self.save_image = save_image
+        
+        self.adjust = adjust
+        output_file = self.path_output_spectrogram.joinpath(audio_file)
+
+        def check_existing_matrix():
+            return len(list(self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"))) == 2**self.zoom_level if save_matrix else True
+
+        if len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))) == sum(2**i for i in range(self.zoom_level+1)) and check_existing_matrix():
+            if overwrite:
+                print(f"Existing files detected for audio file {audio_file}! They will be overwritten.")
+                for old_file in self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"):
+                    old_file.unlink()
+                if save_matrix:
+                    for old_matrix in self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"):
+                        old_matrix.unlink()
+            else:
+                print(f"The spectrograms for the file {audio_file} have already been generated, skipping...")
+                return
+
+
+        lock = FileLock(str(output_file) + ".lock")
+        lock.acquire(blocking=False)
+
+        welchs = self.preprocess_file(audio_file=audio_file,
+                          adjust=adjust,
+                          last_file_behavior=last_file_behavior,
+                          merge_files=merge_files,
+                          write_audio_file=write_audio_file)
+        
+        for welch in welchs:
+            self.gen_tiles(data=welch[0], sample_rate=self.sr_analysis, output_file=welch[1])
+
+        lock.release()
+        os.remove(str(output_file) + ".lock")
+
+
+    def gen_tiles(self, *, data: np.ndarray, sample_rate: int, output_file: Path):
+        """Generate spectrogram tiles corresponding to the zoom levels.
+
+        Parameters
+        ----------
+        data : `np.ndarray`
+            The audio data from which the tiles will be generated.
+        sample_rate : `int`
+            The sample rate of the audio data.
+        output_file : `str`
+            The name of the output spectrogram."""
+
+        duration = len(data) / int(sample_rate)
+
+        nber_tiles_lowest_zoom_level = 2 ** (self.zoom_level)
+        tile_duration = duration / nber_tiles_lowest_zoom_level
+
+        Sxx_2 = np.empty((int(self.nfft / 2) + 1, 1))
+        for tile in range(0, nber_tiles_lowest_zoom_level):
+            start = tile * tile_duration
+            end = start + tile_duration
+
+            sample_data = data[int(start * sample_rate) : int(end * sample_rate) -1]
+
+            Sxx, Freq = self.gen_spectro(
+                data=sample_data,
+                sample_rate=sample_rate,
+                output_file=output_file.parent.joinpath(
+                    f"{output_file.stem}_{nber_tiles_lowest_zoom_level}_{str(tile)}.png"
+                ),
+            )            
+        # save spectrogram matrices (intensity, time and freq) in a npz file
+        if self.save_matrix:
+            Nbech = np.size(data)
+            Noffset = self.window_size - int(self.window_size * self.overlap / 100)
+            Nbwin = int((Nbech - self.window_size) / Noffset)
+            Time = np.linspace(0, Nbech / sample_rate, Nbwin)
+            if self.spectro_normalization == "density":
+                log_spectro = 10 * np.log10((Sxx / (1e-12)) + (1e-20))
+            if self.spectro_normalization == "spectrum":
+                log_spectro = 10 * np.log10(Sxx + (1e-20))
+
+            make_path(self.path_output_spectrogram_matrix, mode=DPDEFAULT)
+
+            output_matrix = self.path_output_spectrogram_matrix.joinpath(
+                output_file.name
+            ).with_suffix(".npz")
+
+            # TODO: add an option to force regeneration (in case of corrupted file)
+            if not output_matrix.exists():
+                np.savez(
+                    output_matrix,
+                    Sxx=Sxx,
+                    log_spectro=log_spectro,
+                    Freq=Freq,
+                    Time=Time,
+                )
+
+                os.chmod(output_matrix, mode=FPDEFAULT)
+
+            os.chmod(output_matrix, mode=FPDEFAULT)
+
+            Sxx_2 = np.hstack((Sxx_2, Sxx))
+
+        Sxx_lowest_level = Sxx_2[:, 1:]
+
+        segment_times = np.linspace(
+            0, len(data) / sample_rate, Sxx_lowest_level.shape[1]
+        )[np.newaxis, :]
+
+        self.time_resolution[0] = segment_times[1] - segment_times[0]
+
+        if self.save_image:
+            # loop over the zoom levels from the second lowest to the highest one
+            for zoom_level in range(self.zoom_level + 1)[::-1]:
+                nberspec = Sxx_lowest_level.shape[1] // (2**zoom_level)
+
+                # loop over the tiles at each zoom level
+                for tile in range(2**zoom_level):
+                    Sxx_int = Sxx_lowest_level[:, tile * nberspec : (tile + 1) * nberspec][
+                        :, :: 2 ** (self.zoom_level - zoom_level)
+                    ]
+
+                    segment_times_int = segment_times[
+                        :, tile * nberspec : (tile + 1) * nberspec
+                    ][:, :: 2 ** (self.zoom_level - zoom_level)]
+
+                    if self.spectro_normalization == "density":
+                        log_spectro = 10 * np.log10(Sxx_int / (1e-12))
+                    if self.spectro_normalization == "spectrum":
+                        log_spectro = 10 * np.log10(Sxx_int)
+
+                    self.generate_and_save_figures(
+                        time=segment_times_int,
+                        freq=Freq,
+                        log_spectro=log_spectro,
+                        output_file=output_file.parent.joinpath(
+                            f"{output_file.stem}_{str(2 ** zoom_level)}_{str(tile)}.png"
+                        ),
+                        adjust=self.adjust
+                    )
 
     def generate_and_save_figures(
         self,
