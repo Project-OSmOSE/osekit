@@ -16,13 +16,9 @@ import numpy as np
 from scipy import signal
 from termcolor import colored
 from matplotlib import pyplot as plt
-from OSmOSE.job import Job_builder
-from OSmOSE.cluster import (
-    reshape,
-    resample,
-    compute_stats,
-)
-from OSmOSE.Dataset import Dataset
+
+from OSmOSE.features import compute_statistics
+from OSmOSE.core import Dataset, Job_builder
 from OSmOSE.utils import safe_read, make_path, set_umask, from_timestamp, to_timestamp
 from OSmOSE.config import *
 
@@ -495,7 +491,49 @@ class Welch(Dataset):
             write_file: `bool`, optional, keyword-only
                 If set to True, will write the preprocessed audio file to the output folder. Else, will hold it in memory. Default is False.
                 """
-        self.__build_path(adjust=adjust)
+        set_umask()
+
+        self.__build_path(self.adjust)
+        Zscore = self.zscore_duration if not self.adjust else "original"
+
+        audio_file = Path(audio_file).name
+
+        #! Data validation
+        if audio_file not in os.listdir(self.audio_path):
+            raise FileNotFoundError(
+                f"The file {audio_file} must be in {self.audio_path} in order to be processed."
+            )
+        
+        if self.data_normalization == "zscore" and self.spectro_normalization != "spectrum":
+            self.spectro_normalization = "spectrum"
+            print("WARNING: the spectrogram normalization has been changed to spectrum because the data will be normalized using zscore.")
+        
+
+
+        #! Determination of zscore normalization parameters
+        if self.data_normalization == "zscore" and Zscore != "original" and not hasattr(self, "__summStats"):
+            average_over_H = int(
+                round(pd.to_timedelta(Zscore).total_seconds() / self.spectro_duration)
+            )
+
+            df = pd.DataFrame()
+            for dd in self.path.joinpath(OSMOSE_PATH.statistics).glob("summaryStats*"):
+                df = pd.concat([df, pd.read_csv(dd, header=0)])
+
+            df["mean_avg"] = df["mean"].rolling(average_over_H, min_periods=1).mean()
+            df["std_avg"] = df["std"].pow(2).rolling(average_over_H, min_periods=1).mean().apply(np.sqrt, raw=True)
+
+            self.__summStats = df
+            self.__zscore_mean = self.__summStats[
+            self.__summStats["filename"] == audio_file
+            ]["mean_avg"].values[0]
+            self.__zscore_std = self.__summStats[
+                self.__summStats["filename"] == audio_file
+            ]["std_avg"].values[0]
+
+            print(f"Zscore mean : {self.__zscore_mean} and std : {self.__zscore_std}/")
+
+
 
         orig_path = self.path_input_audio_file.joinpath("orig_timestamp.csv") if self.path_input_audio_file.joinpath("orig_timestamp.csv").exists() else self.path_input_audio_file.joinpath("timestamp.csv")
         orig_timestamp_file = pd.read_csv(
@@ -590,13 +628,6 @@ class Welch(Dataset):
             if next(self.path_output_spectrogram.glob(f"{output_file.stem}*"), None) is not None:
                 continue
 
-            if self.data_normalization == "instrument":
-                data = (
-                    (data * self.peak_voltage)
-                    / self.sensitivity
-                    / 10 ** (self.gain_dB / 20)
-                )
-
             bpcoef = signal.butter(
                 20,
                 np.array([self.hp_filter_min_freq, self.sr_analysis / 2 - 1]),
@@ -632,56 +663,14 @@ class Welch(Dataset):
         clean_adjust_folder: `bool`, optional, keyword-only
             Whether the adjustment folder should be deleted.
         """
-        set_umask()
 
-        self.__build_path(self.adjust)
-        Zscore = self.zscore_duration if not self.adjust else "original"
-
-        audio_file = Path(audio_file).name
-
-        
-        if audio_file not in os.listdir(self.audio_path):
-            raise FileNotFoundError(
-                f"The file {audio_file} must be in {self.audio_path} in order to be processed."
-            )
-        
-        if self.data_normalization == "zscore" and self.spectro_normalization != "spectrum":
-            self.spectro_normalization = "spectrum"
-            print("WARNING: the spectrogram normalization has been changed to spectrum because the data will be normalized using zscore.")
-        
-
-        print(f"Generating spectrograms for {audio_file}...")
-        #! Determination of zscore normalization parameters
-        if self.data_normalization == "zscore" and Zscore != "original" and not hasattr(self, "__summStats"):
-            average_over_H = int(
-                round(pd.to_timedelta(Zscore).total_seconds() / self.spectro_duration)
-            )
-
-            df = pd.DataFrame()
-            for dd in self.path.joinpath(OSMOSE_PATH.statistics).glob("summaryStats*"):
-                df = pd.concat([df, pd.read_csv(dd, header=0)])
-
-            df["mean_avg"] = df["mean"].rolling(average_over_H, min_periods=1).mean()
-            df["std_avg"] = df["std"].pow(2).rolling(average_over_H, min_periods=1).mean().apply(np.sqrt, raw=True)
-
-            self.__summStats = df
-            self.__zscore_mean = self.__summStats[
-            self.__summStats["filename"] == audio_file
-            ]["mean_avg"].values[0]
-            self.__zscore_std = self.__summStats[
-                self.__summStats["filename"] == audio_file
-            ]["std_avg"].values[0]
-
-            print(f"Zscore mean : {self.__zscore_mean} and std : {self.__zscore_std}/")
 
         #! File processing
-        audio_data_list = self.preprocess_file(audio_file=audio_file, last_file_behavior=last_file_behavior, merge_files=merge_files, write_file=write_audio_file)
-
-        
+        audio_data_list = 
 
 
-    def gen_spectro(
-        self, *, data: np.ndarray, sample_rate: int
+    def compute_welch(
+        self, *, audio_file: Path, merge_files:bool = False, last_file_behavior: Literal["pad","truncate","discard"], write_file: bool = False
     ) -> Tuple[np.ndarray, np.ndarray[float]]:
         """Generate the spectrograms
 
@@ -697,6 +686,15 @@ class Welch(Dataset):
         Sxx : `np.NDArray[float64]`
         Freq : `np.NDArray[float]`
         """
+        self.preprocess_file(audio_file=audio_file, last_file_behavior=last_file_behavior, merge_files=merge_files, write_file=write_file)
+
+        if self.data_normalization == "instrument":
+            data = (
+                (data * self.peak_voltage)
+                / self.sensitivity
+                / 10 ** (self.gain_dB / 20)
+            )
+
         if self.data_normalization == "zscore" and self.zscore_duration:
             if (len(self.zscore_duration) > 0) and (self.zscore_duration != "original"):
                 data = (data - self.__zscore_mean) / self.__zscore_std
