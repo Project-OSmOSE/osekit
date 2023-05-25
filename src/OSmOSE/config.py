@@ -2,7 +2,8 @@ from pathlib import Path
 from collections import namedtuple
 import stat
 
-SUPPORTED_AUDIO_FORMAT = ["wav"]
+SUPPORTED_AUDIO_FORMAT = ["wav", "WAV"]
+UNSUPPORTED_AUDIO_FORMAT = ["mp3","ogg","flac"]
 
 # Dict are easier to modify, namedtuple easier to use
 __global_path_dict = {
