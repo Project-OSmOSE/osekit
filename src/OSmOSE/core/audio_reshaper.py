@@ -164,7 +164,7 @@ def reshape(
     )
     proceed = force_reshape  # Default is False
 
-    def write_file(output, timestamp, sr, extra_text = ""):
+    def write_file(output, timestamp, sr, subtype = "FLOAT", extra_text = ""):
         outfilename = output_dir_path.joinpath(
             f"{from_timestamp(timestamp).replace(':','-').replace('.','_')}.wav"
         )
@@ -173,7 +173,7 @@ def reshape(
         timestamp_list.append(from_timestamp(timestamp))
         timestamp += timedelta(seconds=len(output))
         print(timestamp)
-        sf.write(outfilename, output, sr, format="WAV", subtype="DOUBLE")
+        sf.write(outfilename, output, sr, format="WAV", subtype=subtype)
         os.chmod(outfilename, mode=FPDEFAULT)
 
         if verbose:
@@ -189,6 +189,7 @@ def reshape(
         with sf.SoundFile(input_dir_path.joinpath(files[i])) as audio_file:
             frames = audio_file.frames
             sample_rate = audio_file.samplerate
+            subtype = audio_file.subtype
             audio_data = audio_file.read()
 
         if new_sr == -1: 
@@ -243,7 +244,7 @@ def reshape(
                 )
 
                 if write_output: 
-                    write_file(output,timestamp, sample_rate)
+                    write_file(output,timestamp, sample_rate, subtype=subtype)
                 else:
                     pass#yield (output,files[i])
 
@@ -266,7 +267,7 @@ def reshape(
                     
                     if write_output:
                         pad_text = f"Padded with {fill.size // sample_rate} seconds." if last_file_behavior == "pad" and fill.size > 0 else ""
-                        write_file(output, timestamp, sample_rate, pad_text)
+                        write_file(output, timestamp, sample_rate, pad_text, subtype=subtype)
                     else:
                         pass#yield (output,files[i])
 
@@ -339,7 +340,7 @@ def reshape(
                 previous_audio_data = nextdata[rest:]
 
         if write_output: 
-            write_file(output,timestamp, sample_rate)
+            write_file(output,timestamp, sample_rate, subtype=subtype)
         else:
             pass#yield (output,files[i])
 
@@ -353,7 +354,7 @@ def reshape(
         previous_audio_data = previous_audio_data[chunk_size * sample_rate :]
 
         if write_output: 
-            write_file(output,timestamp, sample_rate)
+            write_file(output,timestamp, sample_rate, subtype=subtype)
         else:
             pass#yield (output,files[i])
 
@@ -376,7 +377,7 @@ def reshape(
                 skip_last = True
 
         if not skip_last:
-            write_file(output,timestamp, sample_rate)
+            write_file(output,timestamp, sample_rate, subtype=subtype)
         else:
             pass#yield (output,files[i])
 
