@@ -208,15 +208,7 @@ class Aplose(Welch):
         if dataset_sr:
             self.dataset_sr = dataset_sr
 
-        list_wav_withEvent_comp = sorted(self.path_input_audio_file.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
 
-        if batch_ind_max == -1:
-            batch_ind_max = len(list_wav_withEvent_comp)
-        list_wav_withEvent = list_wav_withEvent_comp[batch_ind_min:batch_ind_max]
-
-        self.list_wav_to_process = [
-            audio_file.name for audio_file in list_wav_withEvent
-        ]
 
         """List containing the last job ids to grab outside of the class."""
         self.pending_jobs = []

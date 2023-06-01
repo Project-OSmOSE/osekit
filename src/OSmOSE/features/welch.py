@@ -346,6 +346,8 @@ class Welch(Dataset):
     def initialize(self, *, date_template:str = None, force_init: bool = False, batch_ind_min:int = 0, batch_ind_max:int = -1):
         audio_foldername = f"{str(self.spectro_duration)}_{str(self.dataset_sr)}"
         self.audio_path = self.path.joinpath(OSMOSE_PATH.raw_audio, audio_foldername)
+        if not self.audio_path.exists():
+            make_path(self.audio_path, mode=DPDEFAULT)
         # Mandatory init
         if not self.is_built:
             try:
@@ -361,8 +363,18 @@ class Welch(Dataset):
             print("WARNING: the spectrogram normalization has been changed to spectrum because the data will be normalized using zscore.")
 
         self.path_input_audio_file = self._get_original_after_build()
-        
+
         #! INITIALIZATION START
+        list_wav_withEvent_comp = sorted(self.path_input_audio_file.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
+
+        if batch_ind_max == -1:
+            batch_ind_max = len(list_wav_withEvent_comp)
+        list_wav_withEvent = list_wav_withEvent_comp[batch_ind_min:batch_ind_max]
+
+        self.list_wav_to_process = [
+            audio_file.name for audio_file in list_wav_withEvent
+        ]
+
         if self.path.joinpath(OSMOSE_PATH.processed, "subset_files.csv").is_file():
             subset = pd.read_csv(
                 self.path.joinpath(OSMOSE_PATH.processed, "subset_files.csv"),
