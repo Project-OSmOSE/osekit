@@ -360,6 +360,8 @@ class Welch(Dataset):
             self.spectro_normalization = "spectrum"
             print("WARNING: the spectrogram normalization has been changed to spectrum because the data will be normalized using zscore.")
 
+        self.path_input_audio_file = self._get_original_after_build()
+        
         #! INITIALIZATION START
         if self.path.joinpath(OSMOSE_PATH.processed, "subset_files.csv").is_file():
             subset = pd.read_csv(

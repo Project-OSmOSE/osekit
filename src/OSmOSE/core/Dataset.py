@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from OSmOSE.utils import read_header, check_n_files, make_path, set_umask, is_audio
-from OSmOSE.timestamps import write_timestamp
+from OSmOSE.core.timestamps import write_timestamp
 from OSmOSE.config import *
 
 

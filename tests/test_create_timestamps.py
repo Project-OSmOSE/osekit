@@ -1,4 +1,4 @@
-import OSmOSE.timestamps as tm
+import OSmOSE.core.timestamps as tm
 import re
 import pytest
 

@@ -1,5 +1,4 @@
 from OSmOSE.core import *
-from OSmOSE.timestamps import write_timestamp
 from OSmOSE.features import *
 from OSmOSE.application import *
 

@@ -208,7 +208,6 @@ class Aplose(Welch):
         if dataset_sr:
             self.dataset_sr = dataset_sr
 
-        self.path_input_audio_file = self._get_original_after_build()
         list_wav_withEvent_comp = sorted(self.path_input_audio_file.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
 
         if batch_ind_max == -1:
