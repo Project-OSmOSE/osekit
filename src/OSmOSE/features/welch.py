@@ -40,12 +40,12 @@ class Welch(Dataset):
         """Instanciates a spectrogram object.
 
         The characteristics of the dataset are essential to input for the generation of the spectrograms. There is three ways to input them:
-            - Use the existing `analysis/self.__analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that
+            - Use the existing `analysis/self.analysis_sheet.csv` file. If one exist, it will take priority over the other methods. Note that
             when using this file, some attributes will be locked in read-only mode.
             - Fill the `analysis_params` argument. More info on the expected value below.
             - Don't initialize the attributes in the constructor, and assign their values manually.
 
-        In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, `analysis/self.__analysis_sheet.csv`
+        In any case, all attributes must have a value for the spectrograms to be generated. If it does not exist, `analysis/self.analysis_sheet.csv`
         will be written at the end of the `Spectrogram.initialize()` method.
 
         Parameters
@@ -61,7 +61,7 @@ class Welch(Dataset):
             The name of the group using the OsmOSE package. All files created using this dataset will be accessible by the osmose group.
             Will not work on Windows.
         analysis_params : `dict`, optional, keyword-only
-            If `analysis/self.__analysis_sheet.csv` does not exist, the analysis parameters can be submitted in the form of a dict,
+            If `analysis/self.analysis_sheet.csv` does not exist, the analysis parameters can be submitted in the form of a dict,
             with keys matching what is expected:
                 - nfft : `int`
                 - window_size : `int`
@@ -79,7 +79,7 @@ class Welch(Dataset):
                 - spectro_normalization : `str`
                 - data_normalization : `str`
                 - gain_dB : `int`
-            If additional information is given, it will be ignored. Note that if there is an `analysis/self.__analysis_sheet.csv` file, it will
+            If additional information is given, it will be ignored. Note that if there is an `analysis/self.analysis_sheet.csv` file, it will
             always have the priority.
         batch_number : `int`, optional, keyword_only
             The number of batches the dataset files will be split into when submitting parallel jobs (the default is 10).
@@ -102,12 +102,12 @@ class Welch(Dataset):
         processed_path = self.path.joinpath(OSMOSE_PATH.spectrogram)
         metadata_path = processed_path.joinpath("adjust_metadata.csv")
         if metadata_path.exists():
-            self.__analysis_sheet = pd.read_csv(metadata_path, header=0)
+            self.analysis_sheet = pd.read_csv(metadata_path, header=0)
         elif analysis_params:
             # We put the value in a list so that value[0] returns the right value below.
-            self.__analysis_sheet = {key: [value] for (key, value) in analysis_params.items()}
+            self.analysis_sheet = {key: [value] for (key, value) in analysis_params.items()}
         else:
-            self.__analysis_sheet = {}
+            self.analysis_sheet = {}
             print(
                 "No valid processed/adjust_metadata.csv found and no parameters provided. All attributes will be initialized to default values..  \n"
             )
@@ -115,23 +115,23 @@ class Welch(Dataset):
         self.batch_number: int = batch_number
         self.dataset_sr: int = dataset_sr if dataset_sr is not None else orig_metadata['origin_sr'][0]
 
-        self.nfft: int = self.__analysis_sheet["nfft"][0] if "nfft" in self.__analysis_sheet else 1
+        self.nfft: int = self.analysis_sheet["nfft"][0] if "nfft" in self.analysis_sheet else 1
         self.window_size: int = (
-            self.__analysis_sheet["window_size"][0]
-            if "window_size" in self.__analysis_sheet
+            self.analysis_sheet["window_size"][0]
+            if "window_size" in self.analysis_sheet
             else None
         )
         self.overlap: int = (
-            self.__analysis_sheet["overlap"][0] if "overlap" in self.__analysis_sheet else None
+            self.analysis_sheet["overlap"][0] if "overlap" in self.analysis_sheet else None
         )
         self.number_adjustment_spectrogram: int = (
-            self.__analysis_sheet["number_adjustment_spectrogram"][0]
-            if "number_adjustment_spectrogram" in self.__analysis_sheet
+            self.analysis_sheet["number_adjustment_spectrogram"][0]
+            if "number_adjustment_spectrogram" in self.analysis_sheet
             else None
         )
         self.spectro_duration: int = (
-            self.__analysis_sheet["spectro_duration"][0]
-            if self.__analysis_sheet is not None and "spectro_duration" in self.__analysis_sheet
+            self.analysis_sheet["spectro_duration"][0]
+            if self.analysis_sheet is not None and "spectro_duration" in self.analysis_sheet
             else (
                 orig_metadata["audio_file_origin_duration"][0]
                 if self.is_built
@@ -140,59 +140,59 @@ class Welch(Dataset):
         )
 
         self.zscore_duration: Union[float, str] = (
-            self.__analysis_sheet["zscore_duration"][0]
-            if "zscore_duration" in self.__analysis_sheet
-            and isinstance(self.__analysis_sheet["zscore_duration"][0], float)
+            self.analysis_sheet["zscore_duration"][0]
+            if "zscore_duration" in self.analysis_sheet
+            and isinstance(self.analysis_sheet["zscore_duration"][0], float)
             else "original"
         )
 
         # fmin cannot be 0 in butterworth. If that is the case, it takes the smallest value possible, epsilon
         self.hp_filter_min_freq: int = (
-            self.__analysis_sheet["hp_filter_min_freq"][0]
-            if "hp_filter_min_freq" in self.__analysis_sheet
+            self.analysis_sheet["hp_filter_min_freq"][0]
+            if "hp_filter_min_freq" in self.analysis_sheet
             else 0
         )
 
         self.sensitivity: float = (
-            self.__analysis_sheet["sensitivity_dB"][0]
-            if "sensitivity_dB" in self.__analysis_sheet
+            self.analysis_sheet["sensitivity_dB"][0]
+            if "sensitivity_dB" in self.analysis_sheet
             else 0
         )
 
         self.peak_voltage: float = (
-            self.__analysis_sheet["peak_voltage"][0]
-            if "peak_voltage" in self.__analysis_sheet
+            self.analysis_sheet["peak_voltage"][0]
+            if "peak_voltage" in self.analysis_sheet
             else None
         )
         self.spectro_normalization: str = (
-            self.__analysis_sheet["spectro_normalization"][0]
-            if "spectro_normalization" in self.__analysis_sheet
+            self.analysis_sheet["spectro_normalization"][0]
+            if "spectro_normalization" in self.analysis_sheet
             else None
         )
         self.data_normalization: str = (
-            self.__analysis_sheet["data_normalization"][0]
-            if "data_normalization" in self.__analysis_sheet
+            self.analysis_sheet["data_normalization"][0]
+            if "data_normalization" in self.analysis_sheet
             else None
         )
         self.gain_dB: float = (
-            self.__analysis_sheet["gain_dB"][0]
-            if "gain_dB" in self.__analysis_sheet is not None
+            self.analysis_sheet["gain_dB"][0]
+            if "gain_dB" in self.analysis_sheet is not None
             else None
         )
 
         self.window_type: str = (
-            self.__analysis_sheet["window_type"][0]
-            if "window_type" in self.__analysis_sheet
+            self.analysis_sheet["window_type"][0]
+            if "window_type" in self.analysis_sheet
             else "hamming"
         )
 
         self.time_resolution = (
             [
-                self.__analysis_sheet[col][0]
-                for col in self.__analysis_sheet
+                self.analysis_sheet[col][0]
+                for col in self.analysis_sheet
                 if "time_resolution" in col
             ]
-            if self.__analysis_sheet is not None
+            if self.analysis_sheet is not None
             else [0] * self.zoom_level
         )
 

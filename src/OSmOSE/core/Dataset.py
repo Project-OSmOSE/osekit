@@ -280,7 +280,7 @@ class Dataset:
         path_raw_audio = original_folder if original_folder is not None else self._find_or_create_original_folder()
         path_timestamp_formatted = path_raw_audio.joinpath("timestamp.csv")
 
-        if not path_timestamp_formatted.exists():
+        if not path_timestamp_formatted.exists() or (path_timestamp_formatted.exists() and path_timestamp_formatted.stat().st_size == 0):
             if not date_template:
                 raise FileNotFoundError(
                     f"The timestamp.csv file has not been found in {path_raw_audio}. You can create it automatically by setting the date template as argument."
@@ -373,16 +373,16 @@ class Dataset:
 
             return list_filename_abnormal_duration
 
-        dd = pd.DataFrame(list_interWavInterval).describe()
-        print("Summary statistics on your INTER-FILE DURATION")
-        print(dd[0].to_string())
-        if dd[0]["std"] < 1e-10:
-            dutyCycle_percent = round(
-                100 * mean(list_duration) / mean(list_interWavInterval),
-                1,
-            )
-        else:
-            dutyCycle_percent = np.nan
+        # dd = pd.DataFrame(list_interWavInterval).describe()
+        # print("Summary statistics on your INTER-FILE DURATION")
+        # print(dd[0].to_string())
+        # if dd[0]["std"] < 1e-10:
+        #     dutyCycle_percent = round(
+        #         100 * mean(list_duration) / mean(list_interWavInterval),
+        #         1,
+        #     )
+        # else:
+        dutyCycle_percent = np.nan
 
         # get files with too small duration
         nominalVal_duration = int(np.percentile(list_duration, 10))

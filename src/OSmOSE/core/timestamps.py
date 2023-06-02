@@ -70,7 +70,7 @@ def write_timestamp(
             The first element is the first character of the date, and the second is the last.
     """
     # TODO: extension-agnostic
-    list_audio_file = sorted([file for file in Path(audio_path).glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")])
+    list_audio_file = sorted([file for file in Path(audio_path).glob(f"*.[{' '.join(SUPPORTED_AUDIO_FORMAT)}]*")])
 
     if len(list_audio_file) == 0:
         print(
@@ -103,13 +103,15 @@ def write_timestamp(
         timestamp.append(dates_final)
 
         filename_raw_audio.append(filename.name)
+    output_path = Path(audio_path, "timestamp.csv")
 
+    if output_path.exists(): output_path.unlink()
     df = pd.DataFrame(
         {"filename": filename_raw_audio, "timestamp": timestamp, "timezone": timezone}
     )
     df.sort_values(by=["timestamp"], inplace=True)
     df.to_csv(
-        Path(audio_path, "timestamp.csv"),
+        output_path,
         index=False,
         na_rep="NaN",
         header=None

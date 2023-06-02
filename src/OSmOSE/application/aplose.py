@@ -16,19 +16,19 @@ class Aplose(Welch):
         super().__init__(dataset_path, dataset_sr=dataset_sr, gps_coordinates=gps_coordinates, owner_group=owner_group, analysis_params=analysis_params, batch_number=batch_number, local=local)
 
         self.colormap: str = (
-            self.__analysis_sheet["colormap"][0] if "colormap" in self.__analysis_sheet else "viridis"
+            self.analysis_sheet["colormap"][0] if "colormap" in self.analysis_sheet else "viridis"
         )
         self.zoom_level: int = (
-            self.__analysis_sheet["zoom_level"][0] if "zoom_level" in self.__analysis_sheet else 0
+            self.analysis_sheet["zoom_level"][0] if "zoom_level" in self.analysis_sheet else 0
         )
         self.dynamic_min: int = (
-            self.__analysis_sheet["dynamic_min"][0]
-            if "dynamic_min" in self.__analysis_sheet
+            self.analysis_sheet["dynamic_min"][0]
+            if "dynamic_min" in self.analysis_sheet
             else None
         )
         self.dynamic_max: int = (
-            self.__analysis_sheet["dynamic_max"][0]
-            if "dynamic_max" in self.__analysis_sheet
+            self.analysis_sheet["dynamic_max"][0]
+            if "dynamic_max" in self.analysis_sheet
             else None
         )
         plt.switch_backend("agg")
@@ -278,13 +278,13 @@ class Aplose(Welch):
         for i, time_res in enumerate(self.time_resolution):
             data.update({f"time_resolution_{i}": time_res})
 
-        self.__analysis_sheet = pd.DataFrame.from_records([data])
+        self.analysis_sheet = pd.DataFrame.from_records([data])
 
         adjust_path = self.path.joinpath(OSMOSE_PATH.spectrogram, "adjust_metadata.csv")
         if adjust_path.exists():
             adjust_path.unlink() # Always overwrite this file
 
-        self.__analysis_sheet.to_csv(
+        self.analysis_sheet.to_csv(
             adjust_path
         )
         os.chmod(adjust_path, mode=FPDEFAULT)
