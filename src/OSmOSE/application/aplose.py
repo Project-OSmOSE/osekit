@@ -563,7 +563,8 @@ class Aplose(Welch):
             fig.axes[0].get_yaxis().set_visible(True)
             ax.set_ylabel('Frequency (Hz)')
             ax.set_xlabel('Time (s)')
-            plt.colorbar()
+            cbar = plt.colorbar()
+            cbar.set_label("Amplitude (dB)", rotation=270)
         else:            
             fig.axes[0].get_xaxis().set_visible(False)
             fig.axes[0].get_yaxis().set_visible(False)
