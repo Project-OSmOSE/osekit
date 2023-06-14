@@ -47,11 +47,10 @@ class Job_builder:
             "errfile",
         ]
 
-        if not all(prop in self.__config._fields for prop in required_properties):
+        if not all(prop in self.__config.keys() for prop in required_properties):
             raise ValueError(
-                f"The provided configuration file is missing the following attributes: {'; '.join(list(set(required_properties).difference(set(self.__config._fields))))}"
+                f"The provided configuration file is missing the following attributes: {'; '.join(list(set(required_properties).difference(set(self.__config.keys()))))}"
             )
-
     # region Properties
     # READ-ONLY properties
     @property
@@ -250,13 +249,13 @@ class Job_builder:
             The path to the created job file.
         """
         set_umask()
-        if "Presets" in self.__config._fields:
-            if preset and preset.lower() not in self.__config.Presets._fields:
+        if "Presets" in self.__config.keys():
+            if preset and preset.lower() not in self.__config["Presets"].keys():
                 raise ValueError(
-                    f"Unrecognized preset {preset}. Valid presets are: {', '.join(self.__config.Presets._fields)}"
+                    f"Unrecognized preset {preset}. Valid presets are: {', '.join(self.__config['Presets'].keys())}"
                 )
 
-            job_preset = getattr(self.__config.Presets, preset)
+            job_preset = getattr(self.__config["Presets"], preset)
         else:
             preset = None
 

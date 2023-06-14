@@ -58,7 +58,7 @@ def test_build_path(input_dataset):
     
     assert not dataset.path_output_spectrogram.exists()
 
-    dataset._Spectrogram__build_path(adjust=False, dry=False)
+    dataset._Aplose__build_path(adjust=False, dry=False)
     assert dataset.path_output_spectrogram == dataset.path.joinpath(
         OSMOSE_PATH.spectrogram, "5_240", "512_512_97", "image"
     )
