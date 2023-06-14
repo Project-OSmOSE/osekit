@@ -9,7 +9,7 @@ import soundfile as sf
 import numpy as np
 from scipy import signal
 
-from OSmOSE.utils import set_umask, get_timestamp_of_audio_file
+from OSmOSE.utils import set_umask
 
 def Write_zscore_norma_params(
     *,
@@ -55,6 +55,11 @@ def Write_zscore_norma_params(
 
     list_summaryStats = []
 
+    timestamps = pd.read_csv(Path(input_dir).joinpath('timestamp.csv'),header=None, names=["filename","timestamp"])
+    # get timestamp of the audio file
+    
+
+
     for wav in wav_list:
         data, sample_rate = sf.read(wav)
 
@@ -69,7 +74,7 @@ def Write_zscore_norma_params(
         )
         data = signal.sosfilt(bpcoef, data)
         
-        current_timestamp = get_timestamp_of_audio_file(Path(input_dir).joinpath('timestamp.csv') , wav.name)        
+        current_timestamp = str(timestamps["timestamp"][timestamps["filename"] == wav.name].values[0])       
 
         list_summaryStats.append([wav.name, current_timestamp, np.mean(data), np.std(data)])
 
