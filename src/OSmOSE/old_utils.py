@@ -9,6 +9,8 @@ from collections import namedtuple
 import sys
 from typing import Union, NamedTuple, Tuple
 
+import pandas as pd
+
 import json
 
 try:
@@ -366,3 +368,12 @@ def make_path(path: Path, *, mode=DPDEFAULT) -> Path:
 
 def set_umask():
     os.umask(0o002)
+
+
+
+# TO DO : function not optimized in case you use it in a for loop , because it will reload .csv for each audiofile , should
+# be able to take as input the already loaded timestamps
+def get_timestamp_of_audio_file(path_timestamp_file:Path,audio_file_name:str) -> str:
+    timestamps = pd.read_csv(path_timestamp_file,header=None, names=["filename","timestamp"])
+    # get timestamp of the audio file
+    return str(timestamps["timestamp"][timestamps["filename"] == audio_file_name].values[0])

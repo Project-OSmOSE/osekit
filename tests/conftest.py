@@ -39,9 +39,9 @@ def input_dataset(tmp_path: Path):
             writer = csv.writer(timestampf)
             writer.writerow(
                 [
-                    str(wav_file),
+                    wav_file.name,
                     f"2022-01-01T12:00:{str(3*i).zfill(2)}.000Z",
-                    "UTC",
+                    #"UTC",
                 ]
             )
 
@@ -113,14 +113,14 @@ def input_reshape(input_dir: Path):
     with open(input_dir.joinpath("timestamp.csv"), "w", newline="") as timestampf:
         writer = csv.writer(timestampf)
         writer.writerow(
-            [str(input_dir.joinpath("test.wav")), "2022-01-01T11:59:57.000Z", "UTC"]
+            ["test.wav", "2022-01-01T11:59:57.000Z"]#, "UTC"]
         )
         writer.writerows(
             [
                 [
-                    str(input_dir.joinpath(f"test{i}.wav")),
+                    f"test{i}.wav",
                     f"2022-01-01T12:00:{str(3*i).zfill(2)}.000Z",
-                    "UTC",
+                    #"UTC",
                 ]
                 for i in range(9)
             ]

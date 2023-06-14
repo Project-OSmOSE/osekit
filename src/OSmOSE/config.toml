@@ -2,7 +2,7 @@
     job_scheduler = "Torque"
     # env_script should contain everything but the environment name, with ${env_name} being where it will go
     env_script = ". /appli/anaconda/latest/etc/profile.d/conda.sh; conda activate /home/datawork-osmose/conda-env/${env_name}/"
-    env_name = "osmose_dev"
+    env_name = "osmose"
     outfile = "Job_{}_%j.out"
     errfile = "Job_{}_%j.err"
 

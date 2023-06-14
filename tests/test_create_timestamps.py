@@ -29,7 +29,7 @@ def test_write_timestamp(tmp_path):
     for i in range(10):
         filename = f"test_120723_1815{str(3*i).zfill(2)}.wav"
         open(tmp_path.joinpath(filename), "w").close()
-        expected_result.append(f"{filename},2023-07-12T18:15:{str(3*i).zfill(2)}.000Z,UTC\n")
+        expected_result.append(f"{filename},2023-07-12T18:15:{str(3*i).zfill(2)}.000Z\n")#,UTC TEMPORARY
     
     tm.write_timestamp(audio_path=tmp_path, date_template = true_template)
 

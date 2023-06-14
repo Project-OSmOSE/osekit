@@ -290,14 +290,14 @@ def test_reshape_max_delta_interval(input_reshape: Path, output_dir: Path, monke
     with open(input_reshape.joinpath("timestamp.csv"), "w", newline="") as timestampf:
         writer = csv.writer(timestampf)
         writer.writerow(
-            [str(input_reshape.joinpath("test.wav")), "2022-01-01T11:59:56.000Z", "UTC"]
+            [str(input_reshape.joinpath("test.wav")), "2022-01-01T11:59:56.000Z"]#, "UTC"]
         )
         writer.writerows(
             [
                 [
                     str(input_reshape.joinpath(f"test{i}.wav")),
                     f"2022-01-01T12:00:{str(5*i).zfill(2)}.000Z",
-                    "UTC",
+                    #"UTC",
                 ]
                 for i in range(9)
             ]

@@ -49,6 +49,7 @@ def write_timestamp(
     date_template: str,
     timezone: str = "UTC",
     offset: tuple = None,
+    verbose: bool = False 
 ):
     """Read the dates in the filenames of audio files in the `audio_path` folder,
     according to the date template in strftime format or the offsets from the beginning and end of the date.
@@ -68,20 +69,42 @@ def write_timestamp(
         offsets: `tuple(int,int)`, optional
             a tuple containing the beginning and end offset of the date.
             The first element is the first character of the date, and the second is the last.
+        verbose: `bool`, optional, keyword-only
+            If set to True, print all messages. default is False 
     """
-    # TODO: extension-agnostic
+    
     list_audio_file = sorted([file for file in Path(audio_path).glob(f"*.[{' '.join(SUPPORTED_AUDIO_FORMAT)}]*")])
 
     if len(list_audio_file) == 0:
-        print(
-            f"No audio file found in the {audio_path} directory. An empty timestamp.csv will be created."
-        )
+        
+        list_audio_file_WAV = sorted([file for file in Path(audio_path).glob("*.WAV")])
 
+        if len(list_audio_file_WAV) > 0:
+
+            print(
+                f"Your audio files have a .WAV extension, we are changing it to the standard .wav extension"
+                )
+            
+            for file_name in list_audio_file_WAV:
+                os.rename(file_name, Path(audio_path).joinpath(file_name.stem+'.wav'))
+        
+        elif len(Path(audio_path).glob("*.mp3",".*flac"))>0:
+
+            print(
+                f"Your audio files do not have the right extension, we only accept wav audio files for the moment."
+            )
+                    
+        else:
+        
+            print(
+                f"No audio files found in the {audio_path} directory."
+            )
+  
     timestamp = []
     filename_raw_audio = []
 
     converted = convert_template_to_re(date_template)
-    for filename in list_audio_file:
+    for i, filename in enumerate(list_audio_file):
         try:
             if offset:
                 date_extracted = re.search(converted, filename.stem[offset[0] : offset[1] + 1])[0]
@@ -96,9 +119,12 @@ def write_timestamp(
         dates = datetime.datetime.strftime(date_obj, "%Y-%m-%dT%H:%M:%S.%f")
 
         dates_final = dates[:-3] + "Z"
-
-        print("filename->", filename)
-        print("extracted timestamp->", dates_final, "\n")
+        if i <5:
+            print("filename->", filename)
+            print("extracted timestamp->", dates_final, "\n")
+        elif verbose:
+            print("filename->", filename)
+            print("extracted timestamp->", dates_final, "\n")
 
         timestamp.append(dates_final)
 
@@ -107,7 +133,7 @@ def write_timestamp(
 
     if output_path.exists(): output_path.unlink()
     df = pd.DataFrame(
-        {"filename": filename_raw_audio, "timestamp": timestamp, "timezone": timezone}
+        {"filename": filename_raw_audio, "timestamp": timestamp}#, "timezone": timezone}
     )
     df.sort_values(by=["timestamp"], inplace=True)
     df.to_csv(
