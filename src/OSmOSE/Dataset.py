@@ -78,7 +78,7 @@ class Dataset:
 
         if skip_perms:
             print(
-                "It seems you are on a non-Unix operating system (probably Windows). The build_dataset() method will not work as intended and permission might be uncorrectly set."
+                "It seems you are on a non-Unix operating system (probably Windows). The build() method will not work as intended and permission might be uncorrectly set."
             )
 
         pd.set_option("display.float_format", lambda x: "%.0f" % x)
@@ -437,6 +437,9 @@ class Dataset:
             new_folder_name = path_raw_audio.parent.joinpath(
                 str(int(mean(list_duration))) + "_" + str(int(mean(list_samplingRate)))
             )
+            
+            if new_folder_name.exists():
+                new_folder_name.rmdir()
 
             path_raw_audio = path_raw_audio.rename(new_folder_name)
             self.__original_folder = path_raw_audio

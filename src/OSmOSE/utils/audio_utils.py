@@ -31,6 +31,8 @@ def read_header(file: str) -> Tuple[int, float, int, int]:
     ----
     When there is no `data` chunk, the `frames` value will fall back on the size written in the header. This can be incorrect,
     if the file has been corrupted or the writing process has been interrupted before completion.
+
+    Adapted from https://gist.github.com/JonathanThorpe/9dab1729d19723ccd37730ffe477502a
     """
     with open(file, "rb") as fh:
         _, size, _ = struct.unpack("<4sI4s", fh.read(12))

@@ -15,7 +15,7 @@ from importlib import resources
 from OSmOSE.utils import read_config, set_umask, make_path
 from OSmOSE.config import *
 
-
+JOB_CONFIG_TEMPLATE = namedtuple("job_config", ["job_scheduler","env_script","env_name","queue","nodes","walltime","ncpus","mem","outfile","errfile"])
 class Job_builder:
     def __init__(self, config_file: str = None):
         if config_file is None:
@@ -28,7 +28,7 @@ class Job_builder:
             self.__configfile = config_file
             self.__full_config: NamedTuple = read_config(config_file)
 
-        self.__config = self.__full_config.Job
+        self.__config = self.__full_config["Job"]
 
         self.__prepared_jobs = []
         self.__ongoing_jobs = []
@@ -83,83 +83,83 @@ class Job_builder:
     # READ-WRITE properties
     @property
     def job_scheduler(self):
-        return self.__config.job_scheduler
+        return self.__config["job_scheduler"]
 
     @job_scheduler.setter
     def job_Scheduler(self, value: Literal["Torque", "Slurm"]):
-        self.__config = self.__config._replace(job_scheduler=value)
+        self.__config = self.__config["job_scheduler"] = value
 
     @property
     def env_script(self):
-        return self.__config.env_script
+        return self.__config["env_script"]
 
     @env_script.setter
     def env_script(self, value):
-        self.__config = self.__config._replace(env_script=value)
+        self.__config = self.__config["env_script"] = value
 
     @property
     def env_name(self):
-        return self.__config.env_name
+        return self.__config["env_name"]
 
     @env_name.setter
     def env_name(self, value):
-        self.__config = self.__config._replace(env_name=value)
+        self.__config = self.__config["env_name"] = value
 
     @property
     def queue(self):
-        return self.__config.queue
+        return self.__config["queue"]
 
     @queue.setter
     def queue(self, value):
-        self.__config = self.__config._replace(queue=value)
+        self.__config = self.__config["queue"] = value
 
     @property
     def nodes(self):
-        return self.__config.nodes
+        return self.__config["nodes"]
 
     @nodes.setter
     def nodes(self, value):
-        self.__config = self.__config._replace(nodes=value)
+        self.__config = self.__config["nodes"] = value
 
     @property
     def walltime(self):
-        return self.__config.walltime
+        return self.__config["walltime"]
 
     @walltime.setter
     def walltime(self, value):
-        self.__config = self.__config._replace(walltime=value)
+        self.__config = self.__config["walltime"] = value
 
     @property
     def ncpus(self):
-        return self.__config.ncpus
+        return self.__config["ncpus"]
 
     @ncpus.setter
     def ncpus(self, value):
-        self.__config = self.__config._replace(ncpus=value)
+        self.__config = self.__config["ncpus"] = value
 
     @property
     def mem(self):
-        return self.__config.mem
+        return self.__config["mem"]
 
     @mem.setter
     def mem(self, value):
-        self.__config = self.__config._replace(mem=value)
+        self.__config = self.__config["mem"] = value
 
     @property
     def outfile(self):
-        return self.__config.outfile
+        return self.__config["outfile"]
 
     @outfile.setter
     def outfile(self, value):
-        self.__config = self.__config._replace(outfile=value)
+        self.__config = self.__config["outfile"] = value
 
     @property
     def errfile(self):
-        return self.__config.errfile
+        return self.__config["errfile"]
 
     @errfile.setter
     def errfile(self, value):
-        self.__config = self.__config._replace(errfile=value)
+        self.__config = self.__config["errfile"] = value
 
     # endregion
 
@@ -260,7 +260,7 @@ class Job_builder:
                     f"Unrecognized preset {preset}. Valid presets are: {', '.join(self.__config['Presets'].keys())}"
                 )
 
-            job_preset = getattr(self.__config["Presets"], preset)
+            job_preset = self.__config["Presets"][preset]
         else:
             preset = None
 
@@ -301,15 +301,15 @@ class Job_builder:
         errfile = logdir.joinpath(errfile)
 
         if not queue:
-            queue = self.queue if not preset else job_preset.queue
+            queue = self.queue if not preset else job_preset["queue"]
         if not nodes:
-            nodes = self.nodes if not preset else job_preset.nodes
+            nodes = self.nodes if not preset else job_preset["nodes"]
         if not walltime:
-            walltime = self.walltime if not preset else job_preset.walltime
+            walltime = self.walltime if not preset else job_preset["walltime"]
         if not ncpus:
-            ncpus = self.ncpus if not preset else job_preset.ncpus
+            ncpus = self.ncpus if not preset else job_preset["ncpus"]
         if not mem:
-            mem = self.mem if not preset else job_preset.mem
+            mem = self.mem if not preset else job_preset["mem"]
 
         match job_scheduler:
             case "Torque":
