@@ -45,7 +45,7 @@ def test_substract_timestamps():
 
 def test_reshape_errors(input_dir):
     with pytest.raises(ValueError) as e:
-        reshape("/not/a/path", 15)
+        next(reshape("/not/a/path", 15))
 
     assert (
         str(e.value)
@@ -53,7 +53,7 @@ def test_reshape_errors(input_dir):
     )
 
     with pytest.raises(ValueError) as e:
-        reshape(input_dir, 20, last_file_behavior="misbehave")
+        next(reshape(input_dir, 20, last_file_behavior="misbehave"))
 
     assert (
         str(e.value)
@@ -61,17 +61,20 @@ def test_reshape_errors(input_dir):
     )
 
     with pytest.raises(FileNotFoundError):
-        reshape(input_dir, 20)  # Supposed to fail because there is no timestamp.csv
+        next(reshape(input_dir, 20))  # Supposed to fail because there is no timestamp.csv
 
 
 def test_reshape_smaller(input_reshape: Path, output_dir: Path):
-    reshaped_list = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
+    reshaped = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
+    print(reshaped)
+    reshaped_list = list(reshaped)
+    print(reshaped_list)
     assert len(reshaped_list) == 15
     # assert sf.info(reshaped_list[0]).duration == 2.0
     # assert sf.info(reshaped_list[0]).samplerate == 44100
     # assert sum(audio/samplerate for audio in reshaped_list) == 30.0
 
-    reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True)
+    any(reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True))
 
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
     # reshaped_files = sorted(

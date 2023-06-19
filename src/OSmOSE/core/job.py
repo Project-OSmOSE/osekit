@@ -7,7 +7,7 @@ import tomlkit
 import subprocess
 from uuid import uuid4
 from string import Template
-from typing import NamedTuple, List, Literal
+from typing import List, Literal
 from warnings import warn
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -20,13 +20,13 @@ class Job_builder:
     def __init__(self, config_file: str = None):
         if config_file is None:
             self.__configfile = "config.toml"
-            self.__full_config: NamedTuple = read_config(
+            self.__full_config: dict = read_config(
                 resources.files("OSmOSE").joinpath(self.__configfile)
             )
 
         else:
             self.__configfile = config_file
-            self.__full_config: NamedTuple = read_config(config_file)
+            self.__full_config: dict = read_config(config_file)
 
         self.__config = self.__full_config["Job"]
 

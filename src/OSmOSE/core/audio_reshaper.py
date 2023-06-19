@@ -164,26 +164,26 @@ def reshape(
     )
     proceed = force_reshape  # Default is False
 
-    def write_file(output, timestamp, sr, subtype = "FLOAT", extra_text = ""):
+    def yield_result(*, output, timestamp, sr, subtype = "FLOAT", extra_text = ""):
         outfilename = output_dir_path.joinpath(
             f"{from_timestamp(timestamp).replace(':','-').replace('.','_')}.wav"
         )
         result.append(outfilename.name)
-        print(timestamp)
+        
         timestamp_list.append(from_timestamp(timestamp))
         timestamp += timedelta(seconds=len(output))
-        print(timestamp)
-        sf.write(outfilename, output, sr, format="WAV", subtype=subtype)
-        os.chmod(outfilename, mode=FPDEFAULT)
+        
+        if write_output:
+            sf.write(outfilename, output, sr, format="WAV", subtype=subtype)
+            os.chmod(outfilename, mode=FPDEFAULT)
 
-        if verbose:
-            if not extra_text:
-                extra_text = f"{len(previous_audio_data)/sr} seconds left from slicing."
-            print(
-                f"{outfilename} written! File is {(len(output)/sr)} seconds long. {extra_text}"
-            )
-
-        return outfilename
+            if verbose:
+                if not extra_text:
+                    extra_text = f"{len(previous_audio_data)/sr} seconds left from slicing."
+                print(
+                    f"{outfilename} written! File is {(len(output)/sr)} seconds long. {extra_text}"
+                )
+        return (output, outfilename)
 
     while i < len(files):
         with sf.SoundFile(input_dir_path.joinpath(files[i])) as audio_file:
@@ -199,7 +199,6 @@ def reshape(
             audio_data = resample(audio_data, new_samples)
             
         file_duration = len(audio_data)//sample_rate
-        file_type = sf.info(input_dir_path.joinpath(files[i])).subtype
 
         if not merge_files and file_duration < chunk_size:
             raise ValueError("When not merging files, the file duration must be smaller than the target duration.")
@@ -244,10 +243,7 @@ def reshape(
                     else t * chunk_size + len(output) // sample_rate
                 )
 
-                if write_output: 
-                    write_file(output,timestamp, sample_rate, subtype=subtype)
-                else:
-                    pass#yield (output,files[i])
+                yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
 
                 t += 1
                 audio_data = previous_audio_data
@@ -266,11 +262,9 @@ def reshape(
                             audio_data = []
                             break
                     
-                    if write_output:
-                        pad_text = f"Padded with {fill.size // sample_rate} seconds." if last_file_behavior == "pad" and fill.size > 0 else ""
-                        write_file(output, timestamp, sample_rate, pad_text, subtype=subtype)
-                    else:
-                        pass#yield (output,files[i])
+                    pad_text = f"Padded with {fill.size // sample_rate} seconds." if last_file_behavior == "pad" and fill.size > 0 else ""
+                    print(subtype)
+                    yield yield_result(output=output, timestamp=timestamp, sr=sample_rate, subtype=subtype, extra_text=pad_text)
 
 
 
@@ -340,10 +334,7 @@ def reshape(
                 output = audio_data
                 previous_audio_data = nextdata[rest:]
 
-        if write_output: 
-            write_file(output,timestamp, sample_rate, subtype=subtype)
-        else:
-            pass#yield (output,files[i])
+        yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
 
 
         i += 1
@@ -354,10 +345,7 @@ def reshape(
         output = previous_audio_data[: chunk_size * sample_rate]
         previous_audio_data = previous_audio_data[chunk_size * sample_rate :]
 
-        if write_output: 
-            write_file(output,timestamp, sample_rate, subtype=subtype)
-        else:
-            pass#yield (output,files[i])
+        yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
 
         
         i += 1
@@ -378,9 +366,7 @@ def reshape(
                 skip_last = True
 
         if not skip_last:
-            write_file(output,timestamp, sample_rate, subtype=subtype)
-        else:
-            pass#yield (output,files[i])
+            yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
 
 
 
@@ -412,7 +398,7 @@ def reshape(
         )
         os.chmod(path_csv, mode=FPDEFAULT)
 
-    return [output_dir_path.joinpath(res) for res in result]
+    #yield [output_dir_path.joinpath(res) for res in result]
 
 if __name__ == "__main__":
     parser = ArgumentParser()

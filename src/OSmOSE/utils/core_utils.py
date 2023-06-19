@@ -57,8 +57,8 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
         print("  - {}".format(dataset))
 
 
-def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
-    """Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.
+def read_config(raw_config: Union[str, dict, Path]) -> dict:
+    """Read the given configuration file or dict. Only TOML and JSON formats are accepted for now.
 
     Parameter
     ---------
@@ -67,8 +67,8 @@ def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
 
     Returns
     -------
-    config : `namedtuple`
-        The configuration as a `namedtuple` object.
+    config : `dict`
+        The configuration as a `dict` object.
 
     Raises
     ------
@@ -115,14 +115,7 @@ def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
                         f"The provided configuration file extension ({Path(raw_config).suffix} is not a valid extension. Please use .toml or .json files."
                     )
 
-    return convert(raw_config)
-
-
-def convert(dictionary):
-    for key, value in dictionary.items():
-        if isinstance(value, dict):
-            dictionary[key] = convert(value)
-    return namedtuple("GenericDict", dictionary.keys())(**dictionary)
+    return raw_config
 
 def safe_read(
     file_path: str, *, nan: float = 0.0, posinf: any = None, neginf: any = None
