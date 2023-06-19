@@ -153,7 +153,8 @@ def reshape(
 
     result = []
     timestamp_list = []
-    timestamp: datetime = None
+    global timestamp # Declare timestamp as a global to use it in yield_result
+    timestamp = None
     previous_audio_data = np.empty(0)
     sample_rate = 0
     i = 0
@@ -164,13 +165,14 @@ def reshape(
     )
     proceed = force_reshape  # Default is False
 
-    def yield_result(*, output, timestamp, sr, subtype = "FLOAT", extra_text = ""):
+    def yield_result(*, output, sr, subtype = "FLOAT", extra_text = ""):
+        global timestamp
         outfilename = output_dir_path.joinpath(
-            f"{from_timestamp(timestamp).replace(':','-').replace('.','_')}.wav"
+            f"{from_timestamp(timestamp).replace(':','-').replace('.','_').rstrip('Z')}.wav"
         )
         result.append(outfilename.name)
-        
         timestamp_list.append(from_timestamp(timestamp))
+        timestamp += timedelta(seconds=len(output)//sr)
         
         if write_output:
             sf.write(outfilename, output, sr, format="WAV", subtype=subtype)
@@ -242,8 +244,7 @@ def reshape(
                     else t * chunk_size + len(output) // sample_rate
                 )
 
-                yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
-                timestamp += timedelta(seconds=len(output))
+                yield yield_result(output=output, sr=sample_rate, subtype=subtype)
 
                 t += 1
                 audio_data = previous_audio_data
@@ -264,8 +265,7 @@ def reshape(
                     
                     pad_text = f"Padded with {fill.size // sample_rate} seconds." if last_file_behavior == "pad" and fill.size > 0 else ""
                     print(subtype)
-                    yield yield_result(output=output, timestamp=timestamp, sr=sample_rate, subtype=subtype, extra_text=pad_text)
-                    timestamp += timedelta(seconds=len(output))
+                    yield yield_result(output=output,  sr=sample_rate, subtype=subtype, extra_text=pad_text)
 
 
 
@@ -335,8 +335,7 @@ def reshape(
                 output = audio_data
                 previous_audio_data = nextdata[rest:]
 
-        yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
-        timestamp += timedelta(seconds=len(output))
+        yield yield_result(output=output, sr=sample_rate, subtype=subtype)
 
 
         i += 1
@@ -347,8 +346,7 @@ def reshape(
         output = previous_audio_data[: chunk_size * sample_rate]
         previous_audio_data = previous_audio_data[chunk_size * sample_rate :]
 
-        yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
-        timestamp += timedelta(seconds=len(output))
+        yield yield_result(output=output, sr=sample_rate, subtype=subtype)
 
         
         i += 1
@@ -369,8 +367,7 @@ def reshape(
                 skip_last = True
 
         if not skip_last:
-            yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
-        timestamp += timedelta(seconds=len(output))
+            yield yield_result(output=output, sr=sample_rate, subtype=subtype)
 
 
 

@@ -5,13 +5,12 @@ import random
 import shutil
 import struct
 from collections import namedtuple
-from distutils.errors import UnknownFileError
 import sys
 from typing import Union, NamedTuple, Tuple
 
 import json
 
-from utils.path_utils import make_path
+from OSmOSE.utils.path_utils import make_path
 
 try:
     import tomllib
@@ -80,7 +79,7 @@ def read_config(raw_config: Union[str, dict, Path]) -> dict:
         Raised if the raw_config is anything else than a string, a PurePath or a dict.
     NotImplementedError
         Raised if the raw_config file is in YAML format
-    UnknownFileError
+    ValueError
         Raised if the raw_config file is not in TOML, JSON or YAML formats."""
 
     match raw_config:
@@ -113,7 +112,7 @@ def read_config(raw_config: Union[str, dict, Path]) -> dict:
                         "YAML support will eventually get there (unfortunately)"
                     )
                 case _:
-                    raise UnknownFileError(
+                    raise ValueError(
                         f"The provided configuration file extension ({Path(raw_config).suffix} is not a valid extension. Please use .toml or .json files."
                     )
 

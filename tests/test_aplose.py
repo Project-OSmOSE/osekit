@@ -68,3 +68,58 @@ def test_build_path(input_dataset):
 
     assert dataset.path.joinpath(OSMOSE_PATH.statistics).exists()
 
+def test_initialize_5s(input_dataset):
+    sr = 44100
+    dataset = Aplose(
+        dataset_path=input_dataset["main_dir"],
+        dataset_sr=sr,
+        analysis_params=PARAMS,
+        local=True,
+    )
+
+    dataset.initialize()
+
+    timestamp_path = dataset.path.joinpath(
+        OSMOSE_PATH.raw_audio.joinpath(f"5_{sr}", "timestamp.csv")
+    )
+
+    spectro_paths = [
+        OSMOSE_PATH.spectrogram.joinpath(f"5_{sr}", "512_512_97", "image"),
+        OSMOSE_PATH.spectrogram.joinpath(f"5_{sr}", "512_512_97", "matrix"),
+        OSMOSE_PATH.spectrogram.joinpath("adjust_metadata.csv"),
+        OSMOSE_PATH.raw_audio.joinpath(f"5_{sr}"),
+        OSMOSE_PATH.raw_audio.joinpath(f"5_{sr}", "metadata.csv"),
+        timestamp_path,
+    ]
+
+    for path in spectro_paths:
+        assert dataset.path.joinpath(path).resolve().exists()
+
+
+def test_initialize_2s(input_dataset):
+    PARAMS["spectro_duration"] = 2
+    sr = 44100 if platform.system() else 240
+    dataset = Aplose(
+        dataset_path=input_dataset["main_dir"],
+        dataset_sr=sr,
+        analysis_params=PARAMS,
+        local=True,
+    )
+
+    dataset.initialize()
+
+    timestamp_path = dataset.path.joinpath(
+        OSMOSE_PATH.raw_audio.joinpath(f"2_{sr}", "timestamp.csv")
+    )
+
+    spectro_paths = [
+        OSMOSE_PATH.spectrogram.joinpath(f"2_{sr}", "512_512_97", "image"),
+        OSMOSE_PATH.spectrogram.joinpath(f"2_{sr}", "512_512_97", "matrix"),
+        OSMOSE_PATH.spectrogram.joinpath("adjust_metadata.csv"),
+        OSMOSE_PATH.raw_audio.joinpath(f"2_{sr}"),
+        OSMOSE_PATH.raw_audio.joinpath(f"2_{sr}", "metadata.csv"),
+        timestamp_path,
+    ]
+
+    for path in spectro_paths:
+        assert dataset.path.joinpath(path).resolve().exists()
