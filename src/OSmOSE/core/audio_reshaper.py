@@ -171,7 +171,6 @@ def reshape(
         result.append(outfilename.name)
         
         timestamp_list.append(from_timestamp(timestamp))
-        timestamp += timedelta(seconds=len(output))
         
         if write_output:
             sf.write(outfilename, output, sr, format="WAV", subtype=subtype)
@@ -244,6 +243,7 @@ def reshape(
                 )
 
                 yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
+                timestamp += timedelta(seconds=len(output))
 
                 t += 1
                 audio_data = previous_audio_data
@@ -265,6 +265,7 @@ def reshape(
                     pad_text = f"Padded with {fill.size // sample_rate} seconds." if last_file_behavior == "pad" and fill.size > 0 else ""
                     print(subtype)
                     yield yield_result(output=output, timestamp=timestamp, sr=sample_rate, subtype=subtype, extra_text=pad_text)
+                    timestamp += timedelta(seconds=len(output))
 
 
 
@@ -335,6 +336,7 @@ def reshape(
                 previous_audio_data = nextdata[rest:]
 
         yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
+        timestamp += timedelta(seconds=len(output))
 
 
         i += 1
@@ -346,6 +348,7 @@ def reshape(
         previous_audio_data = previous_audio_data[chunk_size * sample_rate :]
 
         yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
+        timestamp += timedelta(seconds=len(output))
 
         
         i += 1
@@ -367,6 +370,7 @@ def reshape(
 
         if not skip_last:
             yield yield_result(output=output,timestamp=timestamp, sr=sample_rate, subtype=subtype)
+        timestamp += timedelta(seconds=len(output))
 
 
 

@@ -66,17 +66,16 @@ def test_reshape_errors(input_dir):
 
 def test_reshape_smaller(input_reshape: Path, output_dir: Path):
     reshaped = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
-    print(reshaped)
     reshaped_list = list(reshaped)
-    print(reshaped_list)
     assert len(reshaped_list) == 15
     # assert sf.info(reshaped_list[0]).duration == 2.0
     # assert sf.info(reshaped_list[0]).samplerate == 44100
     # assert sum(audio/samplerate for audio in reshaped_list) == 30.0
 
-    any(reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True))
+    all(reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True))
 
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
+    print(pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values)
     # reshaped_files = sorted(
     #     [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
     #     key=os.path.getmtime,
