@@ -38,6 +38,7 @@ class Dataset:
         gps_coordinates: Union[str, list, Tuple] = None,
         owner_group: str = None,
         original_folder: str = None,
+        local: bool = True,
     ) -> None:
         """Instanciate the dataset with at least its path.
 
@@ -67,6 +68,7 @@ class Dataset:
         self.__name = self.__path.stem
         self.owner_group = owner_group
         self.__gps_coordinates = []
+        self.__local = local
         if gps_coordinates is not None:
             self.gps_coordinates = gps_coordinates
 
@@ -76,7 +78,7 @@ class Dataset:
 
         if skip_perms:
             print(
-                "It seems you are on a non-Unix operating system (probably Windows). The build_dataset() method will not work as intended and permission might be uncorrectly set."
+                "It seems you are on a non-Unix operating system (probably Windows). The build() method will not work as intended and permission might be incorrectly set."
             )
 
         pd.set_option("display.float_format", lambda x: "%.0f" % x)
@@ -195,12 +197,14 @@ class Dataset:
     @property
     def is_built(self):
         """Checks if self.path/data/audio contains at least one folder and none called "original"."""
+        
         metadata_path = next(
-            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), None
+            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), False
         )
         timestamp_path = next(
-            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), None
+            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), False
         )
+        
         return metadata_path and metadata_path.exists() and timestamp_path and timestamp_path.exists() and not self.path.joinpath(OSMOSE_PATH.raw_audio,"original").exists()
 
     # endregion
@@ -261,21 +265,25 @@ class Dataset:
 
             DONE ! your dataset is on OSmOSE platform !
         """
-        set_umask()
-        if owner_group is None:
-            owner_group = self.owner_group
+        if self.is_built and not force_upload:
+            print("It seems this dataset has already been built. Running the build() method on an already built dataset might result in unexpected behavior. If this is a mistake, use the force_upload parameter.")
 
-        if not skip_perms:
-                print("\nSetting OSmOSE permission to the dataset...")
-                if owner_group:
-                    gid = grp.getgrnam(owner_group).gr_gid
-                    try:
-                        os.chown(self.path, -1, gid)
-                    except PermissionError:
-                        print(f"You have not the permission to change the owner of the {self.path} folder. This might be because you are trying to rebuild an existing dataset. The group owner has not been changed.")
-
-                # Add the setgid bid to the folder's permissions, in order for subsequent created files to be created by the same user group.
-                os.chmod(self.path, DPDEFAULT)
+        if not self.__local:
+            set_umask()
+            if owner_group is None:
+                owner_group = self.owner_group
+    
+            if not skip_perms:
+                    print("\nSetting OSmOSE permission to the dataset...")
+                    if owner_group:
+                        gid = grp.getgrnam(owner_group).gr_gid
+                        try:
+                            os.chown(self.path, -1, gid)
+                        except PermissionError:
+                            print(f"You have not the permission to change the owner of the {self.path} folder. This might be because you are trying to rebuild an existing dataset. The group owner has not been changed.")
+    
+                    # Add the setgid bid to the folder's permissions, in order for subsequent created files to be created by the same user group.
+                    os.chmod(self.path, DPDEFAULT)
 
         path_raw_audio = original_folder if original_folder is not None else self._find_or_create_original_folder()
         path_timestamp_formatted = path_raw_audio.joinpath("timestamp.csv")
@@ -341,7 +349,7 @@ class Dataset:
                 print(
                     f"The audio file {audio_file} could not be loaded, its importation has been canceled.\nDescription of the error: {e}"
                 )
-                list_filename_abnormal_duration.append(audio_file)
+                list_filename_abnormal_duration.append(str(audio_file.name))
 
             list_size.append(audio_file.stat().st_size / 1e6)
 
@@ -375,6 +383,7 @@ class Dataset:
 
             with open(path_raw_audio.joinpath("files_not_loaded.csv"), "w") as fp:
                 fp.write("\n".join(list_filename_abnormal_duration))
+            os.chmod(path_raw_audio.joinpath("files_not_loaded.csv"), mode=FPDEFAULT)
             if not force_upload:
                 return list_filename_abnormal_duration
 
@@ -438,12 +447,15 @@ class Dataset:
             new_folder_name = path_raw_audio.parent.joinpath(
                 str(int(mean(list_duration))) + "_" + str(int(mean(list_samplingRate)))
             )
+            
+            if new_folder_name.exists():
+                new_folder_name.rmdir()
 
             path_raw_audio = path_raw_audio.rename(new_folder_name)
             self.__original_folder = path_raw_audio
 
             for subpath in OSMOSE_PATH:
-                if not "processed" in str(subpath):
+                if "data" in str(subpath):
                     make_path(self.path.joinpath(subpath), mode=DPDEFAULT)
 
             # rename filenames in the subset_files.csv if any to replace -' by '_'
@@ -503,22 +515,31 @@ class Dataset:
         """Delete all files with abnormal durations in the dataset, and rewrite the timestamps.csv file to reflect the changes.
         If no abnormal file is detected, then it does nothing."""
 
-        if not self.list_abnormal_filenames:
-            warn(
-                "No abnormal file detected. You need to run the Dataset.build() method in order to detect abnormal files before using this method."
-            )
-            return
+        bad_file_list = self.list_abnormal_filenames
 
-        timestamp_path = self.list_abnormal_filenames.parent.joinpath("timestamp.csv")
+        if not bad_file_list:
+            if self.original_folder.joinpath("files_not_loaded.csv").exists():
+                with open(self.original_folder.joinpath("files_not_loaded.csv"), "r") as f:
+                    for line in f:
+                        bad_file_list.append(Path(line.rstrip()))
+            else:
+                warn(
+                    "No abnormal file detected. You need to run the Dataset.build() method in order to detect abnormal files before using this method."
+                )
+                return
+
+        timestamp_path = bad_file_list.parent.joinpath("timestamp.csv")
 
         csvFileArray = pd.read_csv(timestamp_path, header=None)
 
-        for abnormal_file in self.list_abnormal_filenames:
+        for abnormal_file in bad_file_list:
             csvFileArray = csvFileArray.drop(
                 csvFileArray[csvFileArray[0].values == abnormal_file.name].index
             )
 
             print(f"removing : {abnormal_file.name}")
+            if not abnormal_file.exists():
+                abnormal_file = self.original_folder.joinpath(abnormal_file.name)
             abnormal_file.unlink()
 
         csvFileArray.sort_values(by=[1], inplace=True)
@@ -564,7 +585,7 @@ class Dataset:
         for path, _, files in os.walk(self.path):
             for f in files:
                 if not Path(f).parent == "original":
-                    if is_audio(f):
+                    if f.endswith((".wav",".WAV","*.mp3",".*flac")):
                         audio_files.append(Path(path,f))
                     elif "timestamp.csv" in f:
                         timestamp_files.append(Path(path,f))
@@ -573,7 +594,7 @@ class Dataset:
             res = "-1"
             choice = ""
             for i, ts in enumerate(timestamp_files):
-                choice += f"{i+1}: {ts}"
+                choice += f"{i+1}: {ts}\n"
             while int(res) not in range(1,len(timestamp_files) +1):
                 res = input(f"Multiple timestamp.csv detected. Choose which one should be considered the original:\n{choice}")
 
@@ -588,7 +609,6 @@ class Dataset:
                 self.path.joinpath(audio.parent).rmdir()
 
         return path_raw_audio.joinpath("original")
-        
 
     def _get_original_after_build(self) -> Path:
         """Find the original folder path after the dataset has been built.
