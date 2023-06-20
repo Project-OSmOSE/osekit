@@ -344,10 +344,6 @@ class Welch(Dataset):
 
     # TODO: some cleaning
     def initialize(self, *, date_template:str = None, force_init: bool = False, batch_ind_min:int = 0, batch_ind_max:int = -1):
-        audio_foldername = f"{str(self.spectro_duration)}_{str(self.dataset_sr)}"
-        self.audio_path = self.path.joinpath(OSMOSE_PATH.raw_audio, audio_foldername)
-        if not self.audio_path.exists():
-            make_path(self.audio_path, mode=DPDEFAULT)
         # Mandatory init
         if not self.is_built:
             try:
@@ -357,7 +353,39 @@ class Welch(Dataset):
                     f"Unhandled error during dataset building. The spectrogram initialization will be cancelled. The error may be resolved by building the dataset separately first. Description of the error: {str(e)}"
                 )
                 return
-            
+        
+        # Stop initialization if already done
+        final_path = self.path.joinpath(
+            OSMOSE_PATH.spectrogram,
+            f"{str(self.spectro_duration)}_{str(self.dataset_sr)}",
+            f"{str(self.nfft)}_{str(self.window_size)}_{str(self.overlap)}",
+            "metadata.csv",
+        )
+        temp_path = self.path.joinpath(OSMOSE_PATH.spectrogram, "adjust_metadata.csv")
+        audio_metadata_path = self.path.joinpath(
+            OSMOSE_PATH.raw_audio,
+            f"{str(self.spectro_duration)}_{str(self.dataset_sr)}",
+            "metadata.csv",
+        )
+
+        if (
+            (final_path.exists() or temp_path.exists())
+            and audio_metadata_path.exists()
+            and audio_metadata_path.with_stem("timestamp").exists()
+            and not force_init
+        ):
+            audio_file_count = pd.read_csv(audio_metadata_path)["audio_file_count"][0]
+            if len(list(audio_metadata_path.parent.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})")) == audio_file_count):
+                print(
+                    "It seems these spectrogram parameters are already initialized. If it is an error or you want to rerun the initialization, add the `force_init` argument."
+                )
+                return
+
+        audio_foldername = f"{str(self.spectro_duration)}_{str(self.dataset_sr)}"
+        self.audio_path = self.path.joinpath(OSMOSE_PATH.raw_audio, audio_foldername)
+        if not self.audio_path.exists():
+            make_path(self.audio_path, mode=DPDEFAULT)
+
         if self.data_normalization == "zscore" and self.spectro_normalization != "spectrum":
             self.spectro_normalization = "spectrum"
             print("WARNING: the spectrogram normalization has been changed to spectrum because the data will be normalized using zscore.")
@@ -475,6 +503,117 @@ class Welch(Dataset):
             for process in processes:
                 process.join()
 
+                    # Load variables from raw metadata
+        metadata = pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"))
+        audio_file_origin_duration = metadata["audio_file_origin_duration"][0]
+        origin_sr = metadata["dataset_sr"][0]
+        audio_file_count = metadata["audio_file_count"][0]
+
+        metadata["audio_file_dataset_duration"] = self.spectro_duration
+        new_meta_path = self.audio_path.joinpath("metadata.csv")
+        metadata.to_csv(new_meta_path)
+        os.chmod(new_meta_path, mode=FPDEFAULT)
+
+        data = {
+            "dataset_name": self.name,
+            "dataset_sr": self.dataset_sr,
+            "nfft": self.nfft,
+            "window_size": self.window_size,
+            "overlap": self.overlap,
+            "colormap": self.colormap,
+            "zoom_level": self.zoom_level,
+            "number_adjustment_spectrogram": self.number_adjustment_spectrogram,
+            "dynamic_min": self.dynamic_min,
+            "dynamic_max": self.dynamic_max,
+            "spectro_duration": self.spectro_duration,
+            "audio_file_folder_name": self.audio_path.name,
+            "data_normalization": self.data_normalization,
+            "hp_filter_min_freq": self.hp_filter_min_freq,
+            "sensitivity_dB": 20 * np.log10(self.sensitivity / 1e6),
+            "peak_voltage": self.peak_voltage,
+            "spectro_normalization": self.spectro_normalization,
+            "gain_dB": self.gain_dB,
+            "zscore_duration": self.zscore_duration,
+            "window_type": self.window_type,
+            "frequency_resolution": self.frequency_resolution,
+        }
+
+        for i, time_res in enumerate(self.time_resolution):
+            data.update({f"time_resolution_{i}": time_res})
+
+        self.analysis_sheet = pd.DataFrame.from_records([data])
+
+        adjust_path = self.path.joinpath(OSMOSE_PATH.spectrogram, "adjust_metadata.csv")
+        if adjust_path.exists():
+            adjust_path.unlink() # Always overwrite this file
+
+        self.analysis_sheet.to_csv(
+            adjust_path
+        )
+        os.chmod(adjust_path, mode=FPDEFAULT)
+        
+        if not adjust_path.exists():
+            raise FileNotFoundError("Failed to write adjust_metadata.csv")
+
+    def update_parameters(self, filename: Path) -> bool:
+        """Read the csv file filename and compare it to the spectrogram parameters. If any parameter is different, the file will be replaced and the fields changed.
+        
+        If there is nothing to update, the file won't be changed.
+        
+        Parameter
+        ---------
+        filename: Path
+            The path to the csv file to be updated.
+        
+        Returns
+        -------
+            True if the parameters were updated else False."""
+        
+        if not filename.suffix == ".csv":
+            raise ValueError("The file must be a .csv file to be updated.")
+        new_params = {
+            "dataset_name": self.name,
+            "dataset_sr": self.dataset_sr,
+            "nfft": self.nfft,
+            "window_size": self.window_size,
+            "overlap": self.overlap,
+            "colormap": self.colormap,
+            "zoom_level": self.zoom_level + 1,
+            "number_adjustment_spectrogram": self.number_adjustment_spectrogram,
+            "dynamic_min": self.dynamic_min,
+            "dynamic_max": self.dynamic_max,
+            "spectro_duration": self.spectro_duration,
+            "audio_file_folder_name": self.audio_path.name,
+            "data_normalization": self.data_normalization,
+            "hp_filter_min_freq": self.hp_filter_min_freq,
+            "sensitivity_dB": 20 * log10(self.sensitivity / 1e6),
+            "peak_voltage": self.peak_voltage,
+            "spectro_normalization": self.spectro_normalization,
+            "gain_dB": self.gain_dB,
+            "zscore_duration": self.zscore_duration,
+            "window_type": self.window_type,
+            "frequency_resolution": self.frequency_resolution,
+        }
+        for i, time_res in enumerate(self.time_resolution):
+            new_params.update({f"time_resolution_{i}": time_res})
+
+        if not filename.exists():
+            pd.DataFrame.from_records([new_params]).to_csv(filename, index=False)
+
+            os.chmod(filename, mode=DPDEFAULT)
+            return True
+        
+        orig_params = pd.read_csv(filename, header=0)
+        
+        if any([param not in orig_params or str(orig_params[param]) != str(new_params[param]) for param in new_params]):
+            filename.unlink()
+            pd.DataFrame.from_records([new_params]).to_csv(filename, index=False)
+
+            os.chmod(filename, mode=DPDEFAULT)
+            return True
+        return False
+
+
 
     def audio_file_list_csv(self) -> Path:
         list_audio = list(self.audio_path.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
@@ -542,8 +681,15 @@ class Welch(Dataset):
             for dd in self.path.joinpath(OSMOSE_PATH.statistics).glob("summaryStats*"):
                 df = pd.concat([df, pd.read_csv(dd, header=0)])
 
-            df["mean_avg"] = df["mean"].rolling(average_over_H, min_periods=1).mean()
-            df["std_avg"] = df["std"].pow(2).rolling(average_over_H, min_periods=1).mean().apply(np.sqrt, raw=True)
+            df.set_index('timestamp', inplace=True)
+            df.index = pd.to_datetime(df.index)            
+            
+            if Zscore == "all":
+                df["mean_avg"] = df["mean"].mean()   
+                df["std_avg"] = df["std"].pow(2).apply(np.sqrt, raw=True)
+            else:            
+                df["mean_avg"] = df["mean"].groupby(df.index.to_period(Zscore)).transform('mean')
+                df["std_avg"] = df["std"].pow(2).groupby(df.index.to_period(Zscore)).transform('mean').apply(np.sqrt, raw=True)
 
             self.__summStats = df
             self.__zscore_mean = self.__summStats[
