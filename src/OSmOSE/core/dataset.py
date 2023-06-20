@@ -317,6 +317,11 @@ class Dataset:
                 ),
                 auto_normalization=auto_normalization,
             )
+        if lost_levels:
+            path_raw_audio.rename(path_raw_audio.parent.joinpath("original_files"))
+            path_raw_audio = self.path.joinpath(
+                    OSMOSE_PATH.raw_audio, "normalized_original"
+                )
 
         for ind_dt in tqdm(range(len(timestamp_csv))):
             if ind_dt < len(timestamp_csv) - 1:
@@ -370,19 +375,19 @@ class Dataset:
 
             with open(path_raw_audio.joinpath("files_not_loaded.csv"), "w") as fp:
                 fp.write("\n".join(list_filename_abnormal_duration))
+            if not force_upload:
+                return list_filename_abnormal_duration
 
-            return list_filename_abnormal_duration
-
-        # dd = pd.DataFrame(list_interWavInterval).describe()
-        # print("Summary statistics on your INTER-FILE DURATION")
-        # print(dd[0].to_string())
-        # if dd[0]["std"] < 1e-10:
-        #     dutyCycle_percent = round(
-        #         100 * mean(list_duration) / mean(list_interWavInterval),
-        #         1,
-        #     )
-        # else:
-        dutyCycle_percent = np.nan
+        dd = pd.DataFrame(list_interWavInterval).describe()
+        print("Summary statistics on your INTER-FILE DURATION")
+        print(dd[0].to_string())
+        if dd[0]["std"] < 1e-10:
+            dutyCycle_percent = round(
+                100 * mean(list_duration) / mean(list_interWavInterval),
+                1,
+            )
+        else:
+            dutyCycle_percent = np.nan
 
         # get files with too small duration
         nominalVal_duration = int(np.percentile(list_duration, 10))

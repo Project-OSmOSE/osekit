@@ -42,21 +42,44 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
     ds_folder = Path(datasets_folder_path)
 
     dataset_list = [
-        directory for directory in ds_folder.iterdir() if ds_folder.joinpath(directory)
+        directory
+        for directory in ds_folder.iterdir()
+        if ds_folder.joinpath(directory).is_dir()
     ]
+
+    dataset_list = sorted(
+        dataset_list, key=lambda path: str(path).lower()
+    )  # case insensitive alphabetical sorting of datasets
+
     list_not_built_datasets = []
+    list_unknown_datasets = []
 
     for dataset_directory in dataset_list:
-        if ds_folder.joinpath(
-            dataset_directory, OSMOSE_PATH.raw_audio, "original"
-        ).exists():
-            list_not_built_datasets.append(dataset_directory)
+        dataset_directory = ds_folder.joinpath(dataset_directory)
+        if os.access(dataset_directory, os.R_OK):
+            metadata_path = next(
+                dataset_directory.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), None
+            )
+            timestamp_path = next(
+                dataset_directory.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), None
+            )
+            
+            if not(metadata_path and metadata_path.exists() and timestamp_path and timestamp_path.exists() and not dataset_directory.joinpath(OSMOSE_PATH.raw_audio,"original").exists()):
+                list_not_built_datasets.append(dataset_directory)
+        else:
+            list_unknown_datasets.append(dataset_directory)
 
-    print("List of the datasets not built yet:")
+    not_built_formatted = "\n".join(
+        [f"  - {dataset.name}" for dataset in list_not_built_datasets]
+    )
+    print(f"""List of the datasets that aren't built yet:\n{not_built_formatted}""")
 
-    for dataset in list_not_built_datasets:
-        print("  - {}".format(dataset))
-
+    unreachable_formatted = "\n".join(
+        [f"  - {dataset.name}" for dataset in list_unknown_datasets]
+    )
+    print(
+        f"""List of unreachable datasets (probably due to insufficient permissions) :\n{unreachable_formatted}"""
+    )
 
 def read_config(raw_config: Union[str, dict, Path]) -> dict:
     """Read the given configuration file or dict. Only TOML and JSON formats are accepted for now.
