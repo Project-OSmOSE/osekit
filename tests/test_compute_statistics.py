@@ -3,8 +3,9 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 from OSmOSE.features import compute_stats
+import pytest
 
-
+@pytest.mark.unit
 def test_output_file_written(input_dataset: Path, output_dir: Path):
     output_file = output_dir.joinpath("output.csv")
     print(output_file)
@@ -13,7 +14,7 @@ def test_output_file_written(input_dataset: Path, output_dir: Path):
     assert output_file.exists()
     assert output_file.stat().st_size > 0
 
-
+@pytest.mark.unit
 def test_output_file_columns(input_dataset, output_dir: Path):
     output_file = output_dir.joinpath("output.csv")
     # Call the function to write normalization parameters
@@ -26,7 +27,7 @@ def test_output_file_columns(input_dataset, output_dir: Path):
         header = next(reader)
         assert header == ["filename", "timestamp", "mean", "std"]
 
-
+@pytest.mark.integ
 def test_output_file_content(input_dataset, output_dir):
     output_file = output_dir / "output.csv"
     # Create two dummy WAV files with different means and stds

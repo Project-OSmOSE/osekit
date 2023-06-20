@@ -5,7 +5,7 @@ import shutil
 from OSmOSE.utils import *
 from OSmOSE.config import OSMOSE_PATH
 
-
+@pytest.mark.unit
 def test_display_folder_storage_infos(monkeypatch):
     mock_usage = namedtuple("usage", ["total", "used", "free"])
     monkeypatch.setattr(
@@ -14,7 +14,7 @@ def test_display_folder_storage_infos(monkeypatch):
 
     assert True
 
-
+@pytest.mark.unit
 def test_read_header(input_dir):
     sr, frames, channels, sampwidth = read_header(input_dir.joinpath("test.wav"))
 
@@ -23,7 +23,7 @@ def test_read_header(input_dir):
     assert channels == 1
     assert sampwidth == 2
 
-
+@pytest.mark.unit
 @pytest.mark.filterwarnings("ignore:3 NaN detected")
 def test_safe_read(input_dir):
     rate = 44100  # samples per second
@@ -47,18 +47,18 @@ def test_safe_read(input_dir):
 
     assert np.array_equal(expected, safe_read(input_dir.joinpath("nan.wav"))[0])
 
-
+@pytest.mark.unit
 def test_read_header(input_dir):
     sr = 44100
     frames = float(sr * 3)
     channels = 1
-    sampwidth = 8
+    sampwidth = 4
 
     assert (sr, frames, channels, sampwidth) == read_header(
         input_dir.joinpath("test.wav")
     )
 
-
+@pytest.mark.unit
 def test_check_n_files_ok_files(input_dir, output_dir):
     file_list = [input_dir.joinpath("test.wav")]
     for i in range(9):
@@ -71,7 +71,7 @@ def test_check_n_files_ok_files(input_dir, output_dir):
 
     assert len(os.listdir(output_dir)) == 0
 
-
+@pytest.mark.unit
 def test_check_n_files_bad_files(input_dir, output_dir):
     file_list = []
     rate = 44100  # samples per second
@@ -98,6 +98,7 @@ def test_check_n_files_bad_files(input_dir, output_dir):
     )
     assert len(os.listdir(output_dir)) == 10
     
+@pytest.mark.unit
 def test_check_n_files_under_threshold_bad_files(input_dir, output_dir, monkeypatch):
     monkeypatch.setattr("sys.stdin", StringIO("y\n"))
     file_list = [input_dir.joinpath("test.wav")]

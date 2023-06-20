@@ -99,7 +99,7 @@ def write_timestamp(
             print(
                 f"No audio files found in the {audio_path} directory."
             )
-  
+
     timestamp = []
     filename_raw_audio = []
 

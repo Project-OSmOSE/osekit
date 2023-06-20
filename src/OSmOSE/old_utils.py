@@ -55,14 +55,16 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
     list_unknown_datasets = []
 
     for dataset_directory in dataset_list:
-        if os.access(ds_folder.joinpath(dataset_directory), os.R_OK):
-            ds_metadata_path = next(
-                ds_folder.joinpath(dataset_directory, OSMOSE_PATH.raw_audio).rglob(
-                    "metadata.csv"
-                ),
-                None,
+        dataset_directory = ds_folder.joinpath(dataset_directory)
+        if os.access(dataset_directory, os.R_OK):
+            metadata_path = next(
+                dataset_directory.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), None
             )
-            if not ds_folder.joinpath(dataset_directory, OSMOSE_PATH.raw_audio, "original").exists() or not ds_metadata_path :
+            timestamp_path = next(
+                dataset_directory.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), None
+            )
+            
+            if not(metadata_path and metadata_path.exists() and timestamp_path and timestamp_path.exists() and not dataset_directory.joinpath(OSMOSE_PATH.raw_audio,"original").exists()):
                 list_not_built_datasets.append(dataset_directory)
         else:
             list_unknown_datasets.append(dataset_directory)
@@ -321,7 +323,10 @@ def check_n_files(
                     make_path(Path(output_path), mode=DPDEFAULT)
 
                     for audio_file in file_list:
-                        data, sr = safe_read(audio_file)
+                        with sf.SoundFile(audio_file) as audio_f:
+                            sr = audio_f.samplerate
+                            subtype = audio_f.subtype
+                            data = audio_f.read()
                         data = (
                             (data - np.mean(data)) / np.std(data)
                         ) * 0.063  # = -24dB
@@ -333,6 +338,7 @@ def check_n_files(
                             outfile,
                             data=data,
                             samplerate=sr,
+                            subtype=subtype
                         )
 
                         os.chmod(outfile, mode=FPDEFAULT)

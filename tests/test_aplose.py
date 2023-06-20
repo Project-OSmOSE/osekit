@@ -6,6 +6,7 @@ import numpy as np
 from OSmOSE.application import Aplose
 from OSmOSE.config import OSMOSE_PATH
 import soundfile as sf
+import pytest
 
 PARAMS = {
     "nfft": 512,
@@ -26,7 +27,7 @@ PARAMS = {
     "zscore_duration": "original",
 }
 
-
+@pytest.mark.unit
 def test_build_path(input_dataset):
     dataset = Aplose(
         dataset_path=input_dataset["main_dir"],
@@ -68,6 +69,7 @@ def test_build_path(input_dataset):
 
     assert dataset.path.joinpath(OSMOSE_PATH.statistics).exists()
 
+@pytest.mark.integ
 def test_initialize_5s(input_dataset):
     sr = 44100
     dataset = Aplose(
@@ -95,7 +97,7 @@ def test_initialize_5s(input_dataset):
     for path in spectro_paths:
         assert dataset.path.joinpath(path).resolve().exists()
 
-
+@pytest.mark.integ
 def test_initialize_2s(input_dataset):
     PARAMS["spectro_duration"] = 2
     sr = 44100 if platform.system() else 240

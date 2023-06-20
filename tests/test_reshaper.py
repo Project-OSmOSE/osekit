@@ -7,7 +7,7 @@ import pytest
 import csv
 import os
 
-
+@pytest.mark.unit
 def test_substract_timestamps():
     # Create test data
     timestamp_data = {
@@ -42,7 +42,7 @@ def test_substract_timestamps():
         == "time data '20220101T12:03:00.000' does not match format '%Y-%m-%dT%H:%M:%S.%fZ'"
     )
 
-
+@pytest.mark.unit
 def test_reshape_errors(input_dir):
     with pytest.raises(ValueError) as e:
         next(reshape("/not/a/path", 15))
@@ -63,7 +63,7 @@ def test_reshape_errors(input_dir):
     with pytest.raises(FileNotFoundError):
         next(reshape(input_dir, 20))  # Supposed to fail because there is no timestamp.csv
 
-
+@pytest.mark.unit
 def test_reshape_smaller(input_reshape: Path, output_dir: Path):
     reshaped = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
     reshaped_list = list(reshaped)
@@ -93,7 +93,7 @@ def test_reshape_smaller(input_reshape: Path, output_dir: Path):
 
     assert np.allclose(full_input, full_output)
 
-
+@pytest.mark.unit
 def test_reshape_larger(input_reshape: Path, output_dir):
     all(reshape(input_files=input_reshape, chunk_size=5, output_dir_path=output_dir, write_output=True))
 
@@ -103,7 +103,7 @@ def test_reshape_larger(input_reshape: Path, output_dir):
     assert sf.info(reshaped_files[0]).duration == 5.0
     assert sf.info(reshaped_files[0]).samplerate == 44100
 
-
+@pytest.mark.unit
 def test_reshape_pad_last(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -120,7 +120,7 @@ def test_reshape_pad_last(input_reshape: Path, output_dir):
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sf.info(reshaped_files[-1]).duration == 4.0
 
-
+@pytest.mark.unit
 def test_reshape_truncate_last(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -137,7 +137,7 @@ def test_reshape_truncate_last(input_reshape: Path, output_dir):
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sf.info(reshaped_files[-1]).duration == 2.0
 
-
+@pytest.mark.unit
 def test_reshape_discard_last(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -154,7 +154,7 @@ def test_reshape_discard_last(input_reshape: Path, output_dir):
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sf.info(reshaped_files[-1]).duration == 4.0
 
-
+@pytest.mark.unit
 def test_reshape_offsets(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -192,6 +192,7 @@ def test_reshape_offsets(input_reshape: Path, output_dir):
         input_content_end[: 2 * 44100], output_content_end[-2 * 44100 :]
     )
 
+@pytest.mark.unit
 def test_reshape_no_merge_discard(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -208,6 +209,7 @@ def test_reshape_no_merge_discard(input_reshape: Path, output_dir):
     assert len(reshaped_files) == 10
     assert sf.info(reshaped_files[0]).duration == 2
 
+@pytest.mark.unit
 def test_reshape_no_merge_truncate(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -245,6 +247,7 @@ def test_reshape_no_merge_truncate(input_reshape: Path, output_dir):
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-58_000.wav")).duration == 1
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 1
 
+@pytest.mark.unit
 def test_reshape_no_merge_pad(input_reshape: Path, output_dir):
     all(reshape(
         input_files=input_reshape,
@@ -262,7 +265,7 @@ def test_reshape_no_merge_pad(input_reshape: Path, output_dir):
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 2
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 2
 
-
+@pytest.mark.unit
 def test_reshape_max_delta_interval(input_reshape: Path, output_dir: Path, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: "no")
     with open(input_reshape.joinpath("timestamp.csv"), "w", newline="") as timestampf:

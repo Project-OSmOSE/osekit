@@ -2,6 +2,7 @@ import OSmOSE.core.timestamps as tm
 import re
 import pytest
 
+@pytest.mark.unit
 def test_convert_template_to_re():
     raw_all = "".join(tm.__converter.keys())
     simple_template = "%Y/%m/%d"
@@ -18,7 +19,7 @@ def test_convert_template_to_re():
     assert re.search(complex_res, complex_text)[0] == "y_2017-m_02, 11AM%"
 
 
-# a monkeypatch
+@pytest.mark.integ
 def test_write_timestamp(tmp_path):
     true_template = "%d%m%y_%H%M%S"
     bad_template = "%Y%I%S%p"

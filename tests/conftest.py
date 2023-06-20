@@ -12,6 +12,17 @@ def capture_csv(monkeypatch):
 
 @pytest.fixture
 def input_dataset(tmp_path: Path):
+    """Fixture to create an input dataset. 
+    
+    Creates the basic structure of a dataset in a temporary direction, as well as 10 audio files of 3 seconds of random noise at a sample rate of 44100,
+     as well as the timestamp.csv file, from 2022-01-01T12:00:00 to 2022-01-01T12:00:30
+    Returns
+    -------
+        The paths to the dataset's folders, in order : 
+        - root directory
+        - main audio directory 
+        - original audio sub-directory
+        - main spectrogram directory."""
     main_dir = tmp_path.joinpath("sample_dataset")
     main_audio_dir = main_dir.joinpath(OSMOSE_PATH.raw_audio)
     orig_audio_dir = main_audio_dir.joinpath("original")
@@ -31,7 +42,7 @@ def input_dataset(tmp_path: Path):
         data[data > 1] = 1
         data[data < -1] = -1
         wav_file = orig_audio_dir.joinpath(f"test-{i}.wav")
-        sf.write(wav_file, data, rate, format="WAV", subtype="DOUBLE")
+        sf.write(wav_file, data, rate, format="WAV", subtype="FLOAT")
 
         with open(
             orig_audio_dir.joinpath("timestamp.csv"), "a", newline=""
@@ -55,6 +66,13 @@ def input_dataset(tmp_path: Path):
 
 @pytest.fixture
 def input_dir(tmp_path):
+    """Creates a temporary input directory with a single audio file.
+    
+    The file is 3 seconds of random noise at a sample rate of 44100.
+    Returns
+    -------
+        input_dir: `Path`
+            The path to the input directory."""
     # Parameters
     input_dir = tmp_path / "input"
     input_dir.mkdir()
@@ -66,13 +84,18 @@ def input_dir(tmp_path):
     data[data > 1] = 1
     data[data < -1] = -1
     wav_file = input_dir / "test.wav"
-    sf.write(wav_file, data, rate, format="WAV", subtype="DOUBLE")
+    sf.write(wav_file, data, rate, format="WAV", subtype="FLOAT")
 
     yield input_dir
 
 
 @pytest.fixture
 def output_dir(tmp_path: Path):
+    """Creates an empty temporary output directory.
+    
+    Returns
+    -------
+        The directory path"""
     output_dir = tmp_path.joinpath("output")
     if output_dir.is_dir():
         shutil.rmtree(output_dir)
@@ -82,6 +105,16 @@ def output_dir(tmp_path: Path):
 
 @pytest.fixture
 def input_spectrogram(input_dataset):
+    """Creates an input dataset and analysis parameters.
+    
+    See input_dataset for the details of the input dataset.
+    
+    Returns
+    -------
+        input_dataset: `Path`
+            The path to the dataset directory
+        analysis_params: `dict`
+            Dummy analysis parameters"""
     analysis_params = {
         "nfft": 512,
         "winsize": 512,
@@ -106,6 +139,14 @@ def input_spectrogram(input_dataset):
 
 @pytest.fixture
 def input_reshape(input_dir: Path):
+    """Creates 10 audio files in a temporary directory and the corresponding timestamp.csv.
+    
+    The files are all copies of the file created by the input_dir fixture.
+    
+    Returns
+    -------
+        input_dir: `Path`
+            The path to the input directory."""
     for i in range(9):
         wav_file = input_dir.joinpath(f"test{i}.wav")
         shutil.copyfile(input_dir.joinpath("test.wav"), wav_file)

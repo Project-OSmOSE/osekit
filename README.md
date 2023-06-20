@@ -12,13 +12,13 @@
 
 ## Presentation
 
-OSmOSE toolkit is an open source suite of tools dedicated to the management and analysis of passive underwater acoustic data. Among other key features, our toolkit has been adapted to be deployed on a cluster infrastructure; below you will find installation procedures using the (DATARMOR)[https://www.ifremer.fr/fr/infrastructures-de-recherche/le-supercalculateur-datarmor] cluster of IFREMER, on which our production version runs.
+OSmOSE toolkit is an open source suite of tools dedicated to the management and analysis of passive underwater acoustic data. Among other key features, our toolkit has been adapted to be deployed on a cluster infrastructure; below you will find installation procedures using the [DATARMOR](https://www.ifremer.fr/fr/infrastructures-de-recherche/le-supercalculateur-datarmor) cluster of IFREMER, on which our production version runs.
 
 ## For users
 
 ### Quick start  in local
 
-Users will be interested in the stable versions of our toolkit, which are released on a regular basis and are available (here)[https://github.com/Project-OSmOSE/osmose-toolkit/releases/tag/v0.1.0]. We discourage users to install the toolkit from our git repository, as it is under permanent development and thus potentially unstable and unfinished.
+Users will be interested in the stable versions of our toolkit, which are released on a regular basis and are available [here](https://github.com/Project-OSmOSE/osmose-toolkit/releases/tag/v0.1.0). We discourage users to install the toolkit from our git repository, as it is under permanent development and thus potentially unstable and unfinished.
 
 ### Quick start on DATARMOR
 
@@ -32,7 +32,7 @@ The newest stable version can be directly used within a Jupyter Hub session of D
 
 1. Install locally our toolkit (see section **Local installation** below);
 
-2. Start by reviewing our Github (issues)[https://github.com/orgs/Project-OSmOSE/projects/6]), get in touch with our developer team to obtain an account, and propose new issues anytime following standard procedures (in particular, among other must-have: short description, assignees, status, label...);
+2. Start by reviewing our Github [issues](https://github.com/orgs/Project-OSmOSE/projects/6), get in touch with our developer team to obtain an account, and propose new issues anytime following standard procedures (in particular, among other must-have: short description, assignees, status, label...);
 
 3. Develop and validate locally your contribution. Please follow standad github procedures such as developing on a new branch built from our main branch; no pushes will be accepted on our main repository. We recomend the use of our poetry-based editable conda environment to ensure ??;
 
@@ -116,13 +116,13 @@ will:
 
 ## Presentation
 
-OSmOSE toolkit is an open source suite of tools dedicated to the management and analysis of passive underwater acoustic data. Among other key features, our toolkit has been adapted to be deployed on a cluster infrastructure; below you will find installation procedures using the (DATARMOR)[https://www.ifremer.fr/fr/infrastructures-de-recherche/le-supercalculateur-datarmor] cluster of IFREMER, on which our production version runs.
+OSmOSE toolkit is an open source suite of tools dedicated to the management and analysis of passive underwater acoustic data. Among other key features, our toolkit has been adapted to be deployed on a cluster infrastructure; below you will find installation procedures using the [DATARMOR](https://www.ifremer.fr/fr/infrastructures-de-recherche/le-supercalculateur-datarmor) cluster of IFREMER, on which our production version runs.
 
 ## For users
 
 ### Quick start  in local
 
-Users will be interested in the stable versions of our toolkit, which are released on a regular basis and are available (here)[https://github.com/Project-OSmOSE/osmose-toolkit/releases/tag/v0.1.0]. We discourage users to install the toolkit from our git repository, as it is under permanent development and thus potentially unstable and unfinished.
+Users will be interested in the stable versions of our toolkit, which are released on a regular basis and are available [here](https://github.com/Project-OSmOSE/osmose-toolkit/releases/tag/v0.1.0). We discourage users to install the toolkit from our git repository, as it is under permanent development and thus potentially unstable and unfinished.
 
 ### Quick start on DATARMOR
 
@@ -136,7 +136,7 @@ The newest stable version can be directly used within a Jupyter Hub session of D
 
 1. Install locally our toolkit (see section **Local installation** below);
 
-2. Review our Github (issues)[https://github.com/orgs/Project-OSmOSE/projects/6], get in touch with our developer team to obtain an account, and propose new issues anytime following standard procedures (in particular, among other must-have: short description, assignees, status, label...);
+2. Review our Github [issues](https://github.com/orgs/Project-OSmOSE/projects/6), get in touch with our developer team to obtain an account, and propose new issues anytime following standard procedures (in particular, among other must-have: short description, assignees, status, label...);
 
 3. Develop and validate locally your contribution. Please follow standad github procedures such as developing on a new branch built from our main branch; no pushes will be accepted on our main repository. We recomend the use of our poetry-based editable conda environment to ensure ??;
 

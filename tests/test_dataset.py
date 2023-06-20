@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from OSmOSE import Dataset
 
-
+@pytest.mark.unit
 def test_init(input_dataset, capsys):
     dataset = Dataset(dataset_path=input_dataset["main_dir"])
 
@@ -14,7 +14,7 @@ def test_init(input_dataset, capsys):
     captured = capsys.readouterr()
     assert "This dataset has no GPS coordinates." in captured.out
 
-
+@pytest.mark.unit
 def test_find_or_create_original_folder(input_dataset):
     dataset = Dataset(input_dataset["main_dir"])
     folder = dataset._find_or_create_original_folder()
@@ -29,7 +29,7 @@ def test_find_or_create_original_folder(input_dataset):
 
     assert folder2 == input_dataset["orig_audio_dir"].with_name("original")
 
-
+@pytest.mark.unit
 def test_error_build(input_dir: Path):
     input_dir.joinpath("data", "audio").mkdir(parents=True)
     dataset = Dataset(input_dir)
@@ -41,7 +41,7 @@ def test_error_build(input_dir: Path):
         == f"""The timestamp.csv file has not been found in {input_dir.joinpath("data","audio","original")}. You can create it automatically by setting the date template as argument."""
     )
 
-
+@pytest.mark.integ
 def test_build(input_dataset):
     dataset = Dataset(input_dataset["main_dir"])
 

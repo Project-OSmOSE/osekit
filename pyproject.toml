@@ -37,3 +37,8 @@ build-backend = "poetry.core.masonry.api"
 addopts = [
     "--import-mode=importlib",
 ]
+markers = [
+    "unit: Mark test as unitary test. Run only these with '-m unit'.",
+    "integ: Mark test as integration test. Run only these with '-m integ'.",
+    "reg: Mark test as regression test. Run only these with '-m ref'."
+]

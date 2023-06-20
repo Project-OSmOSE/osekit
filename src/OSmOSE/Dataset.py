@@ -78,7 +78,7 @@ class Dataset:
 
         if skip_perms:
             print(
-                "It seems you are on a non-Unix operating system (probably Windows). The build() method will not work as intended and permission might be uncorrectly set."
+                "It seems you are on a non-Unix operating system (probably Windows). The build() method will not work as intended and permission might be incorrectly set."
             )
 
         pd.set_option("display.float_format", lambda x: "%.0f" % x)
@@ -197,12 +197,14 @@ class Dataset:
     @property
     def is_built(self):
         """Checks if self.path/data/audio contains at least one folder and none called "original"."""
+        
         metadata_path = next(
-            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), None
+            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), False
         )
         timestamp_path = next(
-            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), None
+            self.path.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), False
         )
+        
         return metadata_path and metadata_path.exists() and timestamp_path and timestamp_path.exists() and not self.path.joinpath(OSMOSE_PATH.raw_audio,"original").exists()
 
     # endregion
@@ -264,6 +266,9 @@ class Dataset:
 
             DONE ! your dataset is on OSmOSE platform !
         """
+        if self.is_built and not force_upload:
+            print("It seems this dataset has already been built. Running the build() method on an already built dataset might result in unexpected behavior. If this is a mistake, use the force_upload parameter.")
+
         if not self.__local:
             set_umask()
             if owner_group is None:
@@ -321,6 +326,11 @@ class Dataset:
                 ),
                 auto_normalization=auto_normalization,
             )
+        if lost_levels:
+            path_raw_audio.rename(path_raw_audio.parent.joinpath("original_files"))
+            path_raw_audio = self.path.joinpath(
+                    OSMOSE_PATH.raw_audio, "normalized_original"
+                )
 
         for ind_dt in tqdm(range(len(timestamp_csv))):
             if ind_dt < len(timestamp_csv) - 1:
@@ -340,7 +350,7 @@ class Dataset:
                 print(
                     f"The audio file {audio_file} could not be loaded, its importation has been canceled.\nDescription of the error: {e}"
                 )
-                list_filename_abnormal_duration.append(audio_file)
+                list_filename_abnormal_duration.append(str(audio_file.name))
 
             list_size.append(audio_file.stat().st_size / 1e6)
 
@@ -373,7 +383,8 @@ class Dataset:
             )
 
             with open(path_raw_audio.joinpath("files_not_loaded.csv"), "w") as fp:
-                fp.write("\n".join(str(list_filename_abnormal_duration)))
+                fp.write("\n".join(list_filename_abnormal_duration))
+            os.chmod(path_raw_audio.joinpath("files_not_loaded.csv"), mode=FPDEFAULT)
             if not force_upload:
                 return list_filename_abnormal_duration
 
@@ -505,22 +516,31 @@ class Dataset:
         """Delete all files with abnormal durations in the dataset, and rewrite the timestamps.csv file to reflect the changes.
         If no abnormal file is detected, then it does nothing."""
 
-        if not self.list_abnormal_filenames:
-            warn(
-                "No abnormal file detected. You need to run the Dataset.build() method in order to detect abnormal files before using this method."
-            )
-            return
+        bad_file_list = self.list_abnormal_filenames
 
-        timestamp_path = self.list_abnormal_filenames.parent.joinpath("timestamp.csv")
+        if not bad_file_list:
+            if self.original_folder.joinpath("files_not_loaded.csv").exists():
+                with open(self.original_folder.joinpath("files_not_loaded.csv"), "r") as f:
+                    for line in f:
+                        bad_file_list.append(Path(line.rstrip()))
+            else:
+                warn(
+                    "No abnormal file detected. You need to run the Dataset.build() method in order to detect abnormal files before using this method."
+                )
+                return
+
+        timestamp_path = bad_file_list.parent.joinpath("timestamp.csv")
 
         csvFileArray = pd.read_csv(timestamp_path, header=None)
 
-        for abnormal_file in self.list_abnormal_filenames:
+        for abnormal_file in bad_file_list:
             csvFileArray = csvFileArray.drop(
                 csvFileArray[csvFileArray[0].values == abnormal_file.name].index
             )
 
             print(f"removing : {abnormal_file.name}")
+            if not abnormal_file.exists():
+                abnormal_file = self.original_folder.joinpath(abnormal_file.name)
             abnormal_file.unlink()
 
         csvFileArray.sort_values(by=[1], inplace=True)

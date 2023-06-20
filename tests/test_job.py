@@ -25,6 +25,7 @@ pbshead = """#!/bin/bash
 #PBS -l walltime=12:00:00
 #PBS -l mem=42G"""
 
+@pytest.mark.unit
 def test_build_job_file(output_dir):
     script_path = "/path/to/script"
     script_args = "--arg1 value1 --arg2 value2"
