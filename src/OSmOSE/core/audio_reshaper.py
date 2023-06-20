@@ -198,6 +198,7 @@ def reshape(
         elif new_sr != sample_rate:
             new_samples = frames*new_sr//sample_rate
             audio_data = resample(audio_data, new_samples)
+            sample_rate = new_sr
             
         file_duration = len(audio_data)//sample_rate
 
