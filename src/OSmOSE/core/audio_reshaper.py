@@ -96,7 +96,7 @@ def reshape(
 
     if isinstance(input_files, list):
         input_dir_path = Path(input_files[0]).parent
-        files = [Path(file).stem for file in input_files]
+        files = [Path(audio_file).name for audio_file in input_files]
         if verbose:
             print(f"Input directory detected as {input_dir_path}")
     else:

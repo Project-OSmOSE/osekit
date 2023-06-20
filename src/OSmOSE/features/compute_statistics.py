@@ -11,7 +11,7 @@ from scipy import signal
 
 from OSmOSE.utils import set_umask
 
-def Write_zscore_norma_params(
+def compute_stats(
     *,
     input_dir: Path,
     output_file: Path,
@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    Write_zscore_norma_params(
+    compute_stats(
         input_dir=Path(args.input_dir),
         output_file=Path(args.output_file),
         hp_filter_min_freq=args.hp_filter_min_freq,

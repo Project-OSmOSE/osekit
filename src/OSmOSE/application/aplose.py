@@ -44,7 +44,7 @@ class Aplose(Welch):
         plt.rc("figure", titlesize=ticksize)  # fontsize of the figure title
 
         self.adjust = False
-        self.__build_path(dry=True)
+        self.build_path(dry=True)
 
     @property
     def colormap(self):
@@ -83,7 +83,7 @@ class Aplose(Welch):
         self.__dynamic_max = value
 
 
-    def __build_path(self, adjust: bool = False, dry: bool = False):
+    def build_path(self, adjust: bool = False, dry: bool = False):
         """Build some internal paths according to the expected architecture and might create them.
 
         Parameter
@@ -203,7 +203,7 @@ class Aplose(Welch):
         date_template : `str`, optiona, keyword-only
             When initializing a spectrogram of a dataset that has not been built, providing a date_template will generate the timestamp.csv.
         """
-        self.__build_path()
+        self.build_path()
         super().initialize(batch_ind_min=batch_ind_min, batch_ind_max=batch_ind_max, force_init=force_init, date_template=date_template)
 
         if dataset_sr:
@@ -244,12 +244,13 @@ class Aplose(Welch):
         self.save_image = save_image
         
         self.adjust = adjust
-        output_file = self.path_output_spectrogram.joinpath(audio_file)
+        lockfile = f"{self.path_output_spectrogram.joinpath('lock' + Path(audio_file).stem)}.lock"
 
         def check_existing_matrix():
             return len(list(self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"))) == 2**self.zoom_level if save_matrix else True
 
-        if len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))) == sum(2**i for i in range(self.zoom_level+1)) and check_existing_matrix():
+        if len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))) == sum(2**i for i in range(self.zoom_level)) and check_existing_matrix():
+            print(len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))))
             if overwrite:
                 print(f"Existing files detected for audio file {audio_file}! They will be overwritten.")
                 for old_file in self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"):
@@ -261,21 +262,20 @@ class Aplose(Welch):
                 print(f"The spectrograms for the file {audio_file} have already been generated, skipping...")
                 return
 
-
-        lock = FileLock(str(output_file) + ".lock")
+        lock = FileLock(lockfile)
         lock.acquire(blocking=False)
 
         welchs = self.preprocess_file(audio_file=audio_file,
                           adjust=adjust,
                           last_file_behavior=last_file_behavior,
                           merge_files=merge_files,
-                          write_audio_file=write_audio_file)
+                          write_file=write_audio_file)
         
         for welch in welchs:
             self.gen_tiles(data=welch[0], sample_rate=self.sr_analysis, output_file=welch[1])
 
         lock.release()
-        os.remove(str(output_file) + ".lock")
+        os.remove(lockfile)
 
 
     def gen_tiles(self, *, data: np.ndarray, sample_rate: int, output_file: Path):
