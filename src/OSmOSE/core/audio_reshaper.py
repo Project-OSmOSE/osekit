@@ -168,7 +168,7 @@ def reshape(
     def yield_result(*, output, sr, subtype = "FLOAT", extra_text = ""):
         global timestamp
         outfilename = output_dir_path.joinpath(
-            f"{from_timestamp(timestamp).replace(':','-').replace('.','_').rstrip('Z')}.wav"
+            f"{from_timestamp(timestamp).replace(':','-').replace('.','_')}.wav"
         )
         result.append(outfilename.name)
         timestamp_list.append(from_timestamp(timestamp))

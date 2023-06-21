@@ -35,7 +35,10 @@ def substract_timestamps(
     return next_timestamp - cur_timestamp
 
 def to_timestamp(string: str) -> datetime:
-    return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S.%fZ")
+    try:
+        return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError:
+        return datetime.strptime(string, "%Y-%m-%dT%H-%M-%S_%fZ")
 
 def from_timestamp(date: datetime) -> str:
     return datetime.strftime(date, "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
