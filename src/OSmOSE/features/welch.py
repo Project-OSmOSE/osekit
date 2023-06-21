@@ -30,7 +30,7 @@ class Welch(Dataset):
         self,
         dataset_path: str,
         *,
-        dataset_sr: int = None,
+        dataset_sr: int = 0,
         gps_coordinates: Union[str, list, tuple] = None,
         owner_group: str = None,
         analysis_params: dict = None,
@@ -95,10 +95,11 @@ class Welch(Dataset):
 
         self.__local = local
 
+        orig_metadata = None
+
         if self.is_built:
             orig_metadata = pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)
-        elif not dataset_sr:
-            raise ValueError("If you dont know your sr, please use the build() method first")
+        
         processed_path = self.path.joinpath(OSMOSE_PATH.spectrogram)
         metadata_path = processed_path.joinpath("adjust_metadata.csv")
         if metadata_path.exists():
@@ -113,7 +114,7 @@ class Welch(Dataset):
             )
 
         self.batch_number: int = batch_number
-        self.dataset_sr: int = dataset_sr if dataset_sr is not None else orig_metadata['origin_sr'][0]
+        self.dataset_sr: int = dataset_sr if dataset_sr or orig_metadata is None else orig_metadata['origin_sr'][0]
 
         self.nfft: int = self.analysis_sheet["nfft"][0] if "nfft" in self.analysis_sheet else 1
         self.window_size: int = (
@@ -354,6 +355,10 @@ class Welch(Dataset):
                 )
                 return
         
+        self.path_input_audio_file = self._get_original_after_build()
+
+        if not self.dataset_sr:
+            self.dataset_sr = pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"), header=0)["dataset_sr"][0]
         # Stop initialization if already done
         final_path = self.path.joinpath(
             OSMOSE_PATH.spectrogram,
@@ -389,8 +394,6 @@ class Welch(Dataset):
         if self.data_normalization == "zscore" and self.spectro_normalization != "spectrum":
             self.spectro_normalization = "spectrum"
             print("WARNING: the spectrogram normalization has been changed to spectrum because the data will be normalized using zscore.")
-
-        self.path_input_audio_file = self._get_original_after_build()
 
         #! INITIALIZATION START
         input_timestamp = pd.read_csv(
