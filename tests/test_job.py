@@ -3,9 +3,8 @@ from pathlib import Path
 
 import pytest
 from OSmOSE import Job_builder
-from OSmOSE.utils import read_config, convert
 
-custom_config = convert({
+custom_config = {
     "job_scheduler":"Torque",
     "env_script":"conda activate",
     "env_name":"osmose",
@@ -16,7 +15,7 @@ custom_config = convert({
     "mem":"42G",
     "outfile":"%j.out",
     "errfile":"%j.err"
-})
+}
 
 pbshead = """#!/bin/bash
 #PBS -N test_job
@@ -26,6 +25,7 @@ pbshead = """#!/bin/bash
 #PBS -l walltime=12:00:00
 #PBS -l mem=42G"""
 
+@pytest.mark.unit
 def test_build_job_file(output_dir):
     script_path = "/path/to/script"
     script_args = "--arg1 value1 --arg2 value2"

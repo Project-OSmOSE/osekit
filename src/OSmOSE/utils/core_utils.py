@@ -5,11 +5,12 @@ import random
 import shutil
 import struct
 from collections import namedtuple
-from distutils.errors import UnknownFileError
 import sys
 from typing import Union, NamedTuple, Tuple
 
 import json
+
+from OSmOSE.utils.path_utils import make_path
 
 try:
     import tomllib
@@ -41,24 +42,47 @@ def list_not_built_datasets(datasets_folder_path: str) -> None:
     ds_folder = Path(datasets_folder_path)
 
     dataset_list = [
-        directory for directory in ds_folder.iterdir() if ds_folder.joinpath(directory)
+        directory
+        for directory in ds_folder.iterdir()
+        if ds_folder.joinpath(directory).is_dir()
     ]
+
+    dataset_list = sorted(
+        dataset_list, key=lambda path: str(path).lower()
+    )  # case insensitive alphabetical sorting of datasets
+
     list_not_built_datasets = []
+    list_unknown_datasets = []
 
     for dataset_directory in dataset_list:
-        if ds_folder.joinpath(
-            dataset_directory, OSMOSE_PATH.raw_audio, "original"
-        ).exists():
-            list_not_built_datasets.append(dataset_directory)
+        dataset_directory = ds_folder.joinpath(dataset_directory)
+        if os.access(dataset_directory, os.R_OK):
+            metadata_path = next(
+                dataset_directory.joinpath(OSMOSE_PATH.raw_audio).rglob("metadata.csv"), None
+            )
+            timestamp_path = next(
+                dataset_directory.joinpath(OSMOSE_PATH.raw_audio).rglob("timestamp.csv"), None
+            )
+            
+            if not(metadata_path and metadata_path.exists() and timestamp_path and timestamp_path.exists() and not dataset_directory.joinpath(OSMOSE_PATH.raw_audio,"original").exists()):
+                list_not_built_datasets.append(dataset_directory)
+        else:
+            list_unknown_datasets.append(dataset_directory)
 
-    print("List of the datasets not built yet:")
+    not_built_formatted = "\n".join(
+        [f"  - {dataset.name}" for dataset in list_not_built_datasets]
+    )
+    print(f"""List of the datasets that aren't built yet:\n{not_built_formatted}""")
 
-    for dataset in list_not_built_datasets:
-        print("  - {}".format(dataset))
+    unreachable_formatted = "\n".join(
+        [f"  - {dataset.name}" for dataset in list_unknown_datasets]
+    )
+    print(
+        f"""List of unreachable datasets (probably due to insufficient permissions) :\n{unreachable_formatted}"""
+    )
 
-
-def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
-    """Read the given configuration file or dict and converts it to a namedtuple. Only TOML and JSON formats are accepted for now.
+def read_config(raw_config: Union[str, dict, Path]) -> dict:
+    """Read the given configuration file or dict. Only TOML and JSON formats are accepted for now.
 
     Parameter
     ---------
@@ -67,8 +91,8 @@ def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
 
     Returns
     -------
-    config : `namedtuple`
-        The configuration as a `namedtuple` object.
+    config : `dict`
+        The configuration as a `dict` object.
 
     Raises
     ------
@@ -78,7 +102,7 @@ def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
         Raised if the raw_config is anything else than a string, a PurePath or a dict.
     NotImplementedError
         Raised if the raw_config file is in YAML format
-    UnknownFileError
+    ValueError
         Raised if the raw_config file is not in TOML, JSON or YAML formats."""
 
     match raw_config:
@@ -111,85 +135,11 @@ def read_config(raw_config: Union[str, dict, Path]) -> NamedTuple:
                         "YAML support will eventually get there (unfortunately)"
                     )
                 case _:
-                    raise UnknownFileError(
+                    raise ValueError(
                         f"The provided configuration file extension ({Path(raw_config).suffix} is not a valid extension. Please use .toml or .json files."
                     )
 
-    return convert(raw_config)
-
-
-def convert(dictionary):
-    for key, value in dictionary.items():
-        if isinstance(value, dict):
-            dictionary[key] = convert(value)
-    return namedtuple("GenericDict", dictionary.keys())(**dictionary)
-
-
-def read_header(file: str) -> Tuple[int, float, int, int]:
-    """Read the first bytes of a wav file and extract its characteristics.
-
-    At the very least, only the first 44 bytes are read. If the `data` chunk is not right after the header chunk,
-    the subsequent chunks will be read until the `data` chunk is found. If there is no `data` chunk, all the file will be read.
-
-    Parameter
-    ---------
-    file: str
-        The absolute path of the wav file whose header will be read.
-
-    Returns
-    -------
-    samplerate : `int`
-        The number of samples in one frame.
-    frames : `float`
-        The number of frames, corresponding to the file duration in seconds.
-    channels : `int`
-        The number of audio channels.
-    sampwidth : `int`
-        The sample width.
-
-    Note
-    ----
-    When there is no `data` chunk, the `frames` value will fall back on the size written in the header. This can be incorrect,
-    if the file has been corrupted or the writing process has been interrupted before completion.
-    """
-    with open(file, "rb") as fh:
-        _, size, _ = struct.unpack("<4sI4s", fh.read(12))
-        chunk_header = fh.read(8)
-        subchunkid, _ = struct.unpack("<4sI", chunk_header)
-
-        if subchunkid == b"fmt ":
-            _, channels, samplerate, _, _, sampwidth = struct.unpack(
-                "HHIIHH", fh.read(16)
-            )
-
-        chunkOffset = fh.tell()
-        found_data = False
-        while chunkOffset < size and not found_data:
-            fh.seek(chunkOffset)
-            subchunk2id, subchunk2size = struct.unpack("<4sI", fh.read(8))
-            if subchunk2id == b"data":
-                found_data = True
-
-            chunkOffset = chunkOffset + subchunk2size + 8
-
-        if not found_data:
-            print(
-                "No data chunk found while reading the header. Will fallback on the header size."
-            )
-            subchunk2size = size - 36
-
-        sampwidth = (sampwidth + 7) // 8
-        framesize = channels * sampwidth
-        frames = subchunk2size / framesize
-
-        if (size - 72) > subchunk2size:
-            print(
-                f"Warning : the size indicated in the header is not the same as the actual file size. This might mean that the file is truncated or otherwise corrupt.\
-                \nSupposed size: {size} bytes \nActual size: {subchunk2size} bytes."
-            )
-
-        return samplerate, frames, channels, sampwidth
-
+    return raw_config
 
 def safe_read(
     file_path: str, *, nan: float = 0.0, posinf: any = None, neginf: any = None
@@ -305,7 +255,7 @@ def check_n_files(
                                 "You need to set auto_normalization to True to normalize your dataset automatically."
                             )
 
-                    Path(output_path).mkdir(mode=0o770, parents=True, exist_ok=True)
+                    make_path(output_path)
 
                     for audio_file in file_list:
                         data, sr = safe_read(audio_file)

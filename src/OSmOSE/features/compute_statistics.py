@@ -3,13 +3,15 @@ import sys
 import csv
 import argparse
 
+import pandas as pd
+
 import soundfile as sf
 import numpy as np
 from scipy import signal
 
 from OSmOSE.utils import set_umask
 
-def Write_zscore_norma_params(
+def compute_stats(
     *,
     input_dir: Path,
     output_file: Path,
@@ -48,10 +50,15 @@ def Write_zscore_norma_params(
     wav_list = all_files[
         batch_ind_min : batch_ind_max if batch_ind_max != -1 else len(all_files)
     ]
-
+    
     print(f"Computing statistics over {len(wav_list)} files.")
 
     list_summaryStats = []
+
+    timestamps = pd.read_csv(Path(input_dir).joinpath('timestamp.csv'),header=None, names=["filename","timestamp"])
+    # get timestamp of the audio file
+    
+
 
     for wav in wav_list:
         data, sample_rate = sf.read(wav)
@@ -66,12 +73,14 @@ def Write_zscore_norma_params(
             btype="bandpass",
         )
         data = signal.sosfilt(bpcoef, data)
+        
+        current_timestamp = str(timestamps["timestamp"][timestamps["filename"] == wav.name].values[0])       
 
-        list_summaryStats.append([wav, np.mean(data), np.std(data)])
+        list_summaryStats.append([wav.name, current_timestamp, np.mean(data), np.std(data)])
 
     with open(output_file, "w", newline="") as f:
         write = csv.writer(f)
-        write.writerow(["filename", "mean", "std"])
+        write.writerow(["filename","timestamp", "mean", "std"])
         write.writerows(list_summaryStats)
 
     print(f"{output_file} written.")
@@ -117,7 +126,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    Write_zscore_norma_params(
+    compute_stats(
         input_dir=Path(args.input_dir),
         output_file=Path(args.output_file),
         hp_filter_min_freq=args.hp_filter_min_freq,

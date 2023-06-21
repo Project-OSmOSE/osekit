@@ -7,32 +7,33 @@ import tomlkit
 import subprocess
 from uuid import uuid4
 from string import Template
-from typing import NamedTuple, List, Literal
+from typing import List, Literal
 from warnings import warn
 from pathlib import Path
 from datetime import datetime, timedelta
 from importlib import resources
-from OSmOSE.utils import read_config, set_umask
+from OSmOSE.utils import read_config, set_umask, make_path
 from OSmOSE.config import *
 
-
+JOB_CONFIG_TEMPLATE = namedtuple("job_config", ["job_scheduler","env_script","env_name","queue","nodes","walltime","ncpus","mem","outfile","errfile"])
 class Job_builder:
     def __init__(self, config_file: str = None):
         if config_file is None:
             self.__configfile = "config.toml"
-            self.__full_config: NamedTuple = read_config(
+            self.__full_config: dict = read_config(
                 resources.files("OSmOSE").joinpath(self.__configfile)
             )
 
         else:
             self.__configfile = config_file
-            self.__full_config: NamedTuple = read_config(config_file)
+            self.__full_config: dict = read_config(config_file)
 
-        self.__config = self.__full_config.Job
+        self.__config = self.__full_config["Job"]
 
         self.__prepared_jobs = []
         self.__ongoing_jobs = []
         self.__finished_jobs = []
+        self.__cancelled_jobs = []
 
         required_properties = [
             "job_scheduler",
@@ -47,11 +48,10 @@ class Job_builder:
             "errfile",
         ]
 
-        if not all(prop in self.__config._fields for prop in required_properties):
+        if not all(prop in self.__config.keys() for prop in required_properties):
             raise ValueError(
-                f"The provided configuration file is missing the following attributes: {'; '.join(list(set(required_properties).difference(set(self.__config._fields))))}"
+                f"The provided configuration file is missing the following attributes: {'; '.join(list(set(required_properties).difference(set(self.__config.keys()))))}"
             )
-
     # region Properties
     # READ-ONLY properties
     @property
@@ -73,89 +73,93 @@ class Job_builder:
         return self.__finished_jobs
     
     @property
+    def cancelled_jobs(self):
+        return self.__cancelled_jobs
+    
+    @property
     def all_jobs(self):
-        return self.prepared_jobs + self.ongoing_jobs + self.finished_jobs
+        return self.prepared_jobs + self.ongoing_jobs + self.finished_jobs + self.cancelled_jobs
 
     # READ-WRITE properties
     @property
     def job_scheduler(self):
-        return self.__config.job_scheduler
+        return self.__config["job_scheduler"]
 
     @job_scheduler.setter
     def job_Scheduler(self, value: Literal["Torque", "Slurm"]):
-        self.__config = self.__config._replace(job_scheduler=value)
+        self.__config = self.__config["job_scheduler"] = value
 
     @property
     def env_script(self):
-        return self.__config.env_script
+        return self.__config["env_script"]
 
     @env_script.setter
     def env_script(self, value):
-        self.__config = self.__config._replace(env_script=value)
+        self.__config = self.__config["env_script"] = value
 
     @property
     def env_name(self):
-        return self.__config.env_name
+        return self.__config["env_name"]
 
     @env_name.setter
     def env_name(self, value):
-        self.__config = self.__config._replace(env_name=value)
+        self.__config = self.__config["env_name"] = value
 
     @property
     def queue(self):
-        return self.__config.queue
+        return self.__config["queue"]
 
     @queue.setter
     def queue(self, value):
-        self.__config = self.__config._replace(queue=value)
+        self.__config = self.__config["queue"] = value
 
     @property
     def nodes(self):
-        return self.__config.nodes
+        return self.__config["nodes"]
 
     @nodes.setter
     def nodes(self, value):
-        self.__config = self.__config._replace(nodes=value)
+        self.__config = self.__config["nodes"] = value
 
     @property
     def walltime(self):
-        return self.__config.walltime
+        return self.__config["walltime"]
 
     @walltime.setter
     def walltime(self, value):
-        self.__config = self.__config._replace(walltime=value)
+        self.__config = self.__config["walltime"] = value
 
     @property
     def ncpus(self):
-        return self.__config.ncpus
+        return self.__config["ncpus"]
 
     @ncpus.setter
     def ncpus(self, value):
-        self.__config = self.__config._replace(ncpus=value)
+        self.__config = self.__config["ncpus"] = value
 
     @property
     def mem(self):
-        return self.__config.mem
+        return self.__config["mem"]
 
     @mem.setter
     def mem(self, value):
-        self.__config = self.__config._replace(mem=value)
+        self.__config = self.__config["mem"] = value
 
     @property
     def outfile(self):
-        return self.__config.outfile
+        return self.__config["outfile"]
 
     @outfile.setter
     def outfile(self, value):
-        self.__config = self.__config._replace(outfile=value)
+        self.__config = self.__config["outfile"] = value
 
     @property
     def errfile(self):
-        return self.__config.errfile
+        return self.__config["errfile"]
 
     @errfile.setter
     def errfile(self, value):
-        self.__config = self.__config._replace(errfile=value)
+        self.__config = self.__config["errfile"] = value
 
     # endregion
 
@@ -250,25 +254,28 @@ class Job_builder:
             The path to the created job file.
         """
         set_umask()
-        if "Presets" in self.__config._fields:
-            if preset and preset.lower() not in self.__config.Presets._fields:
+        if "Presets" in self.__config.keys():
+            if preset and preset.lower() not in self.__config["Presets"].keys():
                 raise ValueError(
-                    f"Unrecognized preset {preset}. Valid presets are: {', '.join(self.__config.Presets._fields)}"
+                    f"Unrecognized preset {preset}. Valid presets are: {', '.join(self.__config['Presets'].keys())}"
                 )
 
-            job_preset = getattr(self.__config.Presets, preset)
+            job_preset = self.__config["Presets"][preset]
         else:
             preset = None
 
         pwd = Path(__file__).parent
 
+        today = datetime.today().strftime("%Y_%m_%d")
+
         if logdir is None:
-            logdir = pwd.joinpath("log_job")
-            jobdir = pwd.joinpath("ongoing_jobs")
-            logdir.mkdir(mode=DPDEFAULT, exist_ok=True)
-            jobdir.mkdir(mode=DPDEFAULT, exist_ok=True)
+            logdir = pwd.joinpath("log_job",today)
+            jobdir = pwd.joinpath("ongoing_jobs",today)
+            make_path(logdir, mode=DPDEFAULT)
+            make_path(jobdir, mode=DPDEFAULT)
         else:
-            logdir.mkdir(mode=DPDEFAULT, exist_ok=True)
+            logdir = logdir.joinpath(today)
+            make_path(logdir, mode=DPDEFAULT)
             jobdir = logdir
         
 
@@ -294,15 +301,15 @@ class Job_builder:
         errfile = logdir.joinpath(errfile)
 
         if not queue:
-            queue = self.queue if not preset else job_preset.queue
+            queue = self.queue if not preset else job_preset["queue"]
         if not nodes:
-            nodes = self.nodes if not preset else job_preset.nodes
+            nodes = self.nodes if not preset else job_preset["nodes"]
         if not walltime:
-            walltime = self.walltime if not preset else job_preset.walltime
+            walltime = self.walltime if not preset else job_preset["walltime"]
         if not ncpus:
-            ncpus = self.ncpus if not preset else job_preset.ncpus
+            ncpus = self.ncpus if not preset else job_preset["ncpus"]
         if not mem:
-            mem = self.mem if not preset else job_preset.mem
+            mem = self.mem if not preset else job_preset["mem"]
 
         match job_scheduler:
             case "Torque":
@@ -445,6 +452,7 @@ class Job_builder:
                 )
                 print(f'Sent command {" ".join(cmd)}')
                 jobid_list.append(jobid)
+
             elif "slurm" in str(jobinfo["path"]).lower():
                 dep = f"-d afterok:{dependency}" if dependency else ""
                 jobid = (
@@ -458,6 +466,7 @@ class Job_builder:
 
             if jobinfo in self.prepared_jobs:
                 self.__prepared_jobs.remove(jobinfo)
+            jobinfo["id"] = jobid
             self.__ongoing_jobs.append(jobinfo)
 
         return jobid_list
@@ -503,15 +512,20 @@ class Job_builder:
         if len(self.finished_jobs) > 0:
             res += "==== FINISHED JOBS ====\n\n"
         for job_info in self.finished_jobs:
+            created_at = datetime.strptime(today + job_info["outfile"].stem[-11:-3], "%d%m%y%H-%M-%S")
+
             if not job_info["outfile"].exists():
                 res += f"{job_info['job_name']} (created at {created_at}) : Output file still writing..."
+            else:
+                delta = datetime.fromtimestamp(time.mktime(time.localtime(job_info["outfile"].stat().st_ctime))) - created_at
+                strftime = f"{'%H hours, ' if delta.seconds >= 3600 else ''}{'%M minutes and ' if delta.seconds >= 60 else ''}%S seconds"
+                elapsed_time = datetime.strftime(epoch + delta, strftime)
+                res += f"{job_info['job_name']} (created at {created_at}) : finished in {elapsed_time}.\n"
 
-            created_at = datetime.strptime(today + job_info["outfile"].stem[-11:-3], "%d%m%y%H-%M-%S")
-            delta = datetime.fromtimestamp(time.mktime(time.localtime(job_info["outfile"].stat().st_ctime))) - created_at
-            strftime = f"{'%H hours, ' if delta.seconds >= 3600 else ''}{'%M minutes and ' if delta.seconds >= 60 else ''}%S seconds"
-            elapsed_time = datetime.strftime(epoch + delta, strftime)
-            res += f"{job_info['job_name']} (created at {created_at}) : finished in {elapsed_time}.\n"
-
+        if len(self.cancelled_jobs) > 0:
+            res += "==== CANCELLED JOBS ====\n\n"
+            for jobinfo in self.cancelled_jobs:
+                res+= f"{jobinfo['job_name']}"
         print(res)
 
     def read_output_file(
@@ -534,7 +548,7 @@ class Job_builder:
         if not job_file_name:
             job_id = 0
             if job_name:
-                job_id = get_dict_index_in_list(self.finished_jobs, "job_name", job_name)
+                job_id = get_dict_index_in_list(self.finished_jobs, "job_name", job_name.rstrip())
             elif len(self.finished_jobs) == 0:
                 print(
                     f"There are no finished jobs in this context. Wait until the {len(self.ongoing_jobs)} ongoing jobs are done before reading the output. Otherwise, you can specify which file you wish to read."
@@ -550,8 +564,23 @@ class Job_builder:
         with open(job_file_name, "r") as f:
             print("".join(f.readlines()))
 
-def get_dict_index_in_list(list: list, key: str, value: any) -> int:
-    for i, d in enumerate(list):
+    def delete_job(self, job_identifier:str):
+        try:
+            job_id = get_dict_index_in_list(self.ongoing_jobs, "job_name", job_identifier.rstrip())
+        except ValueError:
+            job_id = get_dict_index_in_list(self.ongoing_jobs, "id", job_identifier.rstrip())
+        
+        jobinfo = self.ongoing_jobs[job_id]
+        if "Torque" in str(jobinfo["path"]):
+            subprocess.run(["qdel", jobinfo["id"]])
+        elif "Slurm" in str(jobinfo["path"]):
+            subprocess.run(["scancel", jobinfo["id"]])
+        self.__ongoing_jobs.remove(jobinfo)
+        self.__cancelled_jobs.append(jobinfo)
+        
+
+def get_dict_index_in_list(item_list: list, key: str, value: any) -> int:
+    for i, d in enumerate(item_list):
         if d[key] == value:
             return i
     

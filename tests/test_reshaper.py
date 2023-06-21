@@ -2,12 +2,13 @@ from pathlib import Path
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import List
-from OSmOSE.cluster.audio_reshaper import *
+from OSmOSE.core.audio_reshaper import *
 import pytest
 import csv
 import os
+import shutil
 
-
+@pytest.mark.unit
 def test_substract_timestamps():
     # Create test data
     timestamp_data = {
@@ -42,10 +43,10 @@ def test_substract_timestamps():
         == "time data '20220101T12:03:00.000' does not match format '%Y-%m-%dT%H:%M:%S.%fZ'"
     )
 
-
+@pytest.mark.unit
 def test_reshape_errors(input_dir):
     with pytest.raises(ValueError) as e:
-        reshape("/not/a/path", 15)
+        next(reshape("/not/a/path", 15))
 
     assert (
         str(e.value)
@@ -53,7 +54,7 @@ def test_reshape_errors(input_dir):
     )
 
     with pytest.raises(ValueError) as e:
-        reshape(input_dir, 20, last_file_behavior="misbehave")
+        next(reshape(input_dir, 20, last_file_behavior="misbehave"))
 
     assert (
         str(e.value)
@@ -61,23 +62,20 @@ def test_reshape_errors(input_dir):
     )
 
     with pytest.raises(FileNotFoundError):
-        reshape(input_dir, 20)  # Supposed to fail because there is no timestamp.csv
+        next(reshape(input_dir, 20))  # Supposed to fail because there is no timestamp.csv
 
-
+@pytest.mark.unit
 def test_reshape_smaller(input_reshape: Path, output_dir: Path):
-    reshaped_list = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
+    reshaped = reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=False)
+    reshaped_list = list(reshaped)
     assert len(reshaped_list) == 15
-    # assert sf.info(reshaped_list[0]).duration == 2.0
-    # assert sf.info(reshaped_list[0]).samplerate == 44100
-    # assert sum(audio/samplerate for audio in reshaped_list) == 30.0
-
-    reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True)
+    assert len(reshaped_list[0][0]) / 44100 == 2.0
+    assert sum(len(reshaped_file[0]) / 44100 for reshaped_file in reshaped_list) == 30.0
+    
+    all(reshape(input_files=input_reshape, chunk_size=2, output_dir_path=output_dir, write_output=True))
 
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
-    # reshaped_files = sorted(
-    #     [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-    #     key=os.path.getmtime,
-    # )
+
     assert len(reshaped_files) == 15
     assert sf.info(reshaped_files[0]).duration == 2.0
     assert sf.info(reshaped_files[0]).samplerate == 44100
@@ -96,46 +94,42 @@ def test_reshape_smaller(input_reshape: Path, output_dir: Path):
 
     assert np.allclose(full_input, full_output)
 
-
+@pytest.mark.unit
 def test_reshape_larger(input_reshape: Path, output_dir):
-    reshape(input_files=input_reshape, chunk_size=5, output_dir_path=output_dir, write_output=True)
+    all(reshape(input_files=input_reshape, chunk_size=5, output_dir_path=output_dir, write_output=True))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
+
     assert len(reshaped_files) == 6
     assert sf.info(reshaped_files[0]).duration == 5.0
     assert sf.info(reshaped_files[0]).samplerate == 44100
 
-
+@pytest.mark.unit
 def test_reshape_pad_last(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=4,
         output_dir_path=output_dir,
         last_file_behavior="pad",
         write_output=True
-    )
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
+
     assert len(reshaped_files) == 8
     assert sf.info(reshaped_files[0]).duration == 4.0
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sf.info(reshaped_files[-1]).duration == 4.0
 
-
+@pytest.mark.unit
 def test_reshape_truncate_last(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=4,
         output_dir_path=output_dir,
         last_file_behavior="truncate",
         write_output = True
-    )
+    ))
 
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
@@ -144,28 +138,26 @@ def test_reshape_truncate_last(input_reshape: Path, output_dir):
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sf.info(reshaped_files[-1]).duration == 2.0
 
-
+@pytest.mark.unit
 def test_reshape_discard_last(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=4,
         output_dir_path=output_dir,
         last_file_behavior="discard",
         write_output=True
-    )
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
+
     assert len(reshaped_files) == 7
     assert sf.info(reshaped_files[0]).duration == 4.0
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sf.info(reshaped_files[-1]).duration == 4.0
 
-
+@pytest.mark.unit
 def test_reshape_offsets(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=6,
         output_dir_path=output_dir,
@@ -174,12 +166,10 @@ def test_reshape_offsets(input_reshape: Path, output_dir):
         last_file_behavior="truncate",
         verbose=True,
         write_output=True
-    )
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
+
 
     assert len(reshaped_files) == 5
     assert sf.info(reshaped_files[0]).duration == 6.0
@@ -203,39 +193,36 @@ def test_reshape_offsets(input_reshape: Path, output_dir):
         input_content_end[: 2 * 44100], output_content_end[-2 * 44100 :]
     )
 
+@pytest.mark.unit
 def test_reshape_no_merge_discard(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=2,
         output_dir_path=output_dir,
         last_file_behavior="discard",
         verbose=True,
-        merge_files=False
-    )
+        merge_files=False,
+        write_output=True
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
-    print(reshaped_files)
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 10
     assert sf.info(reshaped_files[0]).duration == 2
 
+@pytest.mark.unit
 def test_reshape_no_merge_truncate(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=2,
         output_dir_path=output_dir,
         last_file_behavior="truncate",
         verbose=True,
-        merge_files=False
-    )
+        merge_files=False,
+        write_output=True
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 20
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 2
@@ -244,78 +231,71 @@ def test_reshape_no_merge_truncate(input_reshape: Path, output_dir):
     for f in reshaped_files:
         f.unlink()
 
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=1,
         output_dir_path=output_dir,
         last_file_behavior="truncate",
         verbose=True,
-        merge_files=False
-    )
+        merge_files=False,
+        write_output=True
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
-
-    print(reshaped_files)
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 30
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 1
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-58_000.wav")).duration == 1
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 1
 
+@pytest.mark.unit
 def test_reshape_no_merge_pad(input_reshape: Path, output_dir):
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=2,
         output_dir_path=output_dir,
         last_file_behavior="pad",
         verbose=True,
-        merge_files=False
-    )
+        merge_files=False,
+        write_output=True
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 20
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 2
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 2
 
-
+@pytest.mark.unit
 def test_reshape_max_delta_interval(input_reshape: Path, output_dir: Path, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: "no")
     with open(input_reshape.joinpath("timestamp.csv"), "w", newline="") as timestampf:
         writer = csv.writer(timestampf)
         writer.writerow(
-            [str(input_reshape.joinpath("test.wav")), "2022-01-01T11:59:56.000Z", "UTC"]
+            [str(input_reshape.joinpath("test.wav")), "2022-01-01T11:59:56.000Z"]#, "UTC"]
         )
         writer.writerows(
             [
                 [
                     str(input_reshape.joinpath(f"test{i}.wav")),
                     f"2022-01-01T12:00:{str(5*i).zfill(2)}.000Z",
-                    "UTC",
+                    #"UTC",
                 ]
                 for i in range(9)
             ]
         )
 
-    reshape(
+    all(reshape(
         input_files=input_reshape,
         chunk_size=2,
         output_dir_path=output_dir,
         max_delta_interval = 5,
         last_file_behavior="pad",
-        verbose=True
-    )
+        verbose=True,
+        write_output=True
+    ))
 
-    reshaped_files = sorted(
-        [x for x in output_dir.iterdir() if str(x).endswith(".wav")],
-        key=os.path.getmtime,
-    )
+    reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 15
     assert sf.info(output_dir.joinpath("2022-01-01T11-59-56_000.wav")).duration == 2
@@ -323,12 +303,40 @@ def test_reshape_max_delta_interval(input_reshape: Path, output_dir: Path, monke
 
 
     with pytest.raises(ValueError) as e:
-        reshape(
+        all(reshape(
             input_files=input_reshape,
             chunk_size=2,
             output_dir_path=output_dir,
             max_delta_interval = 1,
             last_file_behavior="pad",
             verbose=True
-        )
+        ))
     assert str(e.value) == "Error: Cannot merge non-continuous audio files if force_reshape is false."
+
+@pytest.mark.unit
+def test_resample(input_reshape: Path, output_dir: Path):
+    for i in range(3):
+        wav_file = input_reshape.joinpath(f"test{i}.wav")
+        shutil.copyfile(input_reshape.joinpath("test.wav"), wav_file)
+
+    for sr in [100, 500, 8000]:
+        all(reshape(input_files=input_reshape, chunk_size=3, output_dir_path=output_dir, new_sr=sr, write_output=True, verbose=True))
+    
+        reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
+
+        # check that all resampled files exist and have the correct properties
+        for reshaped in reshaped_files:
+            assert reshaped.is_file()
+            outinfo = sf.info(reshaped)
+            assert outinfo.samplerate == sr
+            assert outinfo.channels == 1
+            assert outinfo.frames == sr * 3
+            assert outinfo.duration == 3.0
+
+        assert len(os.listdir(output_dir)) == 11
+        # check that the original files were not modified
+        for i in range(1,9):
+            input_file = input_reshape.joinpath(f"test{i}.wav")
+            ininfo = sf.info(input_file)
+            assert ininfo.samplerate == 44100
+            assert ininfo.frames == 132300

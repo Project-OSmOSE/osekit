@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "osmose"
-version = "0.1.0"
+version = "0.1.2"
 description = "Ocean acoustic studies toolkit."
 authors = ["Rumengol"]
 readme = "README.md"
@@ -41,4 +41,9 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
+]
+markers = [
+    "unit: Mark test as unitary test. Run only these with '-m unit'.",
+    "integ: Mark test as integration test. Run only these with '-m integ'.",
+    "reg: Mark test as regression test. Run only these with '-m ref'."
 ]
