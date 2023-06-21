@@ -98,7 +98,7 @@ class Welch(Dataset):
         if self.is_built:
             orig_metadata = pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)
         elif not dataset_sr:
-            raise ValueError('If you dont know your sr, please use the build() method first')
+            raise ValueError("If you dont know your sr, please use the build() method first")
         processed_path = self.path.joinpath(OSMOSE_PATH.spectrogram)
         metadata_path = processed_path.joinpath("adjust_metadata.csv")
         if metadata_path.exists():

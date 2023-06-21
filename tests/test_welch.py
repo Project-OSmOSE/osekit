@@ -2,6 +2,7 @@ import os
 import platform
 import pandas as pd
 import numpy as np
+import pytest
 
 from OSmOSE.features import Welch
 from OSmOSE.config import OSMOSE_PATH
@@ -27,3 +28,8 @@ PARAMS = {
 }
 
 
+def test_init(input_dataset):
+    # no sr
+    with pytest.raises(ValueError) as e:
+        Welch(dataset_path=input_dataset)
+    assert str(e.value) == "If you dont know your sr, please use the build() method first"
