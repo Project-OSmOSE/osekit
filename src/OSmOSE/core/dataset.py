@@ -1,4 +1,5 @@
 import os
+import shutil
 import stat
 from pathlib import Path
 from typing import Union, Tuple, List
@@ -267,7 +268,8 @@ class Dataset:
         """
         if self.is_built and not force_upload:
             print("It seems this dataset has already been built. Running the build() method on an already built dataset might result in unexpected behavior. If this is a mistake, use the force_upload parameter.")
-
+            return 
+        
         if not self.__local:
             set_umask()
             if owner_group is None:
@@ -449,9 +451,16 @@ class Dataset:
             )
             
             if new_folder_name.exists():
-                new_folder_name.rmdir()
+                if len(os.listdir(new_folder_name)) > 0:
+                    print(f"Moving files to {new_folder_name}")
+                    for f in os.listdir(path_raw_audio):
+                        shutil.move(path_raw_audio.joinpath(f),new_folder_name.joinpath(f))
+                    os.rmdir(path_raw_audio)
+                    path_raw_audio = new_folder_name
+                else:
+                    new_folder_name.rmdir()
 
-            path_raw_audio = path_raw_audio.rename(new_folder_name)
+                    path_raw_audio = path_raw_audio.rename(new_folder_name)
             self.__original_folder = path_raw_audio
 
             for subpath in OSMOSE_PATH:
@@ -595,10 +604,11 @@ class Dataset:
             choice = ""
             for i, ts in enumerate(timestamp_files):
                 choice += f"{i+1}: {ts}\n"
-            while int(res) not in range(1,len(timestamp_files) +1):
-                res = input(f"Multiple timestamp.csv detected. Choose which one should be considered the original:\n{choice}")
+            while int(res) not in range(1,len(timestamp_files) +2):
+                res = input(f"Multiple timestamp.csv detected. Choose which one should be considered the original:\n{choice}{len(timestamp_files) + 1}: None (recreate the timestamp file)\n")
 
-                timestamp_files[int(res)-1].rename(path_raw_audio.joinpath("original","timestamp.csv"))
+                if int(res) <= len(timestamp_files):
+                    timestamp_files[int(res)-1].rename(path_raw_audio.joinpath("original","timestamp.csv"))
         elif len(timestamp_files) == 1:
             timestamp_files[0].rename(path_raw_audio.joinpath("original","timestamp.csv"))
 

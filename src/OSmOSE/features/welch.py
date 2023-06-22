@@ -114,6 +114,7 @@ class Welch(Dataset):
             )
 
         self.batch_number: int = batch_number
+        # If a dataset_sr != 0 is supplied, take it, but if there is no orig_metadata file, set 0 as default value
         self.dataset_sr: int = dataset_sr if dataset_sr or orig_metadata is None else int(orig_metadata['origin_sr'][0])
 
         self.nfft: int = int(self.analysis_sheet["nfft"][0] if "nfft" in self.analysis_sheet else 1)
@@ -351,9 +352,10 @@ class Welch(Dataset):
                 self.build(date_template=date_template)
             except Exception as e:
                 print(
-                    f"Unhandled error during dataset building. The spectrogram initialization will be cancelled. The error may be resolved by building the dataset separately first. Description of the error: {str(e)}"
+                    f"Unhandled error during dataset building. The spectrogram initialization will be cancelled. The error may be resolved by building the dataset separately first. Description of the error:"
                 )
-                return
+
+                raise e
         
         self.path_input_audio_file = self._get_original_after_build()
 
@@ -424,45 +426,49 @@ class Welch(Dataset):
         audio_file_origin_duration = metadata["audio_file_origin_duration"][0]
         origin_sr = metadata["dataset_sr"][0]
         audio_file_count = metadata["audio_file_count"][0]
+        path_csv = self.audio_path.joinpath("timestamp.csv")
 
         # Generate the timestamp.csv
-        new_timestamp_list = []
-        new_name_list = []
-    
-        # The files are considered continuous only if they all follow each others with less than 5 seconds of difference
-        continuous = all(to_timestamp(input_timestamp["timestamp"][i + 1]) - to_timestamp(input_timestamp["timestamp"][i]) + timedelta(seconds=self.spectro_duration) < timedelta(seconds=5) for i in range(len(input_timestamp["timestamp"])))
+        if self.spectro_duration != audio_file_origin_duration:
+            new_timestamp_list = []
+            new_name_list = []
+        
+            # The files are considered continuous only if they all follow each others with less than 5 seconds of difference
+            continuous = all(to_timestamp(input_timestamp["timestamp"][i + 1]) - to_timestamp(input_timestamp["timestamp"][i]) + timedelta(seconds=self.spectro_duration) < timedelta(seconds=5) for i in range(len(input_timestamp["timestamp"])))
 
-        for i in range(len(input_timestamp.filename)):
-            if len(new_timestamp_list) == 0 or not continuous:
-                next_timestamp = to_timestamp(input_timestamp.timestamp[i])
+            for i in range(len(input_timestamp.filename)):
+                if len(new_timestamp_list) == 0 or not continuous:
+                    next_timestamp = to_timestamp(input_timestamp.timestamp[i])
 
-                while next_timestamp + timedelta(seconds=self.spectro_duration) < to_timestamp(input_timestamp.timestamp[i]) + timedelta(seconds=int(audio_file_origin_duration)):
+                    while next_timestamp + timedelta(seconds=self.spectro_duration) < to_timestamp(input_timestamp.timestamp[i]) + timedelta(seconds=int(audio_file_origin_duration)):
+                        new_timestamp_list.append(from_timestamp(next_timestamp))
+                        new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
+                        
+                        next_timestamp += timedelta(seconds=self.spectro_duration)
+                else:
                     new_timestamp_list.append(from_timestamp(next_timestamp))
                     new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
                     
                     next_timestamp += timedelta(seconds=self.spectro_duration)
-            else:
-                new_timestamp_list.append(from_timestamp(next_timestamp))
-                new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
-                
-                next_timestamp += timedelta(seconds=self.spectro_duration)
 
-        path_csv = self.audio_path.joinpath("timestamp.csv")
 
-        if self.path_input_audio_file == self.audio_path:
-            path_csv.rename(path_csv.with_stem("old_timestamp"))
+            if self.path_input_audio_file == self.audio_path:
+                path_csv.rename(path_csv.with_stem("old_timestamp"))
 
-        new_timestamp = pd.DataFrame(
-            {"filename": new_name_list, "timestamp": new_timestamp_list, "timezone": "UTC"}
-        )
-        new_timestamp.sort_values(by=["timestamp"], inplace=True)
-        new_timestamp.drop_duplicates().to_csv(
-            path_csv,
-            index=False,
-            na_rep="NaN",
-            header=None,
-        )
-        os.chmod(path_csv, mode=FPDEFAULT)
+            new_timestamp = pd.DataFrame(
+                {"filename": new_name_list, "timestamp": new_timestamp_list, "timezone": "UTC"}
+            )
+            new_timestamp.sort_values(by=["timestamp"], inplace=True)
+            new_timestamp.drop_duplicates().to_csv(
+                path_csv,
+                index=False,
+                na_rep="NaN",
+                header=None,
+            )
+            os.chmod(path_csv, mode=FPDEFAULT)
+        # If the analysis sample rate is differnet than the original one, the two folder names will differ.
+        elif self.path_input_audio_file != self.audio_path:
+            shutil.copyfile(self.path_input_audio_file.joinpath("timestamp.csv"), path_csv)
 
 
         batch_size = len(self.list_wav_to_process) // self.batch_number
@@ -683,10 +689,6 @@ class Welch(Dataset):
 
         #! Determination of zscore normalization parameters
         if self.data_normalization == "zscore" and Zscore != "original" and not hasattr(self, "__summStats"):
-            average_over_H = int(
-                round(pd.to_timedelta(Zscore).total_seconds() / self.spectro_duration)
-            )
-
             df = pd.DataFrame()
             for dd in self.path.joinpath(OSMOSE_PATH.statistics).glob("summaryStats*"):
                 df = pd.concat([df, pd.read_csv(dd, header=0)])
@@ -727,16 +729,16 @@ class Welch(Dataset):
         )
 
         metadata = pd.read_csv(self.audio_path.joinpath("metadata.csv"))
-        #! If spectro == input audio
+        #! If spectro params == input audio
         if metadata["origin_sr"].values[0] == self.dataset_sr and metadata["audio_file_origin_duration"].values[0] == self.spectro_duration:
-            return (safe_read(audio_file), audio_file)
-
-        files_to_load = [self.path_input_audio_file.joinpath(audio_file)]
+            files_to_load = [self.path_input_audio_file.joinpath(audio_file)]
+        else:
+            files_to_load = [self.path_input_audio_file.joinpath(audio_file)]
 
         orig_index = int(orig_timestamp_file.index[orig_timestamp_file["filename"] == audio_file][0])
         T0 = to_timestamp(orig_timestamp_file["timestamp"][orig_index]) # Timestamp of the beginning of the original file
         d1 = timedelta(seconds=metadata["audio_file_origin_duration"][0]) # Duration of the original timestamp (considering all timestamps are continuous)
-
+        orig_timestamp = [to_timestamp(timestamp) for timestamp in orig_timestamp_file["timestamp"]]
         final_timestamps = [to_timestamp(timestamp) for timestamp in final_timestamp_file["timestamp"]]
 
         N0 = [ts for ts in final_timestamps if ts <= T0][-1] # Timestamp of the beginning of the first output file starting before T0
@@ -745,7 +747,7 @@ class Welch(Dataset):
         # While the original file begins 
         start = T0
         i=1
-        while start > N0:
+        while orig_index -i >= 0 and start > N0:
             start = to_timestamp(orig_timestamp_file["timestamp"][orig_index-i])
             files_to_load.insert(0, self.path_input_audio_file.joinpath(orig_timestamp_file["filename"][orig_index-i]))
             i+=1
@@ -755,7 +757,7 @@ class Welch(Dataset):
         # While the original file ends after the target file, we prepare to create the next.
         j=1
         next_output = N0
-        while T0 + d1 >= next_output + timedelta(seconds=self.spectro_duration):
+        while N0_index + j+1 < len(final_timestamps) and T0 + d1 >= next_output + timedelta(seconds=self.spectro_duration):
             j+=1
             if final_timestamps[N0_index + j] + timedelta(seconds=self.spectro_duration) > T0 + d1 and merge_files == False:
                 break
@@ -767,7 +769,7 @@ class Welch(Dataset):
         print(end + d1)
         print(next_output + timedelta(seconds=self.spectro_duration))
         # While the last audio file loaded ends before the last spectrogram, load it.
-        while end + d1 < next_output + timedelta(seconds=self.spectro_duration):
+        while orig_index + k < len(orig_timestamp_file["timestamp"]) and end + d1 < next_output + timedelta(seconds=self.spectro_duration):
             end = to_timestamp(orig_timestamp_file["timestamp"][orig_index+k])
             files_to_load.append(self.path_input_audio_file.joinpath(orig_timestamp_file["filename"][orig_index+k]))
             k+=1
@@ -874,6 +876,9 @@ class Welch(Dataset):
         Noffset = self.window_size - Noverlap
         Nbwin = int((Nbech - self.window_size) / Noffset)
         Freq = np.fft.rfftfreq(self.nfft, d=1 / sample_rate)
+
+        if Nbwin <= 0:
+            raise ValueError("The window_size cannot be larger than the size of the sample. Consider using a smaller window or a longer audio.")
 
         Sxx = np.zeros([np.size(Freq), Nbwin])
         for idwin in range(Nbwin):

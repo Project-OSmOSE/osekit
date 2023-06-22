@@ -135,7 +135,7 @@ def reshape(
     input_timestamp = pd.read_csv(
         timestamp_path if timestamp_path and timestamp_path.exists() else input_dir_path.joinpath("timestamp.csv"),
         header=None,
-        names=["filename", "timestamp",]# "timezone"],
+        names=["filename", "timestamp", "timezone"],
     )
 
     # When automatically reshaping, will populate the files list
@@ -187,7 +187,8 @@ def reshape(
         return (output, outfilename)
 
     while i < len(files):
-        with sf.SoundFile(input_dir_path.joinpath(files[i])) as audio_file:
+        input_file = input_dir_path.joinpath(files[i])
+        with sf.SoundFile(input_file) as audio_file:
             frames = audio_file.frames
             sample_rate = audio_file.samplerate
             subtype = audio_file.subtype
@@ -385,11 +386,16 @@ def reshape(
         # suppr doublons
         if path_csv.exists():
             tmp_timestamp = pd.read_csv(path_csv, header=None)
+            try:
+                to_timestamp(tmp_timestamp[0].values[0])
+            except:
+                print("Non-OSmOSE names")
+                return
             result += list(tmp_timestamp[0].values)
             timestamp_list += list(tmp_timestamp[1].values)
 
         input_timestamp = pd.DataFrame(
-            {"filename": result, "timestamp": timestamp_list,}# "timezone": "UTC"}
+            {"filename": result, "timestamp": timestamp_list, "timezone": "UTC"}
         )
         input_timestamp.sort_values(by=["timestamp"], inplace=True)
         input_timestamp.drop_duplicates().to_csv(

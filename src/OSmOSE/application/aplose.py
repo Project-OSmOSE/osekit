@@ -15,7 +15,7 @@ from pathlib import Path
 from OSmOSE.utils.timestamp_utils import to_timestamp
 
 class Aplose(Welch):
-    def __init__(self, dataset_path: str, *, dataset_sr: int = None, gps_coordinates: str | list | tuple = None, owner_group: str = None, analysis_params: dict = None, batch_number: int = 10, local: bool = False) -> None:
+    def __init__(self, dataset_path: str, *, dataset_sr: int = 0, gps_coordinates: str | list | tuple = None, owner_group: str = None, analysis_params: dict = None, batch_number: int = 10, local: bool = False) -> None:
         super().__init__(dataset_path, dataset_sr=dataset_sr, gps_coordinates=gps_coordinates, owner_group=owner_group, analysis_params=analysis_params, batch_number=batch_number, local=local)
 
         self.colormap: str = (
@@ -272,7 +272,7 @@ class Aplose(Welch):
                           last_file_behavior=last_file_behavior,
                           merge_files=merge_files,
                           write_file=write_audio_file)
-        
+
         for welch in welchs:
             self.gen_tiles(data=welch[0], sample_rate=self.dataset_sr, output_file=welch[1])
 
@@ -305,7 +305,7 @@ class Aplose(Welch):
         try:
             current_timestamp = to_timestamp(output_file.stem)
         except ValueError:
-            timestamp_file = pd.read_csv(self.audio_path.joinpath("timestamp.csv"), header=None, names=["filename","timestamp"])
+            timestamp_file = pd.read_csv(self.audio_path.joinpath("timestamp.csv"), header=None, names=["filename","timestamp","timezone"])
             current_timestamp = to_timestamp(timestamp_file["timestamp"][timestamp_file["filename"] == f"{output_file.stem}.wav"].values[0])
 
 

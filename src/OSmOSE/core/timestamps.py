@@ -133,7 +133,7 @@ def write_timestamp(
 
     if output_path.exists(): output_path.unlink()
     df = pd.DataFrame(
-        {"filename": filename_raw_audio, "timestamp": timestamp}#, "timezone": timezone}
+        {"filename": filename_raw_audio, "timestamp": timestamp, "timezone": timezone}
     )
     df.sort_values(by=["timestamp"], inplace=True)
     df.to_csv(
