@@ -162,19 +162,19 @@ class Job_builder:
 
     @property
     def outfile(self):
-        return self.__config.outfile
+        return self.__config["outfile"]
 
     @outfile.setter
     def outfile(self, value):
-        self.__config = self.__config.outfile = value
+        self.__config = self.__config["outfile"] = value
 
     @property
     def errfile(self):
-        return self.__config.errfile
+        return self.__config["errfile"]
 
     @errfile.setter
     def errfile(self, value):
-        self.__config = self.__config.errfile = value
+        self.__config = self.__config["errfile"] = value
 
     # endregion
 
