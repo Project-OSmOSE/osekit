@@ -3,11 +3,12 @@ import glob
 import os
 import json
 import time
+from dateutil.parser import parse
 import tomlkit
 import subprocess
 from uuid import uuid4
 from string import Template
-from typing import List, Literal
+from typing import NamedTuple, List, Literal
 from warnings import warn
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -16,6 +17,15 @@ from OSmOSE.utils import read_config, set_umask, make_path
 from OSmOSE.config import *
 
 JOB_CONFIG_TEMPLATE = namedtuple("job_config", ["job_scheduler","env_script","env_name","queue","nodes","walltime","ncpus","mem","outfile","errfile"])
+
+class _Job_info:
+    def __init__(self, job_file_path: Path, jobname: str = "", outfile:Path = "None", errfile: Path = "None", job_id:str = ""):
+        self.file_path = job_file_path
+        self.name = jobname
+        self.id = job_id
+        self.outfile = outfile
+        self.errfile = errfile
+        
 class Job_builder:
     def __init__(self, config_file: str = None):
         if config_file is None:
@@ -52,6 +62,7 @@ class Job_builder:
             raise ValueError(
                 f"The provided configuration file is missing the following attributes: {'; '.join(list(set(required_properties).difference(set(self.__config.keys()))))}"
             )
+
     # region Properties
     # READ-ONLY properties
     @property
@@ -269,14 +280,14 @@ class Job_builder:
         today = datetime.today().strftime("%Y_%m_%d")
 
         if logdir is None:
-            logdir = pwd.joinpath("log_job",today)
-            jobdir = pwd.joinpath("ongoing_jobs",today)
-            make_path(logdir, mode=DPDEFAULT)
-            make_path(jobdir, mode=DPDEFAULT)
+            self.log_dir = pwd.joinpath("log_job",today)
+            self.jobdir = pwd.joinpath("ongoing_jobs",today)
+            make_path(self.log_dir, mode=DPDEFAULT)
+            make_path(self.jobdir, mode=DPDEFAULT)
         else:
-            logdir = logdir.joinpath(today)
-            make_path(logdir, mode=DPDEFAULT)
-            jobdir = logdir
+            self.log_dir = logdir.joinpath(today)
+            make_path(self.log_dir, mode=DPDEFAULT)
+            self.jobdir = self.log_dir
         
 
         job_file = ["#!/bin/bash"]
@@ -295,10 +306,10 @@ class Job_builder:
         if not outfile:
             outfile = self.outfile
 
-        outfile = logdir.joinpath(outfile)
+        outfile = self.log_dir.joinpath(outfile)
         if not errfile:
             errfile = self.errfile
-        errfile = logdir.joinpath(errfile)
+        errfile = self.log_dir.joinpath(errfile)
 
         if not queue:
             queue = self.queue if not preset else job_preset["queue"]
@@ -384,9 +395,9 @@ class Job_builder:
         job_file.append(f"python {script_path} {script_args}")
 
         #! FOOTER
-        outfilename = f"{jobname}_{date_id}_{job_scheduler}_{len(os.listdir(jobdir))}.pbs"
+        outfilename = f"{jobname}_{date_id}_{job_scheduler}_{len(os.listdir(self.jobdir))}.pbs"
 
-        job_file_path = jobdir.joinpath(outfilename)
+        job_file_path = self.jobdir.joinpath(outfilename)
 
         # job_file.append(f"\nchmod 444 {outfile} {errfile}")
         job_file.append(f"\nrm {job_file_path}\n")
@@ -528,6 +539,29 @@ class Job_builder:
                 res+= f"{jobinfo['job_name']}"
         print(res)
 
+    def search_jobs(self, *, date:str, log_dir: Path= None):
+        top_dir = log_dir if log_dir is not None else self.log_dir
+        if top_dir is None:
+            raise ValueError("If no job has been submitted by this instance of Job_builder, then log_dir must be specified.")
+        
+        date = parse(date, fuzzy=True)
+        foldername = datetime.stftime(date, "%Y_%m_%d")
+
+        return [output for output in os.listdir(top_dir.joinpath(foldername)) if output.endswith(".out")]
+
+    def get_job_info(self, *, job_identifier:str):
+        jobinfo = self.get_ongoing_job(job_identifier=job_identifier)
+        
+        if "Torque" in str(jobinfo["path"]):
+            info = subprocess.run(["qstat", "-fx", jobinfo["id"]], stdout=subprocess.PIPE).stdout.decode("utf-8")
+            elapsed = info.split("resources_used.walltime = ")[1].split("\n")[0]
+
+        elif "Slurm" in str(jobinfo["path"]):
+            subprocess.run(["squeue", jobinfo["id"]])
+
+        
+
+
     def read_output_file(
         self, *, job_name: str = None, outtype: Literal["out", "err"] = "out", job_file_name: str = None
     ):
@@ -564,20 +598,40 @@ class Job_builder:
         with open(job_file_name, "r") as f:
             print("".join(f.readlines()))
 
-    def delete_job(self, job_identifier:str):
-        try:
-            job_id = get_dict_index_in_list(self.ongoing_jobs, "job_name", job_identifier.rstrip())
-        except ValueError:
-            job_id = get_dict_index_in_list(self.ongoing_jobs, "id", job_identifier.rstrip())
+    def clear(self, all_jobs:bool=False):
+        """Clear the queue of any job stuck.
         
-        jobinfo = self.ongoing_jobs[job_id]
+        Parameter
+        ---------
+            all: bool, optional, keyword-only
+                If set to True, will clear the job history of the job builder."""
+        if all_jobs:
+            for jobinfo in self.all_jobs:
+                if jobinfo["path"].exists():
+                    jobinfo["path"].unlink()
+
+        for jobinfo in self.ongoing_jobs:
+            res = subprocess.run(f"qstat {jobinfo['job_id']}", shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8").rstrip("\n")
+            if f"{jobinfo['job_id']} has finished" in res and jobinfo["path"].exists():
+                jobinfo["path"].unlink()
+                
+    def delete_job(self, job_identifier:str):
+        jobinfo = self.get_ongoing_job(job_identifier=job_identifier)
+        
         if "Torque" in str(jobinfo["path"]):
             subprocess.run(["qdel", jobinfo["id"]])
         elif "Slurm" in str(jobinfo["path"]):
             subprocess.run(["scancel", jobinfo["id"]])
         self.__ongoing_jobs.remove(jobinfo)
         self.__cancelled_jobs.append(jobinfo)
-        
+
+    def get_ongoing_job(self, job_identifier:str):
+        try:
+            job_id = get_dict_index_in_list(self.ongoing_jobs, "job_name", job_identifier.rstrip())
+        except ValueError:
+            job_id = get_dict_index_in_list(self.ongoing_jobs, "id", job_identifier.rstrip())
+
+        return self.ongoing_jobs[job_id]
 
 def get_dict_index_in_list(item_list: list, key: str, value: any) -> int:
     for i, d in enumerate(item_list):

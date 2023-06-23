@@ -1,6 +1,6 @@
 .pytest-cache
 __pycache__
-*.git
+*.git.*
 dist
 .vscode
 ongoing_jobs
