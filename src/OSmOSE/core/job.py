@@ -631,4 +631,4 @@ def get_dict_index_in_list(item_list: list, attr: str, value: any) -> int:
         if getattr(item, attr) == value:
             return item
     
-    raise ValueError(f"The value {value} appears nowhere in the {key} list.")
+    raise ValueError(f"The value {value} appears nowhere in the {attr} list.")
