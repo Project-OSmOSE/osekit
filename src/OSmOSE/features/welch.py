@@ -209,8 +209,13 @@ class Welch(Dataset):
         return self.__dataset_sr
 
     @dataset_sr.setter
-    def dataset_sr(self, value: int):
-        self.__dataset_sr = value
+    def dataset_sr(self, value: int | Literal["original"]):
+        if value == "original":
+            self.__dataset_sr = int(pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)["dataset_sr"].values[0])
+        elif isinstance(value, int) and value > 0:
+            self.__dataset_sr = value
+        else:
+            raise ValueError(f"{value} is not a valid value for dataset_sr. It must be either 'original' or a positive integer.")
 
     @property
     def nfft(self):
@@ -254,8 +259,13 @@ class Welch(Dataset):
         return self.__spectro_duration
 
     @spectro_duration.setter
-    def spectro_duration(self, value: int):
-        self.__spectro_duration = value
+    def spectro_duration(self, value: int | Literal["original"]):
+        if value == "original":
+            self.__dataset_sr = int(pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)["audio_file_original_duration"].values[0])
+        elif isinstance(value, int) and value > 0:
+            self.__dataset_sr = value
+        else:
+            raise ValueError(f"{value} is not a valid value for spectro_duration. It must be either 'original' or a positive integer.")
 
     @property
     def zscore_duration(self):

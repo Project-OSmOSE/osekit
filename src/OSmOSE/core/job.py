@@ -594,6 +594,10 @@ class Job_builder:
                 if outtype == "out"
                 else self.finished_jobs[job_id]["errfile"]
             )
+        
+        if not Path(job_file_name).exists():
+            print("The output file has not been written yet. Please wait a few moments.")
+            return
 
         with open(job_file_name, "r") as f:
             print("".join(f.readlines()))
