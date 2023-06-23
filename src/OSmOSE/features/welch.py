@@ -261,9 +261,9 @@ class Welch(Dataset):
     @spectro_duration.setter
     def spectro_duration(self, value: int | Literal["original"]):
         if value == "original":
-            self.__dataset_sr = int(pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)["audio_file_original_duration"].values[0])
+            self.__spectro_duration = int(pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)["audio_file_original_duration"].values[0])
         elif isinstance(value, int) and value > 0:
-            self.__dataset_sr = value
+            self.__spectro_duration = value
         else:
             raise ValueError(f"{value} is not a valid value for spectro_duration. It must be either 'original' or a positive integer.")
 

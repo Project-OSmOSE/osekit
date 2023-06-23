@@ -19,13 +19,17 @@ from OSmOSE.config import *
 JOB_CONFIG_TEMPLATE = namedtuple("job_config", ["job_scheduler","env_script","env_name","queue","nodes","walltime","ncpus","mem","outfile","errfile"])
 
 class _Job_info:
-    def __init__(self, job_file_path: Path, jobname: str = "", outfile:Path = "None", errfile: Path = "None", job_id:str = ""):
+    def __init__(self, job_file_path: Path, jobname: str = "", outfile:Path = None, errfile: Path = None, job_id:str = ""):
         self.file_path = job_file_path
         self.name = jobname
         self.id = job_id
         self.outfile = outfile
         self.errfile = errfile
-        
+    
+    def __str__(self) -> str:
+        info = subprocess.run(["qstat", "-fx", self.id], stdout=subprocess.PIPE).stdout.decode("utf-8")
+        elapsed = info.split("resources_used.walltime = ")[1].split("\n")[0]
+        return "Not implemented yet"
 class Job_builder:
     def __init__(self, config_file: str = None):
         if config_file is None:
@@ -158,19 +162,19 @@ class Job_builder:
 
     @property
     def outfile(self):
-        return self.__config["outfile"]
+        return self.__config.outfile
 
     @outfile.setter
     def outfile(self, value):
-        self.__config = self.__config["outfile"] = value
+        self.__config = self.__config.outfile = value
 
     @property
     def errfile(self):
-        return self.__config["errfile"]
+        return self.__config.errfile
 
     @errfile.setter
     def errfile(self, value):
-        self.__config = self.__config["errfile"] = value
+        self.__config = self.__config.errfile = value
 
     # endregion
 
@@ -412,9 +416,7 @@ class Job_builder:
         except ValueError:
             pass
 
-        job_info = {"job_name": jobname, "path": job_file_path, "outfile": outfile, "errfile": errfile}
-
-        self.__prepared_jobs.append(job_info)
+        self.__prepared_jobs.append(_Job_info(job_file_path, jobname, outfile, errfile))
 
         return job_file_path
 
@@ -437,8 +439,8 @@ class Job_builder:
             A list containing the job ids of the submitted jobs.
         """
 
-        jobinfo_list = (
-            [{"path": jobfile}] if jobfile is not None else copy(self.prepared_jobs)
+        job_info_list = (
+            [_Job_info(jobfile)] if jobfile is not None else copy(self.prepared_jobs)
         )
 
         jobid_list = []
@@ -446,14 +448,11 @@ class Job_builder:
         if isinstance(dependency, list):
             dependency = ":".join(dependency)
 
-        jobarray_uuid = str(uuid4())
-        job_dir = Path(jobinfo_list[0]["path"]).parent
         # TODO: Think about the issue when a job have too many dependencies and workaround.
 
-        for i, jobinfo in enumerate(jobinfo_list):
-            #open(job_dir.joinpath(f"tmp_{jobarray_uuid}_{i}.joblock"), "w").close() # Create a temp file with a unique uuid
-            if "torque" in str(jobinfo["path"]).lower():
-                cmd = ["qsub", f"-W depend=afterok:{dependency}", str(jobinfo["path"])] if dependency else ["qsub", str(jobinfo["path"])]
+        for job_info in job_info_list:
+            if "torque" in str(job_info.path).lower():
+                cmd = ["qsub", f"-W depend=afterok:{dependency}", str(job_info.path)] if dependency else ["qsub", str(job_info.path)]
                 jobid = (
                     subprocess.run(
                         cmd, stdout=subprocess.PIPE
@@ -464,42 +463,42 @@ class Job_builder:
                 print(f'Sent command {" ".join(cmd)}')
                 jobid_list.append(jobid)
 
-            elif "slurm" in str(jobinfo["path"]).lower():
+            elif "slurm" in str(job_info.path).lower():
                 dep = f"-d afterok:{dependency}" if dependency else ""
                 jobid = (
                     subprocess.run(
-                        ["sbatch", dep, jobinfo["path"]], stdout=subprocess.PIPE
+                        ["sbatch", dep, job_info.path], stdout=subprocess.PIPE
                     )
                     .stdout.decode("utf-8")
                     .rstrip("\n")
                 )
                 jobid_list.append(jobid)
 
-            if jobinfo in self.prepared_jobs:
-                self.__prepared_jobs.remove(jobinfo)
-            jobinfo["id"] = jobid
-            self.__ongoing_jobs.append(jobinfo)
+            if job_info in self.prepared_jobs:
+                self.__prepared_jobs.remove(job_info)
+            job_info.id = jobid
+            self.__ongoing_jobs.append(job_info)
 
         return jobid_list
 
     def update_job_status(self):
         """Iterates over the list of ongoing jobs and mark them as finished if the job file does not exist."""
-        for jobinfo in self.__ongoing_jobs:
-            if not jobinfo["path"].exists():
-                self.__ongoing_jobs.remove(jobinfo)
-                self.__finished_jobs.append(jobinfo)
+        for job_info in self.__ongoing_jobs:
+            if not job_info.path.exists():
+                self.__ongoing_jobs.remove(job_info)
+                self.__finished_jobs.append(job_info)
 
     def update_job_access(self):
         """In case the output files are not accessible by anyone but the owner, running this once will update the permissions for anyone to read them."""
 
         for job_info in self.finished_jobs:
             try:
-                if job_info["outfile"].exists():
-                    os.chmod(job_info["outfile"], FPDEFAULT)
-                if job_info["errfile"].exists():
-                    os.chmod(job_info["errfile"], FPDEFAULT)
+                if job_info.outfile.exists():
+                    os.chmod(job_info.outfile, FPDEFAULT)
+                if job_info.errfile.exists():
+                    os.chmod(job_info.errfile, FPDEFAULT)
             except KeyError:
-                print(f"No outfile or errfile associated with job {job_info['path']}.")
+                print(f"No outfile or errfile associated with job {job_info.path}.")
 
     def list_jobs(self):
         res = ""
@@ -508,35 +507,35 @@ class Job_builder:
         if len(self.prepared_jobs) > 0:
             res += "==== PREPARED JOBS ====\n\n"
         for job_info in self.prepared_jobs:
-            created_at = datetime.strptime(today + job_info["outfile"].stem[-11:-3], "%d%m%y%H-%M-%S")
-            res += f"{job_info['job_name']} (created at {created_at}) : ready to start.\n"
+            created_at = datetime.strptime(today + job_info.outfile.stem[-11:-3], "%d%m%y%H-%M-%S")
+            res += f"{job_info.name} (created at {created_at}) : ready to start.\n"
 
         if len(self.ongoing_jobs) > 0:
             res += "==== ONGOING JOBS ====\n\n"
         for job_info in self.ongoing_jobs:
-            created_at = datetime.strptime(today + job_info["outfile"].stem[-11:-3], "%d%m%y%H-%M-%S")
+            created_at = datetime.strptime(today + job_info.outfile.stem[-11:-3], "%d%m%y%H-%M-%S")
             delta = datetime.now() - created_at
             strftime = f"{'%H hours, ' if delta.seconds >= 3600 else ''}{'%M minutes and ' if delta.seconds >= 60 else ''}%S seconds"
             elapsed_time = datetime.strftime(epoch + delta, strftime)
-            res += f"{job_info['job_name']} (created at {created_at}) : running for {elapsed_time}.\n"
+            res += f"{job_info.name} (created at {created_at}) : running for {elapsed_time}.\n"
 
         if len(self.finished_jobs) > 0:
             res += "==== FINISHED JOBS ====\n\n"
         for job_info in self.finished_jobs:
-            created_at = datetime.strptime(today + job_info["outfile"].stem[-11:-3], "%d%m%y%H-%M-%S")
+            created_at = datetime.strptime(today + job_info.outfile.stem[-11:-3], "%d%m%y%H-%M-%S")
 
-            if not job_info["outfile"].exists():
-                res += f"{job_info['job_name']} (created at {created_at}) : Output file still writing..."
+            if not job_info.outfile.exists():
+                res += f"{job_info.name} (created at {created_at}) : Output file still writing..."
             else:
-                delta = datetime.fromtimestamp(time.mktime(time.localtime(job_info["outfile"].stat().st_ctime))) - created_at
+                delta = datetime.fromtimestamp(time.mktime(time.localtime(job_info.outfile.stat().st_ctime))) - created_at
                 strftime = f"{'%H hours, ' if delta.seconds >= 3600 else ''}{'%M minutes and ' if delta.seconds >= 60 else ''}%S seconds"
                 elapsed_time = datetime.strftime(epoch + delta, strftime)
-                res += f"{job_info['job_name']} (created at {created_at}) : finished in {elapsed_time}.\n"
+                res += f"{job_info.name} (created at {created_at}) : finished in {elapsed_time}.\n"
 
         if len(self.cancelled_jobs) > 0:
             res += "==== CANCELLED JOBS ====\n\n"
-            for jobinfo in self.cancelled_jobs:
-                res+= f"{jobinfo['job_name']}"
+            for job_info in self.cancelled_jobs:
+                res+= f"{job_info.name}"
         print(res)
 
     def search_jobs(self, *, date:str, log_dir: Path= None):
@@ -549,17 +548,8 @@ class Job_builder:
 
         return [output for output in os.listdir(top_dir.joinpath(foldername)) if output.endswith(".out")]
 
-    def get_job_info(self, *, job_identifier:str):
-        jobinfo = self.get_ongoing_job(job_identifier=job_identifier)
-        
-        if "Torque" in str(jobinfo["path"]):
-            info = subprocess.run(["qstat", "-fx", jobinfo["id"]], stdout=subprocess.PIPE).stdout.decode("utf-8")
-            elapsed = info.split("resources_used.walltime = ")[1].split("\n")[0]
-
-        elif "Slurm" in str(jobinfo["path"]):
-            subprocess.run(["squeue", jobinfo["id"]])
-
-        
+    def display_job_info(self, *, job_identifier:str):
+        print(self.get_ongoing_job(job_identifier=job_identifier))
 
 
     def read_output_file(
@@ -582,7 +572,7 @@ class Job_builder:
         if not job_file_name:
             job_id = 0
             if job_name:
-                job_id = get_dict_index_in_list(self.finished_jobs, "job_name", job_name.rstrip())
+                job_info = get_dict_index_in_list(self.finished_jobs, "name", job_name)
             elif len(self.finished_jobs) == 0:
                 print(
                     f"There are no finished jobs in this context. Wait until the {len(self.ongoing_jobs)} ongoing jobs are done before reading the output. Otherwise, you can specify which file you wish to read."
@@ -590,9 +580,9 @@ class Job_builder:
                 return
             
             job_file_name = (
-                self.finished_jobs[job_id]["outfile"]
+                job_info.outfile
                 if outtype == "out"
-                else self.finished_jobs[job_id]["errfile"]
+                else job_info.errfile
             )
         
         if not Path(job_file_name).exists():
@@ -610,36 +600,35 @@ class Job_builder:
             all: bool, optional, keyword-only
                 If set to True, will clear the job history of the job builder."""
         if all_jobs:
-            for jobinfo in self.all_jobs:
-                if jobinfo["path"].exists():
-                    jobinfo["path"].unlink()
+            for job_info in self.all_jobs:
+                if job_info.path.exists():
+                    job_info.path.unlink()
 
-        for jobinfo in self.ongoing_jobs:
-            res = subprocess.run(f"qstat {jobinfo['job_id']}", shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8").rstrip("\n")
-            if f"{jobinfo['job_id']} has finished" in res and jobinfo["path"].exists():
-                jobinfo["path"].unlink()
+        for job_info in self.ongoing_jobs:
+            res = subprocess.run(f"qstat {job_info.id}", shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8").rstrip("\n")
+            if f"{job_info.id} has finished" in res and job_info.path.exists():
+                job_info.path.unlink()
                 
     def delete_job(self, job_identifier:str):
-        jobinfo = self.get_ongoing_job(job_identifier=job_identifier)
+        job_info = self.get_ongoing_job(job_identifier=job_identifier)
         
-        if "Torque" in str(jobinfo["path"]):
-            subprocess.run(["qdel", jobinfo["id"]])
-        elif "Slurm" in str(jobinfo["path"]):
-            subprocess.run(["scancel", jobinfo["id"]])
-        self.__ongoing_jobs.remove(jobinfo)
-        self.__cancelled_jobs.append(jobinfo)
+        if "Torque" in str(job_info.path):
+            subprocess.run(["qdel", job_info.id])
+        elif "Slurm" in str(job_info.path):
+            subprocess.run(["scancel", job_info.id])
+        self.__ongoing_jobs.remove(job_info)
+        self.__cancelled_jobs.append(job_info)
 
     def get_ongoing_job(self, job_identifier:str):
         try:
-            job_id = get_dict_index_in_list(self.ongoing_jobs, "job_name", job_identifier.rstrip())
+            return get_dict_index_in_list(self.ongoing_jobs, "name", job_identifier.rstrip())
         except ValueError:
-            job_id = get_dict_index_in_list(self.ongoing_jobs, "id", job_identifier.rstrip())
+            return get_dict_index_in_list(self.ongoing_jobs, "id", job_identifier.rstrip())
 
-        return self.ongoing_jobs[job_id]
 
-def get_dict_index_in_list(item_list: list, key: str, value: any) -> int:
-    for i, d in enumerate(item_list):
-        if d[key] == value:
-            return i
+def get_dict_index_in_list(item_list: list, attr: str, value: any) -> int:
+    for item in item_list:
+        if getattr(item, attr) == value:
+            return item
     
     raise ValueError(f"The value {value} appears nowhere in the {key} list.")
