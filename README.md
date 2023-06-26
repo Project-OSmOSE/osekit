@@ -1,3 +1,9 @@
+<div align="center">
+
+  <img src="assets/logo.png" height="500">
+</div>
+
+
 [![Continuous integration][ci-badge]][ci-link]
 [![Code style: black][black-badge]][black-link]
 [![][coverage-badge]][coverage-link]
@@ -42,7 +48,7 @@ The newest stable version can be directly used within a Jupyter Hub session of D
 
 2. Start by reviewing our Github [issues](https://github.com/orgs/Project-OSmOSE/projects/6), get in touch with our developer team to obtain an account, and propose new issues anytime following standard procedures (in particular, among other must-have: short description, assignees, status, label...);
 
-3. Develop and validate locally your contribution. Please follow standad github procedures such as developing on a new branch built from our main branch; no pushes will be accepted on our main repository. We recomend the use of our poetry-based editable conda environment to ensure ??;
+3. Develop and validate locally your contribution. Please follow standad github procedures such as developing on a new branch built from our main branch; no pushes will be accepted on our main repository. We recomend the use of our poetry-based editable conda environment to ease the development process.
 
 4. If intended to be deployed on Datarmor, please see section **Contribution on Datarmor** below;
 
@@ -111,3 +117,6 @@ will:
 
 - Update or install any dependency that is not present.
 
+## License
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. See [LICENSE](LICENSE) for the complete AGPL license
