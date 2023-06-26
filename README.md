@@ -7,7 +7,7 @@
 [![Continuous integration][ci-badge]][ci-link]
 [![Code style: black][black-badge]][black-link]
 [![][coverage-badge]][coverage-link]
-[![Python version: 3.10.9]]
+[![Python version: 3.10.9][python-ver]][python-link]
 
 [ci-badge]: https://github.com/Project-OSmOSE/osmose-toolkit/actions/workflows/github-ci.yml/badge.svg
 [ci-link]: https://github.com/Project-OSmOSE/osmose-toolkit/actions/workflows/github-ci.yml
@@ -15,7 +15,8 @@
 [black-link]: https://github.com/psf/black
 [coverage-badge]: https://project-OSmOSE.github.io/osmose-toolkit/coverage/badge.svg
 [coverage-link]: https://project-OSmOSE.github.io/osmose-toolkit/coverage
-[python-ver]: https://
+[python-ver]: https://img.shields.io/badge/python-3.10+-blue.svg
+[python-link]: https://www.python.org/downloads/release/python-3100/
 
 # OSmOSE Project
 
