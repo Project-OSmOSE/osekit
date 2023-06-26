@@ -408,13 +408,13 @@ class Dataset:
         # go through the duration and check whether abnormal files
         ct_abnormal_duration = 0
         self.list_abnormal_filenames = []
-        list_abnormalFilename_duration = []
+        self.list_abnormal_filename_duration = []
 
         for name, duration in zip(list_filename, list_duration):
             if int(duration) < int(nominalVal_duration):
                 ct_abnormal_duration += 1
                 self.list_abnormal_filenames.append(name)
-                list_abnormalFilename_duration.append(duration)
+                self.list_abnormal_filename_duration.append(duration)
 
         if ct_abnormal_duration > 0 and not force_upload:
             print(
@@ -425,7 +425,7 @@ class Dataset:
 
             print(
                 "Here are their summary stats:",
-                pd.DataFrame(list_abnormalFilename_duration).describe()[0].to_string(),
+                pd.DataFrame(self.list_abnormal_filename_duration).describe()[0].to_string(),
                 "\n",
             )
 
