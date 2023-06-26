@@ -229,6 +229,8 @@ class Aplose(Welch):
         if not save_image and not save_matrix:
             raise ValueError("Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data.")
 
+        self.build_path(adjust=adjust)
+
         set_umask()
         try:
             if clean_adjust_folder and (self.path_output_spectrogram.parent.parent.joinpath(
@@ -274,7 +276,7 @@ class Aplose(Welch):
                           write_file=write_audio_file)
 
         for welch in welchs:
-            self.gen_tiles(data=welch[0], sample_rate=self.dataset_sr, output_file=welch[1])
+            self.gen_tiles(data=welch[0], sample_rate=self.dataset_sr, output_file=self.path_output_spectrogram.joinpath(welch[1]))
 
         lock.release()
         try:
@@ -372,6 +374,7 @@ class Aplose(Welch):
 
                 # loop over the tiles at each zoom level
                 for tile in range(2**zoom_level):
+                    print("Should be printed only once")
                     Sxx_int = Sxx_complete_lowest_level[:, tile * nberspec : (tile + 1) * nberspec][
                         :, :: 2 ** (self.zoom_level - zoom_level)
                     ]

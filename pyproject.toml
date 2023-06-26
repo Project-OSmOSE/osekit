@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "osmose"
-version = "0.1.2"
+version = "1.0.0"
 description = "Ocean acoustic studies toolkit."
 authors = ["Rumengol"]
 readme = "README.md"

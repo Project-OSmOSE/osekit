@@ -215,7 +215,7 @@ class Welch(Dataset):
         elif isinstance(value, int) and value > 0:
             self.__dataset_sr = value
         else:
-            raise ValueError(f"{value} is not a valid value for dataset_sr. It must be either 'original' or a positive integer.")
+            raise ValueError(f"{value} of type {type(value)} is not a valid value for dataset_sr. It must be either 'original' or a positive integer.")
 
     @property
     def nfft(self):
@@ -659,7 +659,7 @@ class Welch(Dataset):
         
     # region On cluster
 
-    def preprocess_file(self, audio_file: Path, *, last_file_behavior: Literal["pad","truncate","discard"] = "pad", merge_files: bool = True, write_file: bool = False, adjust: bool = False) -> Tuple[np.ndarray, str]:
+    def preprocess_file(self, audio_file: Path, *, last_file_behavior: Literal["pad","truncate","discard"] = "pad",  merge_files: bool = True, write_file: bool = False, adjust: bool = False) -> Tuple[np.ndarray, str]:
         """Preprocess an audio file to prepare the spectrogram creation.
         
         Parameters
@@ -682,6 +682,8 @@ class Welch(Dataset):
         """
         set_umask()
         Zscore = self.zscore_duration if not self.adjust else "original"
+
+        self.path_input_audio_file = self._get_original_after_build()
 
         audio_file = Path(audio_file).name
 
@@ -800,7 +802,7 @@ class Welch(Dataset):
         print(
             f"Automatically reshaping audio files to fit the spectro duration value. Files will be {self.spectro_duration} seconds long."
         )
-        print(files_to_load)
+        
         reshaped = reshape(
             input_files=files_to_load, 
             chunk_size=self.spectro_duration,
@@ -815,10 +817,6 @@ class Welch(Dataset):
         for data_tuple in reshaped:
             data = data_tuple[0]
             outfilename = data_tuple[1]
-            output_file = self.path_output_spectrogram.joinpath(outfilename)
-
-            if next(self.path_output_spectrogram.glob(f"{output_file.stem}*"), None) is not None:
-                continue
 
             bpcoef = signal.butter(
                 20,
@@ -829,10 +827,7 @@ class Welch(Dataset):
             )
             data = signal.sosfilt(bpcoef, data)
 
-            if adjust:
-                make_path(self.path_output_spectrogram, mode=DPDEFAULT)
-
-            yield data, output_file
+            yield data, outfilename
 
 
     def compute_welch(

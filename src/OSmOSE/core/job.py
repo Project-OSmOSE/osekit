@@ -20,7 +20,7 @@ JOB_CONFIG_TEMPLATE = namedtuple("job_config", ["job_scheduler","env_script","en
 
 class _Job_info:
     def __init__(self, job_file_path: Path, jobname: str = "", outfile:Path = None, errfile: Path = None, job_id:str = ""):
-        self.file_path = job_file_path
+        self.path = job_file_path
         self.name = jobname
         self.id = job_id
         self.outfile = outfile
@@ -411,7 +411,7 @@ class Job_builder:
             jobfile.write("\n".join(job_file))
 
         try:
-            get_dict_index_in_list(self.all_jobs, "job_name", jobname)
+            get_dict_index_in_list(self.all_jobs, "name", jobname)
             jobname = jobname + str(len(self.all_jobs))
         except ValueError:
             pass

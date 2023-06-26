@@ -389,7 +389,6 @@ def reshape(
             try:
                 to_timestamp(tmp_timestamp[0].values[0])
             except:
-                print("Non-OSmOSE names")
                 return
             result += list(tmp_timestamp[0].values)
             timestamp_list += list(tmp_timestamp[1].values)
