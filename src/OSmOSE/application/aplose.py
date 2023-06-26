@@ -242,6 +242,11 @@ class Aplose(Welch):
                         "adjustment_spectros"
                     ), ignore_errors=True
                 )
+                if adjust:
+                    make_path(self.path_output_spectrogram.parent.parent.joinpath(
+                        "adjustment_spectros"
+                    ), mode=DPDEFAULT)
+                    make_path(self.path_output_spectrogram, mode=DPDEFAULT)
         except: 
             pass
 
@@ -374,7 +379,6 @@ class Aplose(Welch):
 
                 # loop over the tiles at each zoom level
                 for tile in range(2**zoom_level):
-                    print("Should be printed only once")
                     Sxx_int = Sxx_complete_lowest_level[:, tile * nberspec : (tile + 1) * nberspec][
                         :, :: 2 ** (self.zoom_level - zoom_level)
                     ]

@@ -606,7 +606,7 @@ class Welch(Dataset):
             "window_size": self.window_size,
             "overlap": self.overlap,
             "colormap": self.colormap,
-            "zoom_level": self.zoom_level + 1,
+            "zoom_level": self.zoom_level,
             "number_adjustment_spectrogram": self.number_adjustment_spectrogram,
             "dynamic_min": self.dynamic_min,
             "dynamic_max": self.dynamic_max,
@@ -756,7 +756,7 @@ class Welch(Dataset):
         N0 = [ts for ts in final_timestamps if ts <= T0][-1] # Timestamp of the beginning of the first output file starting before T0
         N0_index = final_timestamps.index(N0)
 
-        # While the original file begins 
+        # While the original file begins after the first target file
         start = T0
         i=1
         while orig_index -i >= 0 and start > N0:
