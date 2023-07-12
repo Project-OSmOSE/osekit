@@ -1,4 +1,4 @@
-from OSmOSE.config import SUPPORTED_AUDIO_FORMAT, UNSUPPORTED_AUDIO_FORMAT
+from OSmOSE.config import SUPPORTED_AUDIO_FORMAT
 
 class BadExtensionError(Exception):
     """General class to catch unsupported or unknown file extensions"""

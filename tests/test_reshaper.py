@@ -40,7 +40,7 @@ def test_substract_timestamps():
 
     assert (
         str(ts_error.value)
-        == "time data '20220101T12:03:00.000' does not match format '%Y-%m-%dT%H:%M:%S.%fZ'"
+        == "The timestamp '20220101T12:03:00.000' must match either format %Y-%m-%dT%H:%M:%S.%fZ or %Y-%m-%dT%H-%M-%S_%fZ"
     )
 
 @pytest.mark.unit
@@ -80,7 +80,7 @@ def test_reshape_smaller(input_reshape: Path, output_dir: Path):
     assert sf.info(reshaped_files[0]).duration == 2.0
     assert sf.info(reshaped_files[0]).samplerate == 44100
     assert sum(sf.info(file).duration for file in reshaped_files) == 30.0
-    assert reshaped_files[1].name == "2022-01-01T11-59-59_000.wav"
+    assert reshaped_files[1].name == "2022-01-01T11-59-59_000Z.wav"
 
     full_input = sf.read(input_reshape.joinpath("test.wav"))[0]
 
@@ -225,11 +225,12 @@ def test_reshape_no_merge_truncate(input_reshape: Path, output_dir):
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 20
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 2
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 1
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000Z.wav")).duration == 2
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000Z.wav")).duration == 1
 
-    for f in reshaped_files:
-        f.unlink()
+    shutil.rmtree(output_dir)
+    output_dir.mkdir()
+
 
     all(reshape(
         input_files=input_reshape,
@@ -244,9 +245,9 @@ def test_reshape_no_merge_truncate(input_reshape: Path, output_dir):
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 30
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 1
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-58_000.wav")).duration == 1
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 1
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000Z.wav")).duration == 1
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-58_000Z.wav")).duration == 1
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000Z.wav")).duration == 1
 
 @pytest.mark.unit
 def test_reshape_no_merge_pad(input_reshape: Path, output_dir):
@@ -263,8 +264,8 @@ def test_reshape_no_merge_pad(input_reshape: Path, output_dir):
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 20
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000.wav")).duration == 2
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000.wav")).duration == 2
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-57_000Z.wav")).duration == 2
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-59_000Z.wav")).duration == 2
 
 @pytest.mark.unit
 def test_reshape_max_delta_interval(input_reshape: Path, output_dir: Path, monkeypatch):
@@ -298,8 +299,8 @@ def test_reshape_max_delta_interval(input_reshape: Path, output_dir: Path, monke
     reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
     assert len(reshaped_files) == 15
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-56_000.wav")).duration == 2
-    assert sf.info(output_dir.joinpath("2022-01-01T11-59-58_000.wav")).duration == 2
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-56_000Z.wav")).duration == 2
+    assert sf.info(output_dir.joinpath("2022-01-01T11-59-58_000Z.wav")).duration == 2
 
 
     with pytest.raises(ValueError) as e:

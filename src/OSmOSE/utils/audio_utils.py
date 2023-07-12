@@ -43,6 +43,8 @@ def read_header(file: str) -> Tuple[int, float, int, int]:
             _, channels, samplerate, _, _, sampwidth = struct.unpack(
                 "HHIIHH", fh.read(16)
             )
+        else:
+            raise ValueError("Format parameters have not been found in the header. Are you sure it is a wav file?")
 
         chunkOffset = fh.tell()
         found_data = False

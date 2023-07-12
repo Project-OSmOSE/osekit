@@ -5,6 +5,7 @@ import numpy as np
 
 from OSmOSE.application import Aplose
 from OSmOSE.config import OSMOSE_PATH
+from pathlib import Path
 import soundfile as sf
 import pytest
 
@@ -36,15 +37,7 @@ def test_build_path(input_dataset):
         local=True,
     )
     dataset.build()
-    dataset._Aplose__build_path(adjust=True, dry=True)
-
-    print("Values of Aplose")
-
-    print(
-        "\n".join([f"{attr} : {getattr(dataset, str(attr))}" for attr in dir(dataset)])
-    )
-
-    print(dataset._get_original_after_build())
+    dataset.build_path(adjust=True, dry=True)
 
     assert dataset.path.joinpath(OSMOSE_PATH.raw_audio, "3_44100").exists()
     assert len(list(dataset.path.joinpath(OSMOSE_PATH.raw_audio, "3_44100").glob("*.wav"))) == 10
@@ -59,7 +52,7 @@ def test_build_path(input_dataset):
     
     assert not dataset.path_output_spectrogram.exists()
 
-    dataset._Aplose__build_path(adjust=False, dry=False)
+    dataset.build_path(adjust=False, dry=False)
     assert dataset.path_output_spectrogram == dataset.path.joinpath(
         OSMOSE_PATH.spectrogram, "5_240", "512_512_97", "image"
     )
@@ -100,7 +93,7 @@ def test_initialize_5s(input_dataset):
 @pytest.mark.integ
 def test_initialize_2s(input_dataset):
     PARAMS["spectro_duration"] = 2
-    sr = 44100 if platform.system() else 240
+    sr = 44100
     dataset = Aplose(
         dataset_path=input_dataset["main_dir"],
         dataset_sr=sr,
@@ -125,3 +118,34 @@ def test_initialize_2s(input_dataset):
 
     for path in spectro_paths:
         assert dataset.path.joinpath(path).resolve().exists()
+
+@pytest.mark.integ
+def test_generate_spectrogram(input_dataset):
+    dataset = Aplose(
+        dataset_path=input_dataset["main_dir"],
+        dataset_sr=44100,
+        analysis_params=PARAMS,
+        local=True,
+    )
+
+    dataset.zoom_level = 0
+    dataset.spectro_duration = 3
+
+    dataset.initialize()
+
+    file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
+    
+    with pytest.raises(ValueError) as e:
+        dataset.generate_spectrogram(audio_file=file_to_process)
+    assert str(e.value) == "Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data."
+
+    dataset.generate_spectrogram(audio_file=file_to_process, save_image=True)
+
+    result = os.listdir(dataset.path_output_spectrogram)
+    assert len(result) == 1
+    assert result[0] == f"{file_to_process.name}_1_0.png"
+
+@pytest.mark.reg
+def test_spectro_creation(output_dir):
+    pass
+

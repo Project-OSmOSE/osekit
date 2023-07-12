@@ -115,21 +115,21 @@ class Welch(Dataset):
 
         self.batch_number: int = batch_number
         # If a dataset_sr != 0 is supplied, take it, but if there is no orig_metadata file, set 0 as default value
-        self.dataset_sr: int = dataset_sr if dataset_sr or orig_metadata is None else int(orig_metadata['origin_sr'][0])
+        self.dataset_sr: int = dataset_sr if dataset_sr > 0 or orig_metadata is None else int(orig_metadata['origin_sr'][0])
 
         self.nfft: int = int(self.analysis_sheet["nfft"][0] if "nfft" in self.analysis_sheet else 1)
         self.window_size: int = int(
             self.analysis_sheet["window_size"][0]
             if "window_size" in self.analysis_sheet
-            else None
+            else 0
         )
         self.overlap: int = int(
-            self.analysis_sheet["overlap"][0] if "overlap" in self.analysis_sheet else None
+            self.analysis_sheet["overlap"][0] if "overlap" in self.analysis_sheet else 0
         )
         self.number_adjustment_spectrogram: int = int(
             self.analysis_sheet["number_adjustment_spectrogram"][0]
             if "number_adjustment_spectrogram" in self.analysis_sheet
-            else None
+            else 0
         )
         self.spectro_duration: int = int(
             self.analysis_sheet["spectro_duration"][0]
@@ -212,7 +212,7 @@ class Welch(Dataset):
     def dataset_sr(self, value: int | Literal["original"]):
         if value == "original":
             self.__dataset_sr = int(pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)["dataset_sr"].values[0])
-        elif isinstance(value, int) and value > 0:
+        elif isinstance(value, int):
             self.__dataset_sr = value
         else:
             raise ValueError(f"{value} of type {type(value)} is not a valid value for dataset_sr. It must be either 'original' or a positive integer.")
@@ -262,10 +262,10 @@ class Welch(Dataset):
     def spectro_duration(self, value: int | Literal["original"]):
         if value == "original":
             self.__spectro_duration = int(pd.read_csv(self._get_original_after_build().joinpath("metadata.csv"), header=0)["audio_file_original_duration"].values[0])
-        elif isinstance(value, int) and value > 0:
+        elif isinstance(value, int):
             self.__spectro_duration = value
         else:
-            raise ValueError(f"{value} is not a valid value for spectro_duration. It must be either 'original' or a positive integer.")
+            raise ValueError(f"{value} is not a valid value for spectro_duration. It must be either 'original' or an integer.")
 
     @property
     def zscore_duration(self):
@@ -370,7 +370,7 @@ class Welch(Dataset):
         self.path_input_audio_file = self._get_original_after_build()
 
         if not self.dataset_sr:
-            self.dataset_sr = pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"), header=0)["dataset_sr"][0]
+            self.dataset_sr = int(pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"), header=0)["dataset_sr"][0])
         # Stop initialization if already done
         final_path = self.path.joinpath(
             OSMOSE_PATH.spectrogram,
@@ -733,6 +733,8 @@ class Welch(Dataset):
             header=None,
             names=["filename", "timestamp", "timezone"],
         )
+        print(orig_timestamp_file)
+        print(audio_file)
 
         final_timestamp_file = pd.read_csv(
             self.audio_path.joinpath("timestamp.csv"),

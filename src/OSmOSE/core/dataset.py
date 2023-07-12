@@ -345,7 +345,9 @@ class Dataset:
 
             try:
                 sr, frames, sampwidth, channel_count = read_header(audio_file)
-
+            except ValueError:
+                # If it is a ValueError, it is likely we raised it ourselves, and it is important.
+                raise
             except Exception as e:
                 list_file_problem.append(audio_file)
                 print(
@@ -460,7 +462,7 @@ class Dataset:
                 else:
                     new_folder_name.rmdir()
 
-                    path_raw_audio = path_raw_audio.rename(new_folder_name)
+            path_raw_audio = path_raw_audio.rename(new_folder_name)
             self.__original_folder = path_raw_audio
 
             for subpath in OSMOSE_PATH:

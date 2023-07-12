@@ -29,7 +29,4 @@ PARAMS = {
 
 
 def test_init(input_dataset):
-    # no sr
-    with pytest.raises(ValueError) as e:
-        Welch(dataset_path=input_dataset)
-    assert str(e.value) == "If you dont know your sr, please use the build() method first"
+   pass

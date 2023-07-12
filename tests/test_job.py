@@ -35,7 +35,7 @@ def test_build_job_file(output_dir):
     jb._Job_builder__config = custom_config
     jb.build_job_file(script_path = script_path, script_args=script_args, jobname=jobname, logdir=output_dir)
 
-    with open(jb.prepared_jobs[0]["path"], "r") as f:
+    with open(jb.prepared_jobs[0].path, "r") as f:
         text = "".join(f.readlines())
     
     assert pbshead in text

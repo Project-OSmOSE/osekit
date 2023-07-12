@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import re
 import os
 import datetime
@@ -6,6 +7,8 @@ import pandas as pd
 from pathlib import Path
 
 from OSmOSE.config import *
+
+from OSmOSE.Exceptions.format_exception import UnsupportedAudioFormatError
 
 __converter = {
     "%Y": r"[12][0-9]{3}",
@@ -88,15 +91,13 @@ def write_timestamp(
             for file_name in list_audio_file_WAV:
                 os.rename(file_name, Path(audio_path).joinpath(file_name.stem+'.wav'))
         
-        elif len(Path(audio_path).glob("*.mp3",".*flac"))>0:
+        elif len(list(Path(audio_path).glob("*.[mp3|flac]")))>0:
 
-            print(
-                f"Your audio files do not have the right extension, we only accept wav audio files for the moment."
-            )
+            raise UnsupportedAudioFormatError()
                     
         else:
         
-            print(
+            raise ValueError(
                 f"No audio files found in the {audio_path} directory."
             )
 
