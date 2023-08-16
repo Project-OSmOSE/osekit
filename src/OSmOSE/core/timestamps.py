@@ -1,13 +1,13 @@
-from multiprocessing.sharedctypes import Value
 import re
 import os
 import datetime
 import argparse
-import pandas as pd
+
 from pathlib import Path
 
-from OSmOSE.config import *
+import pandas as pd
 
+from OSmOSE.config import *
 from OSmOSE.Exceptions.format_exception import UnsupportedAudioFormatError
 
 __converter = {

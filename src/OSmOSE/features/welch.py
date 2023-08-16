@@ -1,25 +1,20 @@
-from datetime import datetime, timedelta
-from functools import partial
 import inspect
 import os
 import shutil
 import sys
-from typing import List, Tuple, Union, Literal
+import multiprocessing as mp
+from datetime import timedelta
+from typing import Tuple, Union, Literal
 from math import log10
 from pathlib import Path
-import multiprocessing as mp
-from filelock import FileLock
 
-import soundfile as sf
 import pandas as pd
 import numpy as np
 from scipy import signal
-from termcolor import colored
-from matplotlib import pyplot as plt
 
 from OSmOSE.features.compute_statistics import compute_stats
 from OSmOSE.core import Dataset, Job_builder, reshape
-from OSmOSE.utils import safe_read, make_path, set_umask, from_timestamp, to_timestamp
+from OSmOSE.utils import make_path, set_umask, from_timestamp, to_timestamp
 from OSmOSE.config import *
 
 
@@ -354,9 +349,33 @@ class Welch(Dataset):
 
     # endregion
 
-    # TODO: some cleaning
-    def initialize(self, *, date_template:str = None, force_init: bool = False, batch_ind_min:int = 0, batch_ind_max:int = -1):
-        # Mandatory init
+    def initialize(self, *, date_template:str = None, force_init: bool = False):
+        """Prepares the analysis by setting up everything needed. This step is mandatory and should be executed once all parameters have been set up, before any generation.
+        
+        If the initialization is already done, nothing will change unless force_init is set to True.
+
+        The initialization step does the following :
+
+            1. Check if the dataset if build. If not, it builds it using default parameters.
+
+            2. Creates the folder structure according to dataset_sr and spectro_duration values.
+
+            3. Generate the timestamp.csv file indicating the spectrogram's timestamps (according to the spectro_duration value).
+
+            4. Launch the job to create the zscore duration csv
+
+            5. Write metadata.csv and adjust_metadata.csv
+        
+        Parameter
+        ---------
+            date_template: str, optional, keyword-only
+                The strftime template of the filenames. Only used to build the dataset if it is not already built.
+                
+            force_init: bool, optional, keyword-only
+                Forces every initialization step to execute and overwrites existing files.
+                """
+
+        #! STEP 1 : Build dataset
         if not self.is_built:
             try:
                 self.build(date_template=date_template)
@@ -367,6 +386,7 @@ class Welch(Dataset):
 
                 raise e
         
+        #! STEP 2: CREATE FOLDER STRUCTURE
         self.path_input_audio_file = self._get_original_after_build()
 
         if not self.dataset_sr:
@@ -414,11 +434,7 @@ class Welch(Dataset):
             names=["filename", "timestamp", "timezone"],
         )
 
-        list_wav_withEvent_comp = input_timestamp["filename"].values
-
-        if batch_ind_max == -1:
-            batch_ind_max = len(list_wav_withEvent_comp)
-        list_wav_withEvent = list_wav_withEvent_comp[batch_ind_min:batch_ind_max]
+        list_wav_withEvent = input_timestamp["filename"].values
 
         self.list_wav_to_process = list_wav_withEvent
 
@@ -434,36 +450,37 @@ class Welch(Dataset):
         # Load variables from raw metadata
         metadata = pd.read_csv(self.path_input_audio_file.joinpath("metadata.csv"))
         audio_file_origin_duration = metadata["audio_file_origin_duration"][0]
-        origin_sr = metadata["dataset_sr"][0]
+
         audio_file_count = metadata["audio_file_count"][0]
         path_csv = self.audio_path.joinpath("timestamp.csv")
 
-        # Generate the timestamp.csv
+        #! STEP 3: GENERATE TIMESTAMP.CSV
         if self.spectro_duration != audio_file_origin_duration:
             new_timestamp_list = []
             new_name_list = []
         
             # The files are considered continuous only if they all follow each others with less than 5 seconds of difference
-            continuous = all(to_timestamp(input_timestamp["timestamp"][i + 1]) - to_timestamp(input_timestamp["timestamp"][i]) + timedelta(seconds=self.spectro_duration) < timedelta(seconds=5) for i in range(len(input_timestamp["timestamp"])))
-
+            continuous = all(to_timestamp(input_timestamp["timestamp"][i]) + timedelta(seconds=audio_file_origin_duration) - to_timestamp(input_timestamp["timestamp"][i+1]) < timedelta(seconds=5) for i in range(len(input_timestamp["timestamp"]) -1))
+            
             for i in range(len(input_timestamp.filename)):
                 if len(new_timestamp_list) == 0 or not continuous:
+                    # The first next timestamp is always the first of the list
                     next_timestamp = to_timestamp(input_timestamp.timestamp[i])
-
-                    while next_timestamp + timedelta(seconds=self.spectro_duration) < to_timestamp(input_timestamp.timestamp[i]) + timedelta(seconds=int(audio_file_origin_duration)):
-                        new_timestamp_list.append(from_timestamp(next_timestamp))
-                        new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
-                        
-                        next_timestamp += timedelta(seconds=self.spectro_duration)
-                else:
+                # If the audio is longer than the spectrogram duration, we append the list as many times as needed
+                while next_timestamp + timedelta(seconds=self.spectro_duration) < to_timestamp(input_timestamp.timestamp[i]) + timedelta(seconds=int(audio_file_origin_duration)):
+                    new_timestamp_list.append(from_timestamp(next_timestamp))
+                    new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
+                    
+                    next_timestamp += timedelta(seconds=self.spectro_duration)
+                if continuous:
+                    # If the files are continuous, then just append the previous timestamp to the list.
                     new_timestamp_list.append(from_timestamp(next_timestamp))
                     new_name_list.append(f"{new_timestamp_list[-1].replace(':','-').replace('.','_')}.wav")
                     
                     next_timestamp += timedelta(seconds=self.spectro_duration)
 
-
             if self.path_input_audio_file == self.audio_path:
-                path_csv.rename(path_csv.with_stem("old_timestamp"))
+                path_csv.rename(path_csv.with_stem("orig_timestamp"))
 
             new_timestamp = pd.DataFrame(
                 {"filename": new_name_list, "timestamp": new_timestamp_list, "timezone": "UTC"}
@@ -476,17 +493,17 @@ class Welch(Dataset):
                 header=None,
             )
             os.chmod(path_csv, mode=FPDEFAULT)
-        # If the analysis sample rate is differnet than the original one, the two folder names will differ.
+        # If the analysis sample rate is different than the original one, the two folder names will differ.
         elif self.path_input_audio_file != self.audio_path:
             shutil.copyfile(self.path_input_audio_file.joinpath("timestamp.csv"), path_csv)
 
 
         batch_size = len(self.list_wav_to_process) // self.batch_number
         processes = []
-        #! ZSCORE NORMALIZATION
+
+        #! STEP 4: ZSCORE NORMALIZATION
         norma_job_id_list = []
         if (
-            #os.listdir(self.path.joinpath(OSMOSE_PATH.statistics))
             self.data_normalization == "zscore"
             and self.zscore_duration is not None
             and len(os.listdir(self.path.joinpath(OSMOSE_PATH.statistics))) == 0
@@ -536,7 +553,7 @@ class Welch(Dataset):
             for process in processes:
                 process.join()
 
-
+        #! STEP 5: METADATA CREATION
         metadata["audio_file_dataset_duration"] = self.spectro_duration
         new_meta_path = self.audio_path.joinpath("metadata.csv")
         metadata.to_csv(new_meta_path)
@@ -640,22 +657,6 @@ class Welch(Dataset):
             os.chmod(filename, mode=DPDEFAULT)
             return True
         return False
-
-
-
-    def audio_file_list_csv(self) -> Path:
-        list_audio = list(self.audio_path.glob(f"*.({'|'.join(SUPPORTED_AUDIO_FORMAT)})"))
-        csv_path = self.audio_path.joinpath(f"wav_list_{len(list_audio)}.csv")
-
-        if csv_path.exists():
-            return csv_path
-        else:
-            with open(csv_path, "w") as f:
-                f.write("\n".join([str(audio) for audio in list_audio]))
-
-            os.chmod(csv_path, mode=FPDEFAULT)
-
-            return csv_path
         
     # region On cluster
 
@@ -752,16 +753,18 @@ class Welch(Dataset):
         orig_index = int(orig_timestamp_file.index[orig_timestamp_file["filename"] == audio_file][0])
         T0 = to_timestamp(orig_timestamp_file["timestamp"][orig_index]) # Timestamp of the beginning of the original file
         d1 = timedelta(seconds=metadata["audio_file_origin_duration"][0]) # Duration of the original timestamp (considering all timestamps are continuous)
-        orig_timestamp = [to_timestamp(timestamp) for timestamp in orig_timestamp_file["timestamp"]]
         final_timestamps = [to_timestamp(timestamp) for timestamp in final_timestamp_file["timestamp"]]
+
+        print(final_timestamp_file)
 
         N0 = [ts for ts in final_timestamps if ts <= T0][-1] # Timestamp of the beginning of the first output file starting before T0
         N0_index = final_timestamps.index(N0)
 
-        # While the original file begins after the first target file
+        # While the original file begins after the first target spectrogram
         start = T0
         i=1
-        while orig_index -i >= 0 and start > N0:
+        while orig_index - i >= 0 and start > N0:
+            print(f"start : {start}; N0 : {N0}")
             start = to_timestamp(orig_timestamp_file["timestamp"][orig_index-i])
             files_to_load.insert(0, self.path_input_audio_file.joinpath(orig_timestamp_file["filename"][orig_index-i]))
             i+=1
@@ -771,7 +774,7 @@ class Welch(Dataset):
         # While the original file ends after the target file, we prepare to create the next.
         j=1
         next_output = N0
-        while N0_index + j+1 < len(final_timestamps) and T0 + d1 >= next_output + timedelta(seconds=self.spectro_duration):
+        while N0_index + j+1 <= len(final_timestamps) and T0 + d1 > next_output + timedelta(seconds=self.spectro_duration):
             j+=1
             if final_timestamps[N0_index + j] + timedelta(seconds=self.spectro_duration) > T0 + d1 and merge_files == False:
                 break
@@ -791,7 +794,7 @@ class Welch(Dataset):
         offset_end = (end + d1 - N0 - timedelta(seconds=self.spectro_duration)).seconds
         
         audio_file_origin_duration = metadata["audio_file_origin_duration"][0]
-
+        print(files_to_load)
         #! RESHAPING
         # We might reshape the files and create the folder. Note: reshape function might be memory-heavy and deserve a proper qsub job.
         if self.spectro_duration > int(
@@ -801,10 +804,11 @@ class Welch(Dataset):
                 "Spectrogram size cannot be greater than file duration when not merging files."
             )
 
-        print(
-            f"Automatically reshaping audio files to fit the spectro duration value. Files will be {self.spectro_duration} seconds long."
-        )
-        
+        if self.spectro_duration != int(audio_file_origin_duration):
+            print(
+                f"Automatically reshaping audio files to fit the spectro duration value. Files will be {self.spectro_duration} seconds long."
+            )
+            
         reshaped = reshape(
             input_files=files_to_load, 
             chunk_size=self.spectro_duration,
@@ -815,7 +819,8 @@ class Welch(Dataset):
             last_file_behavior=last_file_behavior,
             write_output=write_file
             )
-    
+
+
         for data_tuple in reshaped:
             data = data_tuple[0]
             outfilename = data_tuple[1]
@@ -909,15 +914,3 @@ class Welch(Dataset):
 
 
     # endregion
-
-    def process_all_files(self, *, save_matrix: bool = False):
-        """Process all the files in the dataset and generates the spectrograms. It uses the python multiprocessing library
-        to parallelise the computation, so it is less efficient to use this method rather than the job scheduler if run on a cluster.
-        """
-
-        kwargs = {"save_matrix": save_matrix}
-
-        map_process_file = partial(self.process_file, **kwargs)
-
-        with mp.Pool(processes=min(self.batch_number, mp.cpu_count())) as pool:
-            pool.map(map_process_file, self.list_wav_to_process)

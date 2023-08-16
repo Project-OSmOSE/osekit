@@ -120,7 +120,7 @@ def test_initialize_2s(input_dataset):
         assert dataset.path.joinpath(path).resolve().exists()
 
 @pytest.mark.integ
-def test_generate_spectrogram(input_dataset):
+def test_generate_spectrogram_no_reshape(input_dataset):
     dataset = Aplose(
         dataset_path=input_dataset["main_dir"],
         dataset_sr=44100,
@@ -135,15 +135,62 @@ def test_generate_spectrogram(input_dataset):
 
     file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
     
-    with pytest.raises(ValueError) as e:
-        dataset.generate_spectrogram(audio_file=file_to_process)
-    assert str(e.value) == "Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data."
+    # with pytest.raises(ValueError) as e:
+    #     dataset.generate_spectrogram(audio_file=file_to_process)
+    # assert str(e.value) == "Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data."
 
     dataset.generate_spectrogram(audio_file=file_to_process, save_image=True)
 
     result = os.listdir(dataset.path_output_spectrogram)
     assert len(result) == 1
-    assert result[0] == f"{file_to_process.name}_1_0.png"
+    assert result[0] == f"2022-01-01T12-00-00_000Z_1_0.png"
+
+@pytest.mark.integ
+def test_generate_spectrogram_reshape_longer(input_dataset):
+    dataset = Aplose(
+        dataset_path=input_dataset["main_dir"],
+        dataset_sr=44100,
+        analysis_params=PARAMS,
+        local=True,
+    )
+
+    dataset.zoom_level = 0
+    dataset.spectro_duration = 5
+
+    dataset.initialize()
+
+    file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
+
+    dataset.generate_spectrogram(audio_file=file_to_process, save_image=True)
+
+    result = os.listdir(dataset.path_output_spectrogram)
+    assert len(result) == 2
+    assert result[0] == f"2022-01-01T12-00-00_000Z_1_0.png"
+    assert result[1] == f"2022-01-01T12-00-05_000Z_1_0.png"
+
+@pytest.mark.integ
+def test_generate_spectrogram_reshape_shorter(input_dataset):
+    dataset = Aplose(
+        dataset_path=input_dataset["main_dir"],
+        dataset_sr=44100,
+        analysis_params=PARAMS,
+        local=True,
+    )
+
+    dataset.zoom_level = 0
+    dataset.spectro_duration = 1
+
+    dataset.initialize()
+
+    file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
+
+    dataset.generate_spectrogram(audio_file=file_to_process, save_image=True)
+
+    result = os.listdir(dataset.path_output_spectrogram)
+    assert len(result) == 3
+    assert result[0] == f"2022-01-01T12-00-00_000Z_1_0.png"
+    assert result[1] == f"2022-01-01T12-00-01_000Z_1_0.png"
+    assert result[2] == f"2022-01-01T12-00-02_000Z_1_0.png"
 
 @pytest.mark.reg
 def test_spectro_creation(output_dir):

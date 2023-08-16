@@ -9,7 +9,6 @@ from statistics import fmean as mean
 
 try:
     import grp
-
     skip_perms = False
 except ModuleNotFoundError:
     skip_perms = True
@@ -161,10 +160,6 @@ class Dataset:
                 else:
                     self.__gps_coordinates = (new_coordinates[0], new_coordinates[1])
                 # TODO : set a standard type for coordinates
-                # else:
-                #     raise ValueError(
-                #         f"The coordinates list must contain either only floats or only sublists of two elements."
-                #     )
             case _:
                 raise TypeError(
                     f"GPS coordinates must be either a list of coordinates or the name of csv containing the coordinates, but {type(new_coordinates)} found."
@@ -187,7 +182,7 @@ class Dataset:
             return
         if value:
             try:
-              gid = grp.getgrnam(value).gr_gid
+                grp.getgrnam(value).gr_gid
             except KeyError as e:
               raise KeyError(
                 f"The group {value} does not exist on the system. Full error trace: {e}"
@@ -369,7 +364,7 @@ class Dataset:
             dates_final = dates[:-3] + "Z"
             timestamp.append(dates_final)
 
-            # we remove the sign '-' in filenames (because of our qsub_resample.sh)
+            # we remove the sign '-' in filenames 
 
             if "-" in audio_file.name:
                 cur_filename = audio_file.name.replace("-", "_")
@@ -570,12 +565,13 @@ class Dataset:
         """Search for the original folder or create it from existing files.
 
         This function does in order:
-    - If there is any audio file in the top directory, consider them all original and create the data/audio/original/ directory before
-        moving all audio files in it.
-    - If there is only one folder in the top directory, move it to /data/audio/original.
-    - If there is a folder named "original" in the raw audio path, then return it
-    - If there is only one folder in the raw audio path, then return it as the original.
-    If none of the above is true, then a ValueError is raised as the original folder could not be found nor created. 
+            - If there is any audio file in the top directory, consider them all original and create the data/audio/original/ directory before
+                moving all audio files in it.
+            - If there is only one folder in the top directory, move it to /data/audio/original.
+            - If there is a folder named "original" in the raw audio path, then return it
+            - If there is only one folder in the raw audio path, then return it as the original.
+        
+        If none of the above is true, then a ValueError is raised as the original folder could not be found nor created. 
 
         Returns
         -------

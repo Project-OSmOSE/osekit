@@ -1,18 +1,19 @@
-from datetime import timedelta
 import os
+import shutil
+from datetime import timedelta
 from filelock import FileLock
 from typing import Literal, Union
-import shutil
-from OSmOSE.config import *
-import pandas as pd
 from termcolor import colored
-from OSmOSE.features import Welch
-from OSmOSE.utils import set_umask, make_path
-import numpy as np
-import matplotlib.pyplot as plt
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
 from OSmOSE.utils.timestamp_utils import to_timestamp
+from OSmOSE.config import *
+from OSmOSE.features import Welch
+from OSmOSE.utils import set_umask, make_path
 
 class Aplose(Welch):
     def __init__(self, dataset_path: str, *, dataset_sr: int = 0, gps_coordinates: str | list | tuple = None, owner_group: str = None, analysis_params: dict = None, batch_number: int = 10, local: bool = False) -> None:
@@ -173,8 +174,6 @@ class Aplose(Welch):
         self,
         *,
         dataset_sr: int = None,
-        batch_ind_min: int = 0,
-        batch_ind_max: int = -1,
         force_init: bool = False,
         date_template: str = None
     ) -> None:
@@ -185,29 +184,13 @@ class Aplose(Welch):
         ----------
         dataset_sr : `int`, optional, keyword-only
             The sampling frequency of the audio files used to generate the spectrograms. If set, will overwrite the Spectrogram.dataset_sr attribute.
-        reshape_method : {"legacy", "classic", "none"}, optional, keyword-only
-            Which method to use if the desired size of the spectrogram is different from the audio file duration.
-            - legacy : Legacy method, use bash and sox software to trim the audio files and fill the empty space with nothing.
-            Unpractical when the audio file duration is longer than the desired spectrogram size.
-            - classic : Classic method, use python and sox library to cut and concatenate the audio files to fit the desired duration.
-            Will rewrite the `timestamp.csv` file, thus timestamps may have unexpected behavior if the concatenated files are not chronologically
-            subsequent.
-            - none : Don't reshape, will throw an error if the file duration is different than the desired spectrogram size. (It is the default behavior)
-
-        batch_ind_min : `int`, optional, keyword-only
-            The index of the first file to consider. Both this parameter and `batch_ind_max` are not commonly used and are
-            for very specific use cases. Most of the time, you want to initialize the whole dataset (the default is 0).
-        batch_ind_max : `int`, optional, keyword-only
-            The index of the last file to consider (the default is -1, meaning consider every file).
-        pad_silence : `bool`, optional, keyword-only
-            When using the legacy reshaping method, whether there should be a silence padding or not (default is False).
         force_init : `bool`, optional, keyword-only
             Force every parameter of the initialization.
         date_template : `str`, optiona, keyword-only
             When initializing a spectrogram of a dataset that has not been built, providing a date_template will generate the timestamp.csv.
         """
         self.build_path()
-        super().initialize(batch_ind_min=batch_ind_min, batch_ind_max=batch_ind_max, force_init=force_init, date_template=date_template)
+        super().initialize(force_init=force_init, date_template=date_template)
 
         if dataset_sr:
             self.dataset_sr = dataset_sr
@@ -226,6 +209,36 @@ class Aplose(Welch):
         clean_adjust_folder: bool = False,
         overwrite: bool = False
     ) -> None:
+        """Generate all spectrograms of a given file. 
+        
+        If the file overlaps several spectrograms in the timeline, they all will be generated.
+        
+        Parameter
+        ---------
+            audio_file: str or Path
+                The path to the audio file to be processed.
+            adjust: bool, optional, keyword-only
+                Whether or not the spectrogram is generated to adjust parameters. Default is False.
+            save_matrix: bool, optional, keyword-only
+                Save the spectrogram's matrix. At least one of this or save_image MUST be set to True. Default is False.
+            save_image: bool, optional, keyword-only
+                Save the spectrogram's image. Default is False.
+            last_file_behavior:  `{"truncate","pad","discard"}, optional, keyword-only
+                When reshaping multiple files, what to do with if the last data of the last file is too small to fill a whole file.
+                    - `truncate` creates a truncated file with the remaining data, which will have a different duration than the others.
+                    - `pad` creates a file of the same duration than the others, where the missing data is filled with 0.
+                    - `discard` ignores the remaining data. The last seconds/minutes/hours of audio will be lost in the reshaping.
+                The default method is `pad`.
+            merge_files: bool, optional, keyword-only
+                Merge continuous files during reshaping. Will only merge them if there is less than 5 secondes between the two files. Default is True.
+            write_audio_file: bool, optional, keyword-only
+                Wite the reshaped and resampled audio file(s). Default is False.
+            clean_adjust_folder: bool, optional, keyword-only
+                Clean the adjustment folder before generating the spectrogram. Useful to not clutter the folder. Default is False.
+            overwrite: bool, optional, keyword-only
+                Force to rewrite every file even if it already exists. Will not delete files that would not be written. Default is False.
+                """
+
         if not save_image and not save_matrix:
             raise ValueError("Neither image or matrix are set to be generated. Please set at least one of save_matrix or save_image to True to proceed with the spectrogram generation, or use the welch() method to get the raw data.")
 
@@ -370,6 +383,7 @@ class Aplose(Welch):
             0, data.size / sample_rate, Sxx_complete_lowest_level.shape[1]
         )[np.newaxis, :]
 
+        #time resolution not yet implemented
         #self.time_resolution = [segment_times[1] - segment_times[0]]
 
         if self.save_image:
@@ -477,8 +491,3 @@ class Aplose(Welch):
         if not metadata_output.exists():
             shutil.copyfile(metadata_input, metadata_output)
             print(f"Written {metadata_output}")
-        # try:
-        #     if not self.adjust and metadata_input.exists() and not metadata_output.exists():
-        #         metadata_input.rename(metadata_output)
-        # except:
-        #     pass

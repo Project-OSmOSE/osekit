@@ -1,18 +1,19 @@
-from copy import copy
 import glob
 import os
 import json
 import time
-from dateutil.parser import parse
 import tomlkit
 import subprocess
-from uuid import uuid4
+
+from dateutil.parser import parse
+from copy import copy
 from string import Template
-from typing import NamedTuple, List, Literal
+from typing import List, Literal
 from warnings import warn
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 from importlib import resources
+
 from OSmOSE.utils import read_config, set_umask, make_path
 from OSmOSE.config import *
 
