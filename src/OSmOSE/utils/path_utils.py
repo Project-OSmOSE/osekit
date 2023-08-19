@@ -1,6 +1,6 @@
 from pathlib import Path
 from OSmOSE.config import *
-
+import os
 def make_path(path: Path, *, mode=DPDEFAULT) -> Path:
     """Create a path folder by folder with correct permissions.
 
@@ -17,6 +17,7 @@ def make_path(path: Path, *, mode=DPDEFAULT) -> Path:
 
     for parent in path.parents[::-1]:
         parent.mkdir(mode=mode, exist_ok=True)
+        print(os.stat(parent))
 
     path.mkdir(mode=mode, exist_ok=True)
 

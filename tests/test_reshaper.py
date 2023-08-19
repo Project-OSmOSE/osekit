@@ -334,6 +334,8 @@ def test_resample(input_reshape: Path, output_dir: Path):
             assert outinfo.frames == sr * 3
             assert outinfo.duration == 3.0
 
+        print(os.listdir(output_dir))
+
         assert len(os.listdir(output_dir)) == 11
         # check that the original files were not modified
         for i in range(1,9):
