@@ -132,8 +132,8 @@ def test_generate_spectrogram_no_reshape(input_dataset):
     dataset.spectro_duration = 3
 
     dataset.initialize()
-
-    file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
+    
+    file_to_process = Path(dataset.path_input_audio_file, "test_0.wav")
     
     # with pytest.raises(ValueError) as e:
     #     dataset.generate_spectrogram(audio_file=file_to_process)
@@ -159,11 +159,11 @@ def test_generate_spectrogram_reshape_longer(input_dataset):
 
     dataset.initialize()
 
-    file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
+    file_to_process = Path(dataset.path_input_audio_file, "test_0.wav")
 
     dataset.generate_spectrogram(audio_file=file_to_process, save_image=True)
 
-    result = os.listdir(dataset.path_output_spectrogram)
+    result = sorted(os.listdir(dataset.path_output_spectrogram))
     assert len(result) == 2
     assert result[0] == f"2022-01-01T12-00-00_000Z_1_0.png"
     assert result[1] == f"2022-01-01T12-00-05_000Z_1_0.png"
@@ -182,11 +182,11 @@ def test_generate_spectrogram_reshape_shorter(input_dataset):
 
     dataset.initialize()
 
-    file_to_process = Path(next(dataset.path_input_audio_file.glob("*.wav")))
-
+    file_to_process = Path(dataset.path_input_audio_file, "test_0.wav")
+    
     dataset.generate_spectrogram(audio_file=file_to_process, save_image=True)
 
-    result = os.listdir(dataset.path_output_spectrogram)
+    result = sorted(os.listdir(dataset.path_output_spectrogram))
     assert len(result) == 3
     assert result[0] == f"2022-01-01T12-00-00_000Z_1_0.png"
     assert result[1] == f"2022-01-01T12-00-01_000Z_1_0.png"
