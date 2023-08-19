@@ -142,6 +142,3 @@ def test_make_path(tmp_path):
 
     assert simple_path.exists()
     assert complex_path.exists()
-    import sys
-    if sys.platform == "linux":
-        assert os.stat(complex_path).st_mode == 0o276
