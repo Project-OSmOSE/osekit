@@ -17,7 +17,7 @@ def make_path(path: Path, *, mode=DPDEFAULT) -> Path:
 
     for parent in path.parents[::-1]:
         parent.mkdir(mode=mode, exist_ok=True)
-        print(os.stat(parent))
+        print(parent, os.stat(parent))
 
     path.mkdir(mode=mode, exist_ok=True)
 

@@ -343,3 +343,5 @@ def test_resample(input_reshape: Path, output_dir: Path):
             ininfo = sf.info(input_file)
             assert ininfo.samplerate == 44100
             assert ininfo.frames == 132300
+
+    assert False

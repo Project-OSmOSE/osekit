@@ -415,6 +415,11 @@ def reshape(
             header=None,
         )
         os.chmod(path_csv, mode=FPDEFAULT)
+    try:    
+        os.remove(str(path_csv) + ".lock")
+    except:
+        pass
+
 
 
 if __name__ == "__main__":
