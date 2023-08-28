@@ -247,10 +247,9 @@ class Aplose(Welch):
         lockfile = f"{self.path_output_spectrogram.joinpath('lock' + Path(audio_file).stem)}.lock"
 
         def check_existing_matrix():
-            return len(list(self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"))) == 2**self.zoom_level if save_matrix else True
+            return len(list(self.path_output_spectrogram_matrix.glob(f"{Path(audio_file).stem}*"))) == 2**self.zoom_level+1 if save_matrix else True
 
-        if len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))) == sum(2**i for i in range(self.zoom_level)) and check_existing_matrix():
-            print(len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))))
+        if len(list(self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"))) == sum(2**i for i in range(self.zoom_level +1)) and check_existing_matrix():
             if overwrite:
                 print(f"Existing files detected for audio file {audio_file}! They will be overwritten.")
                 for old_file in self.path_output_spectrogram.glob(f"{Path(audio_file).stem}*"):

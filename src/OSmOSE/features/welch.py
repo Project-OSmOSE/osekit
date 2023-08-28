@@ -431,7 +431,10 @@ class Welch(Dataset):
         path_csv = self.audio_path.joinpath("timestamp.csv")
 
         if self.path_input_audio_file == self.audio_path:
-            path_csv.rename(path_csv.with_stem("old_timestamp"))
+            name_old = path_csv.with_stem("old_timestamp")
+            if name_old.exists():
+                name_old.unlink()
+            path_csv.rename(name_old)
 
         new_timestamp = pd.DataFrame(
             {"filename": new_name_list, "timestamp": new_timestamp_list, "timezone": "UTC"}
