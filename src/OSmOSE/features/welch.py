@@ -749,7 +749,7 @@ class Welch(Dataset):
             files_to_load = [self.path_input_audio_file.joinpath(audio_file)]
         else:
             files_to_load = [self.path_input_audio_file.joinpath(audio_file)]
-
+            
         orig_index = int(orig_timestamp_file.index[orig_timestamp_file["filename"] == audio_file][0])
         T0 = to_timestamp(orig_timestamp_file["timestamp"][orig_index]) # Timestamp of the beginning of the original file
         d1 = timedelta(seconds=metadata["audio_file_origin_duration"][0]) # Duration of the original timestamp (considering all timestamps are continuous)
