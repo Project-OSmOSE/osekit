@@ -393,28 +393,32 @@ def reshape(
 
     lock = FileLock(str(path_csv) + ".lock")
 
-    with lock:
-        # suppr doublons
-        if path_csv.exists():
-            tmp_timestamp = pd.read_csv(path_csv, header=None)
-            try:
-                to_timestamp(tmp_timestamp[0].values[0])
-            except:
-                return
-            result += list(tmp_timestamp[0].values)
-            timestamp_list += list(tmp_timestamp[1].values)
+    lock.acquire()
 
-        input_timestamp = pd.DataFrame(
-            {"filename": result, "timestamp": timestamp_list, "timezone": "UTC"}
-        )
-        input_timestamp.sort_values(by=["timestamp"], inplace=True)
-        input_timestamp.drop_duplicates().to_csv(
-            path_csv,
-            index=False,
-            na_rep="NaN",
-            header=None,
-        )
-        os.chmod(path_csv, mode=FPDEFAULT)
+    # suppr doublons
+    if path_csv.exists():
+        tmp_timestamp = pd.read_csv(path_csv, header=None)
+        try:
+            to_timestamp(tmp_timestamp[0].values[0])
+        except:
+            return
+        result += list(tmp_timestamp[0].values)
+        timestamp_list += list(tmp_timestamp[1].values)
+
+    input_timestamp = pd.DataFrame(
+        {"filename": result, "timestamp": timestamp_list, "timezone": "UTC"}
+    )
+    input_timestamp.sort_values(by=["timestamp"], inplace=True)
+    input_timestamp.drop_duplicates().to_csv(
+        path_csv,
+        index=False,
+        na_rep="NaN",
+        header=None,
+    )
+    os.chmod(path_csv, mode=FPDEFAULT)
+
+    lock.release()
+    
     try:    
         os.remove(str(path_csv) + ".lock")
     except:

@@ -138,7 +138,7 @@ def test_make_path(tmp_path):
     simple_path = tmp_path / "simple_path"
     complex_path = tmp_path / "not" / "so" / "simple" / "path"
     make_path(simple_path)
-    make_path(complex_path, mode=0o276)
+    make_path(complex_path, mode=0o775)
 
     assert simple_path.exists()
     assert complex_path.exists()

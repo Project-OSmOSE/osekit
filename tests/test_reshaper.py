@@ -322,7 +322,7 @@ def test_resample(input_reshape: Path, output_dir: Path):
 
     for sr in [100, 500, 8000]:
         all(reshape(input_files=input_reshape, chunk_size=3, output_dir_path=output_dir, new_sr=sr, write_output=True, verbose=True))
-    
+        
         reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
         # check that all resampled files exist and have the correct properties
@@ -334,8 +334,6 @@ def test_resample(input_reshape: Path, output_dir: Path):
             assert outinfo.frames == sr * 3
             assert outinfo.duration == 3.0
 
-        print(os.listdir(output_dir))
-
         assert len(os.listdir(output_dir)) == 11
         # check that the original files were not modified
         for i in range(1,9):
@@ -344,4 +342,3 @@ def test_resample(input_reshape: Path, output_dir: Path):
             assert ininfo.samplerate == 44100
             assert ininfo.frames == 132300
 
-    assert False
