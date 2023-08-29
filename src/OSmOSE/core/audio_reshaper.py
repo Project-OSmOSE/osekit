@@ -418,11 +418,9 @@ def reshape(
     os.chmod(path_csv, mode=FPDEFAULT)
 
     lock.release()
-    
-    try:    
+
+    if Path(str(path_csv) + ".lock").exists():
         os.remove(str(path_csv) + ".lock")
-    except:
-        pass
 
 
 
