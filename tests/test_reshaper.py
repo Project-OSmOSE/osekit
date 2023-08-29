@@ -322,7 +322,10 @@ def test_resample(input_reshape: Path, output_dir: Path):
 
     for sr in [100, 500, 8000]:
         all(reshape(input_files=input_reshape, chunk_size=3, output_dir_path=output_dir, new_sr=sr, write_output=True, verbose=True))
-        
+
+        if output_dir.joinpath("timestamp.csv.lock").exists():
+            output_dir.joinpath("timestamp.csv.lock").unlink()
+            
         reshaped_files = [output_dir.joinpath(outfile) for outfile in pd.read_csv(str(output_dir.joinpath("timestamp.csv")), header=None)[0].values]
 
         # check that all resampled files exist and have the correct properties

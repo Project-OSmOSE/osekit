@@ -419,9 +419,6 @@ def reshape(
 
     lock.release()
 
-    if Path(str(path_csv) + ".lock").exists():
-        os.remove(str(path_csv) + ".lock")
-
 
 
 if __name__ == "__main__":
