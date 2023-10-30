@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join welch spectra with ERA5 data &mdash; OSmOSE toolkit  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Going further" href="../../going_further.html" />
+    <link rel="prev" title="Join with auxiliary" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/osmose_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../getting_started.html">Getting started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#quick-installation">Quick installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#sample-datasets">Sample datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../getting_started.html#basic-use-cases">Basic use cases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started.html#build-and-analyze-an-osmose-dataset">Build and analyze an OSmOSE dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started.html#generate-spectrograms">Generate spectrograms</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../getting_started.html#join-with-auxiliary">Join with auxiliary</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../Dataset/index.html">Build and analyze an OSmOSE dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../Spectrogram/index.html">Generate spectrograms</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Join with auxiliary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../going_further.html">Going further</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../on_datarmor.html">On Datarmor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../apidocs.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OSmOSE toolkit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../getting_started.html">Getting started</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Join with auxiliary</a></li>
+      <li class="breadcrumb-item active">Join welch spectra with ERA5 data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gallery_tutorials/Auxiliary/joiner_auxiliary.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-gallery-tutorials-auxiliary-joiner-auxiliary-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="join-welch-spectra-with-era5-data">
+<span id="sphx-glr-gallery-tutorials-auxiliary-joiner-auxiliary-py"></span><h1>Join welch spectra with ERA5 data<a class="headerlink" href="#join-welch-spectra-with-era5-data" title="Link to this heading">¶</a></h1>
+<p>This code will join welch spectra with variables from ERA5 within a pandas dataframe</p>
+<section id="era5-downloading">
+<h2>ERA5 downloading<a class="headerlink" href="#era5-downloading" title="Link to this heading">¶</a></h2>
+<p>To use this code you will first need to download and format some ERA5 data : to do so, please use this <a class="reference external" href="./download_ERA5.html">notebook</a> . For OSmOSE members, this notebook can be directly executing
+on our <a class="reference external" href="https://drive.google.com/drive/folders/1QtNjUo1EaGEKSs4BY_E9iRUSWAlw4bOs">Google drive team</a></p>
+</section>
+<section id="codes">
+<h2>Codes<a class="headerlink" href="#codes" title="Link to this heading">¶</a></h2>
+<p>Define dataset path and name</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">OSmOSE.Auxiliary</span> <span class="kn">import</span> <span class="n">Auxiliary</span>
+
+
+<span class="n">path_osmose_dataset</span> <span class="o">=</span> <span class="s2">&quot;/home6/cazaudo/Bureau/osmose_sample_datasets/&quot;</span>
+<span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;SES1&quot;</span>
+<span class="n">campaign_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">date_template</span> <span class="o">=</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span>
+</pre></div>
+</div>
+<p>Select your set of welch spectra through their time resolution and sampling rate</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time_resolution_welch</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">sample_rate_welch</span> <span class="o">=</span> <span class="mi">38400</span>
+</pre></div>
+</div>
+<p>Run the Auxiliary class to perform joining</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">joiner</span> <span class="o">=</span> <span class="n">Auxiliary</span><span class="p">(</span><span class="n">path_osmose_dataset</span><span class="p">,</span><span class="n">dataset_name</span><span class="p">,</span><span class="n">time_resolution_welch</span><span class="p">,</span><span class="n">sample_rate_welch</span><span class="p">)</span>
+
+<span class="n">joiner</span><span class="o">.</span><span class="n">join_welch</span><span class="p">()</span>
+
+<span class="n">joiner</span><span class="o">.</span><span class="n">join_era</span><span class="p">()</span>
+
+<span class="n">joiner</span><span class="o">.</span><span class="n">save_aux_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Moving hydrophone with gps track given in /home6/cazaudo/Bureau/osmose_sample_datasets/SES1/data/auxiliary/instrument/gps.csv. Now checking your timestamp format
+
+/home6/cazaudo/Bureau/osmose_V0/src/OSmOSE/Auxiliary.py:271: FutureWarning: iteritems is deprecated and will be removed in a future version. Use .items instead.
+  for name, column in self.df.iteritems():
+Joining ERA5 data using the interpolation method.
+Loading SES1.nc file...
+
+  0%|          | 0/6 [00:00&lt;?, ?it/s]
+Loading and formatting u10:  17%|█▋        | 1/6 [00:00&lt;00:00, 107546.26it/s]
+Loading and formatting u10:  33%|███▎      | 2/6 [00:00&lt;00:00,  8.99it/s]
+Loading and formatting v10:  33%|███▎      | 2/6 [00:00&lt;00:00,  8.99it/s]
+Loading and formatting v10:  50%|█████     | 3/6 [00:00&lt;00:00,  6.43it/s]
+Loading and formatting sst:  50%|█████     | 3/6 [00:00&lt;00:00,  6.43it/s]
+Loading and formatting sst:  67%|██████▋   | 4/6 [00:00&lt;00:00,  5.69it/s]
+Loading and formatting tp:  67%|██████▋   | 4/6 [00:00&lt;00:00,  5.69it/s]
+Loading and formatting tp:  83%|████████▎ | 5/6 [00:00&lt;00:00,  5.16it/s]
+Loading and formatting tcc:  83%|████████▎ | 5/6 [00:00&lt;00:00,  5.16it/s]
+Loading and formatting tcc: 100%|██████████| 6/6 [00:01&lt;00:00,  4.93it/s]
+Loading and formatting wmb: 100%|██████████| 6/6 [00:01&lt;00:00,  4.93it/s]
+Loading and formatting wmb: 100%|██████████| 6/6 [00:01&lt;00:00,  4.54it/s]
+Generated file /home6/cazaudo/Bureau/osmose_sample_datasets/SES1/processed/auxiliary/300_38400/aux_data.csv
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.912 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-auxiliary-joiner-auxiliary-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/89138ae483966f54da7f5e61a3756b63/joiner_auxiliary.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">joiner_auxiliary.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/47da4d7bee2c96af64422ba9d23a7c46/joiner_auxiliary.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">joiner_auxiliary.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Join with auxiliary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../going_further.html" class="btn btn-neutral float-right" title="Going further" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, OSmOSE team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

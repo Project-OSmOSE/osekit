@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorials &mdash; OSmOSE toolkit  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/osmose_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="going_further.html">Going further</a></li>
+<li class="toctree-l1"><a class="reference internal" href="on_datarmor.html">On Datarmor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apidocs.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OSmOSE toolkit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">¶</a></h1>
+<section id="github">
+<h2>Github<a class="headerlink" href="#github" title="Link to this heading">¶</a></h2>
+<p>If you happen to encounter this error “fatal: unable to access ‘<a class="reference external" href="https://github.com/Project-OSmOSE/osmose-toolkit.git/">https://github.com/Project-OSmOSE/osmose-toolkit.git/</a>’: The requested URL returned error: 403” after running <code class="xref py py-obj docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--force</span> <span class="pre">origin</span> <span class="pre">bugfix</span></code>, here is how you can deal with it</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>remote<span class="w"> </span>remove<span class="w"> </span>origin
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>git@github.com:Project-OSmOSE/osmose-toolkit.git
+</pre></div>
+</div>
+</section>
+<section id="conda">
+<h2>Conda<a class="headerlink" href="#conda" title="Link to this heading">¶</a></h2>
+<p>To activate a conda environments after its creation</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>ENV_NAME
+</pre></div>
+</div>
+<p>To install a package in your activated environmnent</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>PACKAGE_NAME
+</pre></div>
+</div>
+<p>As an alternative way of installing python packages in your conda environment, you can also run <code class="xref py py-obj docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">pip</span></code> and then run <code class="xref py py-obj docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">PACKAGE_NAME</span></code>. Note that some packages (eg <a class="reference external" href="https://pysoundfile.readthedocs.io/en/latest/">pysoundfile</a>) are not available from conda install but only pip install (problem unsolved of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Solving</span> <span class="pre">environment:</span> <span class="pre">failed</span> <span class="pre">with</span> <span class="pre">initial</span> <span class="pre">frozen</span> <span class="pre">solve.</span> <span class="pre">Retrying</span> <span class="pre">with</span> <span class="pre">flexible</span> <span class="pre">solve.</span></code>)</p>
+<p>To delete a conda environment, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>remove<span class="w"> </span>--name<span class="w"> </span>ENV_NAME
+</pre></div>
+</div>
+<p>To get a list of all existing conda environments on your machine</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>info<span class="w"> </span>--envs
+</pre></div>
+</div>
+</section>
+<section id="bash-and-qsub">
+<h2>Bash and qsub<a class="headerlink" href="#bash-and-qsub" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code> : list all files and folders ;</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qstat</span> <span class="pre">-u</span> <span class="pre">myusername</span></code>  : this will list all your launched qsub jobs. This useful to check that your processing is running as expected, for example there is the right number of running jobs. The letter S stands for job status, which can be R = running, Q = en attente (dans la queue), H = en attente (on hold) ;</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cat</span> <span class="pre">some_file.txt</span></code> : this will display the content of a text file (.txt, .csv) in your terminal.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qdel</span> <span class="pre">job_id</span></code> : this is to kill a launched job appearing in the qstat list. For example to kill the second job from the list below run <code class="xref py py-obj docutils literal notranslate"><span class="pre">qdel</span> <span class="pre">1767379</span></code></p>
+<blockquote>
+<div><p>r2i1n25 datahome/dcazau% qstat -u dcazau
+datarmor0:</p>
+<blockquote>
+<div><p>Req’d  Req’d   Elap</p>
+</div></blockquote>
+<p>Job ID              Username Queue  Jobname SessID NDS TSK Memory Time  S Time
+————— ——– ——– ———- —— — — —— —– - —–
+1767039.datarmo dcazau   ice_mt   jupyterhub  42970   1   4  8192m 02:00 R 00:12
+1767379.datarmo dcazau   ice_mt   jupyterhub  34170   1   8   16gb 02:00 R 01:03</p>
+</div></blockquote>
+</li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qstat</span> <span class="pre">-fx</span> <span class="pre">id_job</span></code> : this will show you all information on your job, especially the address of servers on which it is or will run. Example : exec_vnode = (r2i1n25:ncpus=8:mem=16777216kb) informs you that your code is running on single machine located at r2i1n25 over 8 CPUS with 16 GB RAM</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, OSmOSE team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

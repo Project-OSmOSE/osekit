@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workflow for wind speed estimation using ERA5 data &mdash; OSmOSE toolkit  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="On Datarmor" href="../../on_datarmor.html" />
+    <link rel="prev" title="Weather" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/osmose_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../going_further.html">Going further</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../going_further.html#installation-with-github-and-poetry">Installation with github and poetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../going_further.html#contribute">Contribute</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../going_further.html#advanced-use-cases">Advanced use cases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../going_further.html#soundscape">Soundscape</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../going_further.html#weather">Weather</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../Soundscape/index.html">Soundscape</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Weather</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../on_datarmor.html">On Datarmor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../apidocs.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OSmOSE toolkit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../going_further.html">Going further</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Weather</a></li>
+      <li class="breadcrumb-item active">Workflow for wind speed estimation using ERA5 data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gallery_advanced_workflows/Weather/windspeed_estimation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-gallery-advanced-workflows-weather-windspeed-estimation-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="workflow-for-wind-speed-estimation-using-era5-data">
+<span id="sphx-glr-gallery-advanced-workflows-weather-windspeed-estimation-py"></span><h1>Workflow for wind speed estimation using ERA5 data<a class="headerlink" href="#workflow-for-wind-speed-estimation-using-era5-data" title="Link to this heading">¶</a></h1>
+<p>This code builds a workflow to build a parametric model for wind speed estimation based on welch spectra and ERA5 wind speed data</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>You need to have in your OSmOSE dataset the joined dataframe containing welch spectra paths and ERA5 data, saved as a csv file located in <code class="xref py py-obj docutils literal notranslate"><span class="pre">&lt;path_osmose_dataset&gt;/&lt;dataset_name&gt;/processed/auxiliary/aux_data.csv</span></code> ; see the use case <a class="reference internal" href="../../gallery_tutorials/Auxiliary/joiner_auxiliary.html#sphx-glr-gallery-tutorials-auxiliary-joiner-auxiliary-py"><span class="std std-ref">Join welch spectra with ERA5 data</span></a> to do this.</p>
+</section>
+<section id="codes">
+<h2>Codes<a class="headerlink" href="#codes" title="Link to this heading">¶</a></h2>
+<p>Define dataset path and name</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">OSmOSE.Weather</span> <span class="kn">import</span> <span class="n">Weather</span>
+
+
+<span class="n">path_osmose_dataset</span> <span class="o">=</span> <span class="s2">&quot;/home6/cazaudo/Bureau/osmose_sample_datasets/&quot;</span>
+<span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;SES1&quot;</span>
+<span class="n">campaign_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">date_template</span> <span class="o">=</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span>
+</pre></div>
+</div>
+<p>Select your set of welch spectra through their time resolution and sampling rate</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time_resolution_welch</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">sample_rate_welch</span> <span class="o">=</span> <span class="mi">38400</span>
+</pre></div>
+</div>
+<p>Run the Weather class to do the workflow</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appli_weather</span> <span class="o">=</span> <span class="n">Weather</span><span class="p">(</span><span class="n">path_osmose_dataset</span><span class="p">,</span><span class="n">dataset_name</span><span class="p">,</span><span class="n">time_resolution_welch</span><span class="p">,</span><span class="n">sample_rate_welch</span><span class="p">)</span>
+
+<span class="n">appli_weather</span><span class="o">.</span><span class="n">save_all_welch</span><span class="p">()</span>
+
+<span class="n">appli_weather</span><span class="o">.</span><span class="n">append_SPL_filtered</span><span class="p">(</span><span class="n">freq_min</span><span class="o">=</span><span class="mi">7500</span><span class="p">,</span><span class="n">freq_max</span><span class="o">=</span><span class="mi">8500</span><span class="p">)</span>
+
+<span class="n">appli_weather</span><span class="o">.</span><span class="n">wind_speed_estimation</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Your complete welch npz is already built! move on..
+
+  0%|          | 0/175 [00:00&lt;?, ?it/s]
+ 52%|█████▏    | 91/175 [00:00&lt;00:00, 909.70it/s]
+100%|██████████| 175/175 [00:00&lt;00:00, 846.78it/s]
+Saving figure /home6/cazaudo/Bureau/osmose_sample_datasets/SES1/appli/weather/scatter_wind_model.png
+Saving figure /home6/cazaudo/Bureau/osmose_sample_datasets/SES1/appli/weather/scatter_ecmwf_model.png
+Saving figure /home6/cazaudo/Bureau/osmose_sample_datasets/SES1/appli/weather/temporal_ecmwf_model.png
+</pre></div>
+</div>
+<p>Visualize an example of results</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">temporal_ecmwf_model</span> <span class="o">=</span> <span class="n">path_osmose_dataset</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s1">/appli/weather/temporal_ecmwf_model.png&#39;</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">image</span> <span class="k">as</span> <span class="n">mpimg</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;savefig.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">300</span>
+
+<span class="n">image</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">temporal_ecmwf_model</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_windspeed_estimation_001.png" srcset="../../_images/sphx_glr_windspeed_estimation_001.png" alt="windspeed estimation" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.056 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-advanced-workflows-weather-windspeed-estimation-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/b0f2deb7a91d8d7137a39c7117e4e2f4/windspeed_estimation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">windspeed_estimation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/f2b666688f7deb09e03331f77d77123f/windspeed_estimation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">windspeed_estimation.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Weather" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../on_datarmor.html" class="btn btn-neutral float-right" title="On Datarmor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, OSmOSE team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

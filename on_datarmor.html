@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>On Datarmor &mdash; OSmOSE toolkit  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="Workflow for wind speed estimation using ERA5 data" href="gallery_advanced_workflows/Weather/windspeed_estimation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/osmose_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="going_further.html">Going further</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">On Datarmor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequesites">Prerequesites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ssh-connexion">SSH connexion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#launch-a-qsub-job">Launch a qsub job</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-python-codes-in-qsub-jobs">Run python codes in qsub jobs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#jupyterhub">Jupyterhub</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Getting started</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-the-toolkit-through-notebooks">Use the toolkit through notebooks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shut-down-your-jupyterhub-session">Shut down your jupyterhub session</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conda-environment-creation">Conda environment creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#develop-and-contribute-using-github-and-poetry">Develop and contribute using github and poetry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apidocs.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OSmOSE toolkit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">On Datarmor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/on_datarmor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="on-datarmor">
+<h1>On Datarmor<a class="headerlink" href="#on-datarmor" title="Link to this heading">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<section id="prerequesites">
+<h3>Prerequesites<a class="headerlink" href="#prerequesites" title="Link to this heading">¶</a></h3>
+<p>You need to have an account on Datarmor, that will provide you with</p>
+<ul class="simple">
+<li><p>extranet logins (username + password)</p></li>
+<li><p>intranet logins (username + password)</p></li>
+</ul>
+<p>Besides, you need to be affiliated to our unix group named gosmose. To get an account, please contact your IT assistant if you are from an institute partner of Datarmor, otherwise please contact <a class="reference external" href="mailto:dorian&#46;cazau&#37;&#52;&#48;ensta-bretagne&#46;fr">Dorian Cazau</a> to see how you could join OSmOSE team!</p>
+<p>You can now access Datarmor through two different ways, with a command line interface described in <a class="reference internal" href="#ssh-connexion"><span class="std std-ref">SSH connexion</span></a> or through a jupyter hub session described in <a class="reference internal" href="#jupyterhub"><span class="std std-ref">Jupyterhub</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In case of a first connexion, you will have to pass through the <a class="reference internal" href="#ssh-connexion"><span class="std std-ref">SSH connexion</span></a> first before you can use the jupyterhub of Datarmor.</p>
+</div>
+</section>
+<section id="ssh-connexion">
+<h3>SSH connexion<a class="headerlink" href="#ssh-connexion" title="Link to this heading">¶</a></h3>
+<section id="getting-started">
+<h4>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h4>
+<p>This connexion will require to reach the extranet of Datarmor first, which can be done using a VPN as described in this <a class="reference external" href="./extranet_connection.pdf">document</a></p>
+<p>SSH connexion is then straightforward and you should get the screen showed in see <a class="reference internal" href="#sshconnexion-figure-1"><span class="std std-ref">Figure : Console screen after SSH connexion</span></a> with the following command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>&lt;intranet_username&gt;@datarmor.ifremer.fr
+</pre></div>
+</div>
+<figure class="align-default" id="id2">
+<span id="sshconnexion-figure-1"></span><img alt="_images/SSHconnexion_figure_1.png" src="_images/SSHconnexion_figure_1.png" />
+<figcaption>
+<p><span class="caption-text">Figure : Console screen after SSH connexion</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In case you happen to be on the intranet network of ENSTA Bretagne, IMT Atlantique or UBO, run instead</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>&lt;intranet_username&gt;@datarmor
+</pre></div>
+</div>
+</div>
+<p>Once you are here you can check your unix group to be sure it is gosmose using the bash command <code class="xref py py-obj docutils literal notranslate"><span class="pre">groups</span></code>. Be sure gosmose appears first, a second groups (for your own institution most likely) might be present but must come after gosmose.</p>
+</section>
+<section id="launch-a-qsub-job">
+<h4>Launch a qsub job<a class="headerlink" href="#launch-a-qsub-job" title="Link to this heading">¶</a></h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We have made a <a class="reference internal" href="tutorials.html#conda"><span class="std std-ref">tutorial on Conda</span></a> if you are starting with it</p>
+</div>
+<p>You can now create a job to ask for resources (including internet access) using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">qsub</span></code> command, for example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-l<span class="w"> </span><span class="nv">walltime</span><span class="o">=</span><span class="m">1</span>:00:00<span class="w"> </span>-q<span class="w"> </span>ftp<span class="w"> </span>-S<span class="w"> </span>/bin/bash
+</pre></div>
+</div>
+<p>This job is interactive (parameter -I) and will last for 1 hour (parameter walltime=1:00:00). Default memory resources are limited to 500 MB, you may want more resources to install package in conda environment (as we will see in <a class="reference internal" href="#conda-environment-creation"><span class="std std-ref">Conda environment creation</span></a>) ;  to change this use the <code class="xref py py-obj docutils literal notranslate"><span class="pre">mem</span></code> parameter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-l<span class="w"> </span><span class="nv">walltime</span><span class="o">=</span><span class="m">1</span>:00:00,mem<span class="o">=</span>4G<span class="w"> </span>-q<span class="w"> </span>ftp<span class="w"> </span>-S<span class="w"> </span>/bin/bash
+</pre></div>
+</div>
+<p>See section <a class="reference internal" href="#run-python-codes-in-qsub-jobs"><span class="std std-ref">Run python codes in qsub jobs</span></a> for other configurations of qsub jobs.</p>
+</section>
+<section id="run-python-codes-in-qsub-jobs">
+<h4>Run python codes in qsub jobs<a class="headerlink" href="#run-python-codes-in-qsub-jobs" title="Link to this heading">¶</a></h4>
+<p>Let’s start launching an interactive qsub job:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-q<span class="w"> </span>mpi_1<span class="w"> </span>-l<span class="w"> </span><span class="k">select</span><span class="o">=</span><span class="m">1</span>:ncpus<span class="o">=</span><span class="m">28</span>:mpiprocs<span class="o">=</span><span class="m">28</span>:mem<span class="o">=</span>120gb<span class="w"> </span>-l<span class="w"> </span><span class="nv">walltime</span><span class="o">=</span><span class="m">01</span>:00:00<span class="w"> </span>-S<span class="w"> </span>/bin/bash
+<span class="nb">source</span><span class="w"> </span>/appli/hibd/rdma-hadoop-2.x-1.3.5-x86/sbin/quick-hadoop-get-env.sh<span class="w"> </span>--conda-env<span class="w"> </span>osmose
+</pre></div>
+</div>
+<p>You can now run python scripts, eg <code class="xref py py-obj docutils literal notranslate"><span class="pre">essai_save_image.py</span></code> located in <code class="xref py py-obj docutils literal notranslate"><span class="pre">/home/datawork-osmose/</span></code>, as follows</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">time</span><span class="w"> </span>python3<span class="w"> </span>/home/datawork-osmose/essai_save_image.py
+</pre></div>
+</div>
+<p>To run your code using a GPU</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub<span class="w"> </span>-I<span class="w"> </span>-q<span class="w"> </span>gpuq<span class="w"> </span>-l<span class="w"> </span><span class="nv">ncpus</span><span class="o">=</span><span class="m">10</span><span class="w"> </span>-l<span class="w"> </span><span class="nv">ngpus</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-l<span class="w"> </span><span class="nv">mem</span><span class="o">=</span>32gb<span class="w">  </span>-l<span class="w"> </span><span class="nv">walltime</span><span class="o">=</span><span class="m">01</span>:00:00<span class="w"> </span>-S<span class="w"> </span>/bin/bash
+</pre></div>
+</div>
+</section>
+</section>
+<section id="jupyterhub">
+<h3>Jupyterhub<a class="headerlink" href="#jupyterhub" title="Link to this heading">¶</a></h3>
+<section id="id1">
+<h4>Getting started<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<p>The jupyterhub of Datarmor is directly reachable via this <a class="reference external" href="https://domicile.ifremer.fr/dana-na/auth/url_default/welcome.cgi">portal</a>. Once you are on the Portail Domicile Ifremer (see <a class="reference internal" href="#jupyterhub-figure-1"><span class="std std-ref">Figure : Portail Domicile Ifremer</span></a>) after entering your extranet logins, click on JUPYTER, enter your intranet logins when asked and click on Start My Server.</p>
+<figure class="align-default" id="id3">
+<span id="jupyterhub-figure-1"></span><img alt="_images/Jupyterhub_figure_1.png" src="_images/Jupyterhub_figure_1.png" />
+<figcaption>
+<p><span class="caption-text">Figure : Portail Domicile Ifremer</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>You will then have to select a job profile, which will allocate to your jupyterhub session different amount of computer resources. By default, we recommend to use Datarmor - Jupyterlab - 8 cores, 32 GB RAM, 2 hours (quite equivalent to a personal computer).</p>
+<p>You are now on the Jupyter-Hub of Datarmor!</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Finally : some things to check and keep in mind</p>
+<ul class="simple">
+<li><p>Do not use the jupyterhub session to download or upload high volume data, only a few small files</p></li>
+<li><p>Be aware of your computational resources, and avoid overusing them (this will crash your kernel) ! Conversely, avoid underusing your notebook, especially do not forget to close your notebook session once you are done (see Step 3)</p></li>
+<li><p>Often check that you do not have several jupyterhub sessions running simultaneously (use qstat and qdel, please refer to the Glossary)</p></li>
+</ul>
+</div>
+<p>In case of connection problems, please report it to Dorian Cazau and contact the <a class="reference external" href="mailto:assistance&#37;&#52;&#48;ifremer&#46;fr">assistance</a> at IFREMER.</p>
+</section>
+<section id="use-the-toolkit-through-notebooks">
+<h4>Use the toolkit through notebooks<a class="headerlink" href="#use-the-toolkit-through-notebooks" title="Link to this heading">¶</a></h4>
+<p>Our toolkit has been made accessible through user-friendly notebooks covering different basic use cases (eg build a OSmOSE dataset) and more advanced applications (eg workflow for weather estimation), which have been presented in this documentation in <a class="reference internal" href="getting_started.html#basic-use-cases"><span class="std std-ref">Basic use cases</span></a> and <a class="reference internal" href="going_further.html#advanced-use-cases"><span class="std std-ref">Advanced use cases</span></a>. These notebooks are also present on in our Datarmor workspace at <code class="xref py py-obj docutils literal notranslate"><span class="pre">/home/datawork-osmose/osmose-datarmor/notebooks/</span></code>. You will have to make a copy of them into your personal workspace. To do this, open a terminal from your jupyterhub portal and run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>-R<span class="w"> </span>/home/datawork-osmose/osmose-datarmor/notebooks/<span class="w"> </span>./osmose_notebooks/<span class="w"> </span><span class="p">;</span><span class="w"> </span>chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>-R<span class="w"> </span>./osmose_notebooks/
+</pre></div>
+</div>
+<p>To open a notebook, just double click on it. If your notebook kernel is different from osmose, change it in Kernel -&gt; Change Kernel -&gt; Python [conda env:osmose]. This is the latest stable version.</p>
+</section>
+<section id="shut-down-your-jupyterhub-session">
+<h4>Shut down your jupyterhub session<a class="headerlink" href="#shut-down-your-jupyterhub-session" title="Link to this heading">¶</a></h4>
+<p>Once you are done with your work, please follow this procedure to close your session : on the Jupyter Hub main page -&gt; click tab Running -&gt; click on all Shutdown then click on the button Logout on the Jupyter Hub main page.</p>
+</section>
+</section>
+</section>
+<section id="conda-environment-creation">
+<h2>Conda environment creation<a class="headerlink" href="#conda-environment-creation" title="Link to this heading">¶</a></h2>
+<p>Below are listed the steps to create and build a conda environment that will be available in your Jupyter Hub sessions Note that there is possibly a delay between the creation and disposal of your environment.</p>
+<p>Please first connect to Datarmor via <a class="reference internal" href="#ssh-connexion"><span class="std std-ref">SSH connexion</span></a>. Once you are in your datahome, check that your <code class="xref py py-obj docutils literal notranslate"><span class="pre">condarc</span></code> file contains the following elements (run <code class="xref py py-obj docutils literal notranslate"><span class="pre">cat</span> <span class="pre">.condarc</span></code>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>envs_dirs:
+<span class="w">  </span>-<span class="w"> </span><span class="nv">$DATAWORK</span>/conda-env
+<span class="w">  </span>-<span class="w"> </span><span class="nv">$HOME</span>/conda-env
+<span class="w">  </span>-<span class="w"> </span>/appli/conda-env
+<span class="w">  </span>-<span class="w"> </span>/appli/conda-env/2.7
+<span class="w">  </span>-<span class="w"> </span>/appli/conda-env/3.6
+</pre></div>
+</div>
+<p>Launch an interactive qsub job following the procedure described in <a class="reference internal" href="#launch-a-qsub-job"><span class="std std-ref">Launch a qsub job</span></a>. Be careful of the memory asked, package installation might need memory higher than to the default 500 MB.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We have made a <a class="reference internal" href="tutorials.html#conda"><span class="std std-ref">tutorial on Conda</span></a> if you are starting with it</p>
+</div>
+<p>If at the end you do not find your Kernel in your jupyterhub sessions, especially those installed on your datawork and not datahome, insert in the file ~/.condarc the line “$DATAWORK/conda-env”  , this file should look like that:</p>
+<ol class="arabic simple">
+<li><p>Activate conda commands in your shell</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>/appli/anaconda/latest/etc/profile.d/conda.sh
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Create your ENV_NAME conda environment</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>ENV_NAME
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default on Datarmor, this command will create you an environment in your local home directory (of the form <code class="xref py py-obj docutils literal notranslate"><span class="pre">/home3/datahome/dcazau/conda-env</span></code>), making it only usable by yourself. In case you would like a conda environment usable for the OSmOSE group, you will have to change your environment location by setting the parameter <code class="xref py py-obj docutils literal notranslate"><span class="pre">-p</span></code>. You can also use a specific python version with the parameter <code class="xref py py-obj docutils literal notranslate"><span class="pre">python</span></code>, here is an example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--p<span class="w"> </span>/home/datawork-osmose/conda-env/ENV_NAME<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Reported bug : changing python version will need to set the environment path with <code class="xref py py-obj docutils literal notranslate"><span class="pre">-p</span></code>, otherwise it will be installed in <code class="xref py py-obj docutils literal notranslate"><span class="pre">/dcazau/$Datarmor/...</span></code></p>
+</div>
+<p>You should now see the conda environment located in the <code class="xref py py-obj docutils literal notranslate"><span class="pre">conda-env</span></code> folder within either your datahome or your datawork directory, running the command <code class="xref py py-obj docutils literal notranslate"><span class="pre">conda</span> <span class="pre">info</span> <span class="pre">--envs</span></code> should give you for example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">                      </span>/home/datawork-osmose/conda-env/mmdetect
+<span class="w">                      </span>/home/datawork-osmose/conda-env/osmose
+osmose_dev_dcazau<span class="w">    </span>/home3/datawork/dcazau/conda-env/osmose_dev_dcazau
+</pre></div>
+</div>
+<p>This list is present in ~/.conda/environments.txt files. If you do not see your environment, add it manually in this file; make sure to end the path with the directory name without a <code class="xref py py-obj docutils literal notranslate"><span class="pre">/</span></code>.</p>
+<ol class="arabic simple" start="3">
+<li><p>After activation of your environment, install the package <code class="xref py py-obj docutils literal notranslate"><span class="pre">ipykernel</span></code> to be able to see your environment in the kernes available in jupyterhub</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>ipykernel
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>In case you created an environment in the <code class="xref py py-obj docutils literal notranslate"><span class="pre">datawork-osmose</span></code>, do not forget to change its permissions so it can be read and executed by any member of OSmOSE</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>-R<span class="w"> </span>/home/datawork-osmose/conda-env/ENV_NAME
+</pre></div>
+</div>
+</section>
+<section id="develop-and-contribute-using-github-and-poetry">
+<h2>Develop and contribute using github and poetry<a class="headerlink" href="#develop-and-contribute-using-github-and-poetry" title="Link to this heading">¶</a></h2>
+<p>Although Datarmor should not be used as a development environment, step 4 from our github-based contribution workflow described in <a class="reference internal" href="going_further.html#contribute"><span class="std std-ref">Contribute</span></a> may include a few specific developments regarding features only available on Datarmor (typically everything related to distributed computing). The installation procedure described in <a class="reference internal" href="going_further.html#installation-with-github-and-poetry"><span class="std std-ref">Installation with github and poetry</span></a> is still valid, just considered your Datarmor datahome as your local working directory.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gallery_advanced_workflows/Weather/windspeed_estimation.html" class="btn btn-neutral float-left" title="Workflow for wind speed estimation using ERA5 data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, OSmOSE team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
