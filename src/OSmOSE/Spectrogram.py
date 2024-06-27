@@ -150,7 +150,7 @@ class Spectrogram(Dataset):
             analysis_sheet["overlap"][0] if "overlap" in analysis_sheet else 0
         )
         self.colormap: str = (
-            analysis_sheet["colormap"][0] if "colormap" in analysis_sheet else "viridis"
+            analysis_sheet["colormap"][0] if "colormap" in analysis_sheet else "Greys"
         )
         self.zoom_level: int = (
             analysis_sheet["zoom_level"][0] if "zoom_level" in analysis_sheet else 0
